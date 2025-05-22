@@ -1,0 +1,72 @@
+name: knockknock front deploy
+
+env:
+  IMAGE_NAME: knock-knock-front
+  CONTAINER_NAME: knock-knock-front
+  EC2_HOST: ${{secrets.EC2_HOST}}
+  EC2_SSH_USER: ubuntu
+  PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+  PROJECT_DIR: /home/ubuntu/knockknock/frontend
+
+on:
+  # push:
+  #   branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: DockerHub Login
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+  
+      - name: Build and Push Docker images
+        uses: docker/build-push-action@v6.7.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          build-args: |
+            REACT_APP_URL=${{secrets.REACT_APP_URL}}
+  
+  deploy-to-server:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_SSH_USER }}
+          key: ${{ env.PRIVATE_KEY }}
+          script: |
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-80")
+            
+            echo "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> ${{env.PROJECT_DIR}}/.env.deploy
+            echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> ${{env.PROJECT_DIR}}/.env.deploy
+            echo "IMAGE_TAG=${{ github.sha }}" >> ${{env.PROJECT_DIR}}/.env.deploy
+  
+            if [ ! -z "$CONTAINER_ID" ]; then
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+            fi
+            
+            DOCKER_IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+            sudo docker pull $DOCKER_IMAGE_NAME
+            #sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:80 $DOCKER_IMAGE_NAME
+
+            # Stop and remove existing containers
+            sudo docker-compose -f ${{env.PROJECT_DIR}}/docker-compose.yml down || true
+
+            # Deploy Docker containers
+            sudo docker-compose --env-file ${{env.PROJECT_DIR}}/.env.deploy -f ${{env.PROJECT_DIR}}/docker-compose.yml up -d
+
+            sudo docker image prune -af

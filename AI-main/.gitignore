@@ -1,0 +1,16 @@
+# Security
+.env
+
+# Server log
+*.log
+
+# Files
+static/temp
+bert-kor-base/
+MeloTTS_kr/
+*.pth
+*.wav
+*.zip
+
+# etc
+__pycache__/

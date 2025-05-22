@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Example</title>
+</head>
+<body>
+<h1>Notification Example</h1>
+
+<!-- Input field to enter user number -->
+<label for="userNo">userNo입력:</label>
+<input type="number" id="userNo" name="userNo" min="1" required>
+
+<!-- Button to subscribe -->
+<button id="subscribe-btn">Subscribe</button>
+
+<!-- Notification list -->
+<div id="notifications" style="display:none;">
+    <h2>Incoming Notifications:</h2>
+    <ul id="notification-list">
+        <!-- Notifications will appear here -->
+    </ul>
+</div>
+
+<script>
+    let eventSource;
+
+    document.getElementById('subscribe-btn').addEventListener('click', function() {
+        const userNo = document.getElementById('userNo').value;
+
+        if (userNo) {
+            // userNo로 구독 (EventSource) 객체 생성 필수
+            eventSource = new EventSource(`http://localhost:9090/api/v1/notification/${userNo}`);
+
+            // sse이벤트(알림) 처리
+            const eventName = `userNotification_${userNo}`;
+            eventSource.addEventListener(eventName, event => {
+                console.log('Received event:', event.data);
+                const notificationList = document.getElementById('notification-list');
+                const newNotification = document.createElement('li');
+                newNotification.textContent = event.data;
+                notificationList.appendChild(newNotification);
+            });
+
+            // 에러 처리
+            eventSource.onerror = function() {
+                console.error('Connection error occurred.');
+                eventSource.close();
+            };
+
+            document.getElementById('subscribe-btn').style.display = 'none';
+            document.getElementById('notifications').style.display = 'block';
+        } else {
+            alert('Please enter a valid User Number.');
+        }
+    });
+</script>
+
+</body>
+</html>

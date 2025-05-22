@@ -1,0 +1,12 @@
+{
+    "model_list": [
+        {
+            "name": "bert-kor-base.zip",
+            "id": "1qiPobdpEsnVSk3i8iEJzs3ZY6dP2yJ8s"
+        },
+        {
+            "name": "MeloTTS_kr.zip",
+            "id": "1tMIBtmuRAO3-Z7D2JkB6aVIwlgKiM9Vi"
+        }
+    ]
+}

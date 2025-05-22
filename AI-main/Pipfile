@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = true
+name = "pytorch-cpu"
+
+[packages]
+fastapi-slim = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+transformers = "==4.40.0"
+pydantic-settings = "*"
+torch = {version = "==2.2.0+cpu", index = "pytorch-cpu"}
+torchaudio = {version = "==2.2.0+cpu", index = "pytorch-cpu"}
+soundfile = "==0.12.1"
+anyascii = "==0.3.2"
+g2pkk = "==0.1.2"
+numba = "==0.59.1"
+jamo = "==0.4.1"
+cached-path = "*"
+eunjeon = "*"
+gdown = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
