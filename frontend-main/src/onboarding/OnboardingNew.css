@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.onboarding-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url("image/onboarding-img.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.onboarding-text {
+  color: #fff;
+  z-index: 1;
+  display: flex;
+  position: absolute;
+  margin-left: 5%;
+  font-weight: bold;
+  font-size: 36px;
+  top: 70%;
+  line-height: 180%;
+  text-shadow: 0 4px 27px #000;
+}
+
+.startBtn-wrap {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 30px;
+}
+.startBtn {
+  background-color: #80baff;
+  color: #fff;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 20px;
+  bottom: 30px;
+  font-weight: bold;
+  width: 90%;
+  height: 55px;
+  box-sizing: border-box;
+}

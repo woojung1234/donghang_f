@@ -1,0 +1,136 @@
+/* WelfareInputBirth.module.css */
+
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  position: relative; 
+  flex-direction: column;
+}
+
+
+.infomation-container {
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 10%;
+}
+
+.infomation {
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: -15px;
+  color: #2c2c2c;
+}
+
+.input-container {
+  text-align: center;  
+  margin: 0 auto;
+  margin-top: 50%;
+}
+
+.input-date {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  width: 60px;
+  text-align: center;
+  font-size: 18px;
+  color: #2c2c2c;
+  height: 5vh;
+}
+
+.input-date:focus {
+  outline: none;
+  border-bottom: 2px solid #80BAFF;
+}
+
+.input-divide {
+  margin-left: 15px;
+  margin-right: 15px;
+  font-size: 18px;
+  color: #2c2c2c;
+}
+
+/* .main-section {
+  width: 80%;
+  padding: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.go-input-height {
+  border-width: 3px;
+  border-color: #80BAFF;
+  background-color: #80BAFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  margin-bottom: 5%;
+} */
+
+.go-input-height {
+  width: 90%;
+  position: absolute;
+  bottom: 20px;
+  left: 5%;
+}
+
+.go-input-height-text {
+  height: 60px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #80BAFF;
+  box-sizing: border-box;
+  border-radius: 15px;
+  margin: 0px;
+  padding: 20px;
+}
+
+.main-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .header {
+    margin-bottom: 30px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}

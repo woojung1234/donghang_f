@@ -1,0 +1,62 @@
+.consumption-container{
+    padding: 0px 20px;
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+} 
+
+.category-filter-container {
+    display: flex;
+    padding: 10px 0;
+    overflow-x: auto;
+    margin-bottom: 10px;
+}
+
+.category-filter-button {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-right: 8px;
+}
+
+.category-filter-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #666;
+}
+
+.no-data-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+}
+
+.no-data-image {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+}
+
+.no-data-text {
+    font-size: 16px;
+    color: #888;
+}

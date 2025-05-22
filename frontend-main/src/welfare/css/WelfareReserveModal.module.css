@@ -1,0 +1,257 @@
+.container {
+  max-width: 390px;
+  background-color: white;
+}
+
+input[type="date"]::-webkit-clear-button {
+  display: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: relative;
+}
+
+hr {
+  border: 1px solid #d9d9d9;
+}
+
+.user-name {
+  color: #007bff;
+  font-size: 18px;
+}
+
+.for {
+  color: #686868;
+  font-size: 18px;
+}
+
+.modal-section {
+  width: 100%;
+  background-color: white;
+  position: relative;
+}
+
+.modal-container {
+  border-color: #ccc;
+  height: 100%;
+}
+
+.reserve-modal-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #2c2c2c;
+  text-align: center;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.reserve-info-container-box {
+  margin-top: 20px;
+}
+
+.reserve-info-container1 {
+  margin: 0 auto;
+  margin-top: 50px;
+  width: 90%;
+  height: 70px;
+}
+
+.reserve-info-container11 {
+  margin: 0 auto;
+  margin-top: 30px;
+  width: 90%;
+  height: 90px;
+}
+
+.reserve-info-container2 {
+  margin: 0 auto;
+  margin-top: -10px;
+  width: 90%;
+  height: 70px;
+}
+
+.reserve-info-container2-option {
+  height: 50px;
+  margin-top: 40px;
+}
+
+.reserve-info-container3 {
+  margin: 0 auto;
+  width: 90%;
+  margin-top: 35px;
+}
+
+.reserve-cancel {
+  text-align: center;
+  font-weight: bold;
+  width: 40%;
+  height: 40px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 18px;
+  color: #686868;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 15px;
+  bottom: -80px;
+}
+
+.reserve-yeah {
+  text-align: center;
+  font-weight: bold;
+  width: 40%;
+  height: 40px;
+  border: 2px solid #2c2c2c;
+  border-radius: 10px;
+  background-color: #2c2c2c;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 15px;
+  bottom: -80px;
+}
+
+.main-info {
+  color: #686868;
+}
+
+
+.start-date-container {
+  margin-top: 0px;
+}
+
+.end-date-container {
+  margin-top: 0px;
+}
+
+.reserve-info-text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.reserve-info-text1 {
+  margin-right: 35px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.reserve-price-text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #007bff;
+  float: right;
+}
+
+.insert-date {
+  height: 28px;
+  font-size: 20px;
+  margin-left: 30px;
+  border: 1px solid #c5c5c5;
+  border-radius: 5px;
+  color: #2c2c2c;
+  font-weight: bold;
+}
+
+.insert-start-date {
+  height: 28px;
+  font-size: 20px;
+  margin-left: 30px;
+  border: none;
+  color: #FF5959;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+}
+
+.end-date {
+  height: 28px;
+  font-size: 20px;
+  margin-left: 30px;
+  margin-top: 5px;
+  border: none;
+  color: #FF5959;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+}
+
+.insert-time {
+  height: 28px;
+  font-size: 20px;
+  margin-left: 30px;
+  border: none;
+  color: #FF5959;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+}
+
+.insert-period {
+  height: 28px;
+  font-size: 20px;
+  margin-left: 30px;
+  border: none;
+  color: #FF5959;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+}
+
+.main-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}

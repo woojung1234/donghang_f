@@ -1,0 +1,167 @@
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh; /* 전체 높이로 채우기 */
+}
+
+.header {
+  padding: 10px;
+  background-color: white;
+}
+
+.header-info {
+  width: 100%;
+  background-color: white;
+}
+
+.header-name {
+  margin-top: 30%;
+  margin-left: 2%;
+  font-size: 22px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.header-date {
+  margin-left: 3%;
+  margin-top: 1%;
+  font-size: 18px;
+  color: #888;
+}
+
+.pay-com {
+  color: #007bff;
+}
+
+.main-container {
+  width: 90%;
+  height: 100%;
+  margin: 0 auto;
+  margin-top: 10%;
+}
+
+hr {
+  border: 1px solid #d9d9d9;
+}
+
+.pay-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+dotted-hr {
+  border: none;
+  border: 1px dashed #d9d9d9;
+}
+
+.gender {
+  color: #686868;
+}
+
+.pay-info-cate {
+  font-size: 18px;
+  color: #686868;
+}
+
+.pay-info-title {
+  font-size: 18px;
+  font-weight: bold;
+  float: right;
+  color: #2c2c2c;
+}
+
+.pay-info-tprice {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.pay-info-price {
+  font-size: 22px;
+  font-weight: bold;
+  float: right;
+  color: #2c2c2c;
+}
+
+.main-section {
+  width: 90%;
+  height: 100%;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  text-align: center;
+  margin: 0 auto;
+  bottom: 20px;
+}
+
+.go-main {
+  height: 60px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #80BAFF;
+  box-sizing: border-box;
+  border-radius: 15px;
+  padding: 20px;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+}
+
+.main-text {
+  text-align: center;
+  margin: 0 auto;
+  font-size: 18px;
+  color: white;
+}
+
+.go-main-text {
+  color: white;
+  font-weight: bold;
+}
+
+.main-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .header {
+    margin-bottom: 30px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}

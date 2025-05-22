@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "site.knock_knock_sh.twa",
+      "sha256_cert_fingerprints": ["AF:4A:BC:07:51:25:83:0F:15:C9:04:E5:6B:6A:8D:A0:F1:DD:E1:64:30:42:FA:2A:86:10:62:AE:A4:05:4A:61"]
+    }
+  },
+  { 
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "site.knock_knock_sh.twa",
+      "sha256_cert_fingerprints": [
+        "B7:4D:5E:D6:7E:A5:1C:07:7E:8C:42:5B:A5:5A:7A:7B:D4:A9:1B:1E:F8:46:D0:06:4E:44:96:F6:E5:45:C8:9E"
+      ]
+    }
+  }
+]

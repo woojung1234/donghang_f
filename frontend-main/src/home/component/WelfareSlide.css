@@ -1,0 +1,38 @@
+.welfare-main-container{
+    box-sizing: border-box;
+}
+.welfare-main-text {
+width: 100%;
+position: absolute;
+padding: 20px;
+
+}
+.welfare-main-text p{
+margin: 5px 0px;
+color: #686868;
+
+}
+.welfare-main-text p:nth-child(2){
+font-weight: bold;
+font-size: 22px;
+color: #2C2C2C;
+
+}
+
+.welfare-main-button{
+    height: 35px;
+    border: none;
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    box-shadow: 0px 2px 5px #888;
+    margin-top: 10px;
+    color: #2C2C2C;
+}
+.slide {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  

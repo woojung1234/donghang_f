@@ -1,0 +1,131 @@
+/* 768px 미만 */
+@media (max-width: 767px) {
+  .containerA, .containerB {
+    max-width: 100%;
+    margin: 0 auto;
+    height: 100vh;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #fff8f3; /* .containerA의 배경색 */
+    position: relative;
+  }
+
+  .containerB {
+    background-color: #F8FBFF; /* .containerB의 배경색 */
+  }
+
+  .button-group {
+    display: flex;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 70px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .button {
+    flex: 1;
+    background-color: #fff;
+    box-shadow: 1px 2px 4px #888;
+    padding: 7px;
+    border-radius: 7px;
+    margin-right: 7px;
+    text-align: center;
+  }
+
+  .button:last-child {
+    margin-right: 0;
+  }
+
+  .button-text {
+    margin-top: 7px;
+    font-size: 13px;
+  }
+}
+
+/* 768px 이상 1024px 미만 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .containerA, .containerB {
+    max-width: 80%;
+    margin: 0 auto;
+    height: 100vh;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #fff8f3; /* .containerA의 배경색 */
+    position: relative;
+  }
+
+  .containerB {
+    background-color: #F8FBFF; /* .containerB의 배경색 */
+  }
+
+  .button-group {
+    display: flex;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 80px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .button {
+    flex: 1;
+    background-color: #fff;
+    box-shadow: 1px 2px 4px #888;
+    padding: 8px;
+    border-radius: 8px;
+    margin-right: 8px;
+    text-align: center;
+  }
+
+  .button:last-child {
+    margin-right: 0;
+  }
+
+  .button-text {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}
+
+/* 1024px 이상 */
+@media (min-width: 1024px) {
+  .containerA, .containerB {
+    max-width: 60%;
+    margin: 0 auto;
+    height: 100vh;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #fff8f3; /* .containerA의 배경색 */
+    position: relative;
+  }
+
+  .containerB {
+    background-color: #F8FBFF; /* .containerB의 배경색 */
+  }
+
+  .button-group {
+    display: flex;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 90px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .button {
+    flex: 1;
+    background-color: #fff;
+    box-shadow: 1px 2px 4px #888;
+    padding: 9px;
+    border-radius: 9px;
+    margin-right: 9px;
+    text-align: center;
+  }
+
+  .button:last-child {
+    margin-right: 0;
+  }
+
+  .button-text {
+    margin-top: 9px;
+    font-size: 15px;
+  }
+}

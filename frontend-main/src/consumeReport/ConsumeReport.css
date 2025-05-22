@@ -1,0 +1,84 @@
+.consume-report-container {
+  padding: 0px 20px 20px 20px;
+}
+
+.consume-report-date-container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+.consume-report-date-section{
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.consume-report-date-container select{
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.displayed-date{
+  font-size: 16px;
+  color: #2C2C2C;
+  margin-top: 0px;
+}
+
+.consume-report-price-section {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+}
+
+.total-price {
+  font-weight: bold;
+}
+
+.go-mainred {
+  color: #FF5959;
+}
+
+.chart-container {
+  text-align: center;
+}
+
+.circle-chart-container {
+  margin-top: 25px;
+}
+
+.no-data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50%;
+}
+
+.no-data-image {
+  margin-right: 5px;
+}
+
+.no-data-text {
+  text-align: center;
+  font-size: 18px;
+  color: #999;
+  
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+    .consume-report-container {
+      max-width: 768px;
+      padding: 40px;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .consume-report-container {
+      max-width: 1024px;
+      padding: 60px;
+    }
+  }
+  

@@ -1,0 +1,121 @@
+.container {
+   display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+input[type="date"]::-webkit-clear-button {
+    display: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button {
+    display: none;
+}
+
+hr {
+    border: 1px solid #d9d9d9;
+}
+
+.modal-section {
+    width: 100%;
+    background-color: white;
+    position: relative;
+}
+
+.modal-container {
+    border-color: #ccc;
+    height: 100%;
+}
+
+.consume-modal-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c2c2c;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #D9D9D9;
+    box-sizing: border-box;
+    height: 50px;
+}
+.matchModal-line{
+    margin: 0px;
+    padding: 5px 0px;
+  }
+.reserve-info-container-box {
+    margin-top: 20px;
+}
+
+.consume-info-container1 {
+    margin: 0 auto;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.consume-info-container2 {
+    margin: 0 auto;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.modal-date-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dateBtn{
+    text-align: center;
+    font-weight: bold;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48%;
+}
+.modal-cancel {
+    border: 2px solid #ccc;
+    background-color: white;
+    color: #686868;
+}
+
+.modal-yeah {
+    border: 2px solid #2c2c2c;
+    background-color: #2c2c2c;
+    color: white;
+}
+
+.consume-info-text {
+    font-size: 22px;
+    color: #2c2c2c;
+}
+
+.consume-start-date, 
+.consume-end-date {
+    font-size: 22px;
+    font-weight: bold;
+    color: #FF5959;
+    cursor: pointer;
+    border: none;
+}
+
+.insert-start-date, 
+.insert-end-date {
+    display: none;
+    width: 125px;
+    height: 28px;
+    font-size: 18px;
+    margin-left: 30px;
+    border: 1px solid #c5c5c5;
+    border-radius: 5px;
+    color: #2c2c2c;
+}

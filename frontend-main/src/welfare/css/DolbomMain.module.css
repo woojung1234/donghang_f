@@ -1,0 +1,163 @@
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh; /* 전체 높이로 채우기 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+   margin-top: 10px;
+}
+
+.main-section-container {
+  position: fixed;
+  width: 362px;
+  height: 90px;
+  margin: 0 auto;
+  margin-left: 14px;
+  margin-right: 15px;
+  margin-top: -10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+}
+
+.main-section {
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+}
+
+.button-section {
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+}
+
+.main-text {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.hanwool-list {
+  border-width: 3px;
+  border-color: #d9d9d9;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.nursing-list-text {
+  color: #686868;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.housework-list-text {
+  color: #686868;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hanwool-list-text {
+  color: #686868;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+
+.info-container {
+  width: 360px;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.img-info-first {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.img-info {
+  width: 100%;
+}
+
+.go-reserve-nursing {
+  width: 100%;
+  height: 60px;
+  margin-top: 10%;
+  border-width: 3px;
+  border-color: #80BAFF;
+  background-color: #80BAFF;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.go-reserve-nursing-text {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.main-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .header {
+    margin-bottom: 30px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}

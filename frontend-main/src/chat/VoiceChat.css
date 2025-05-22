@@ -1,0 +1,74 @@
+.voicechat-section {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  height: 100vh;
+  background-color: #FFF8F3;
+}
+
+.chatbot {
+  display: flex;
+  position: absolute;
+  top: 25%;
+  z-index: 10;
+  align-items: center;
+  width: 80%;
+}
+
+.hiddenBtn {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: #FF961B;
+  color: #fff;
+  position: fixed;
+  width: 100px;
+  top: 70px;
+  left: 82%;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.chat-startBtn {
+  margin-bottom: 20px;
+  padding: 20px;
+  font-size: 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: #FF961B;
+  color: #fff;
+  position: fixed;
+  font-weight: bold;
+  width: 350px;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.textbox {
+  font-family: 'Pretendard', sans-serif;
+  width: 330px;
+  height: 500px;
+  display: flex;
+  font-size: 18px;
+  position: fixed;
+  bottom: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  line-height: 170%;
+  background: none;
+  border: none;
+  color: #fff;
+  z-index: 1000;
+  overflow-y: auto;
+  outline: none;
+}
+.listening-text{
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 100px;
+}

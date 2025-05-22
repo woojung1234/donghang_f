@@ -1,0 +1,24 @@
+.onboarding-container{
+   text-align: center;
+}
+.onboarding-logo{
+    margin: 200px 0px;
+}
+.startBtn-wrap{
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    bottom: 30px;
+}
+.startBtn{
+    background-color: #80BAFF;
+    color:#fff;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    width: 350px;
+    height: 55px;
+    box-sizing: border-box;
+}

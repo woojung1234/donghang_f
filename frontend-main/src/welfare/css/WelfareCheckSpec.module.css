@@ -1,0 +1,172 @@
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.infomation-container {
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 30px;
+}
+
+.infomation {
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: -15px;
+  color: #2c2c2c;
+}
+
+.spec-container {
+  margin-left: 15px;
+  margin-right: 15px;
+  flex-direction: column;
+}
+
+.spec-info {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 30px;
+  color: #2c2c2c;
+}
+
+.spec-check {
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid #d9d9d9;
+  width: 96%;
+  text-align: justify;
+  font-size: 18px;
+  color: #2c2c2c;
+  margin-top: -5px;
+  background-color: white;
+}
+
+.spec-check-hw {
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid #d9d9d9;
+  width: 42%;
+  text-align: justify;
+  font-size: 18px;
+  color: #2c2c2c;
+  margin-top: -5px;
+  text-align: center;
+  background-color: white;
+}
+
+.hw {
+  color: #686868;
+}
+
+.disease {
+  
+}
+
+.last {
+  margin-bottom: 35px;
+}
+
+.first {
+  margin-bottom: 10px;
+  border: none;
+}
+
+/* .main-section {
+  width: 80%;
+  padding: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.go-password {
+  border-width: 3px;
+  border-color: #80BAFF;
+  background-color: #80BAFF;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  margin-bottom: 5%;
+} */
+
+.go-password {
+  border-width: 3px;
+  border-color: #80BAFF;
+  background-color: #80BAFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  width: 90%;
+  padding: 20px;
+  margin: 0 auto;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 5%;
+}
+.disabled-btn{
+  opacity: 0.5 !important;
+}
+.main-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #888;
+  margin: 10px 0;
+}
+
+.go-password-text {
+  color: white;
+  font-size: 18px;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .header {
+    margin-bottom: 30px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}

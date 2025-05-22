@@ -1,0 +1,173 @@
+/* 768px 미만 */
+@media (max-width: 767px) {
+  .chat-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+    background-color: #ff961b;
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 85%;
+    box-shadow: 0px 2px 5px #888;
+  }
+
+  .chat-section img {
+    width: 30%;
+    height: 18%;
+  }
+
+  .chat-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main-text {
+    padding-left: 8px;
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .chat-head-text {
+    color: #fff;
+    margin: 0;
+  }
+
+  .chat-info-text {
+    margin-top: 4px;
+    color: #2c2c2c;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* 768px 이상 1024px 미만 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .chat-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 9vh;
+    border-radius: 9px;
+    padding: 18px;
+    margin-bottom: 18px;
+    text-align: center;
+    background-color: #ff961b;
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 35vh;
+    box-shadow: 0px 3px 6px #888;
+  }
+
+  .chat-section img {
+    width: 34%;
+    height: 19%;
+  }
+
+  .chat-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main-text {
+    padding-left: 9px;
+    margin-top: 9px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .chat-head-text {
+    color: #fff;
+    margin: 0;
+  }
+
+  .chat-info-text {
+    margin-top: 4.5px;
+    color: #2c2c2c;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .icon {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* 1024px 이상 */
+@media (min-width: 1024px) {
+  .chat-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    background-color: #ff961b;
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 37vh;
+    box-shadow: 0px 3px 7px #888;
+  }
+
+  .chat-section img {
+    width: 36%;
+    height: 20%;
+  }
+
+  .chat-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main-text {
+    padding-left: 10px;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .chat-head-text {
+    color: #fff;
+    margin: 0;
+  }
+
+  .chat-info-text {
+    margin-top: 5px;
+    color: #2c2c2c;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .icon {
+    width: 50px;
+    height: 50px;
+  }
+}

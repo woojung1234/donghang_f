@@ -1,0 +1,170 @@
+
+.modiInfo-container{
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    position: relative; 
+    padding-bottom: 80px;
+}
+.infoInput-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.infoInput-box p {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.infoInput-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E1E6EC;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.infoInput-gender {
+    display: flex;
+    gap: 20px;
+}
+
+.infoInput-gender label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.infoInput-gender input[type='radio'] {
+    display: none; 
+}
+
+.infoInput-gender .custom-radio {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #E1E6EC;
+    background-color: #fff;
+    margin-right: 10px;
+}
+
+.infoInput-gender input[type='radio']:checked + .custom-radio {
+    border-color: #80BAFF; 
+}
+
+.infoInput-gender input[type='radio']:checked + .custom-radio::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: #80BAFF; 
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.infoInput-gender p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+    color: #333;
+}
+
+.bodyInfo {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.bodyInfo-box {
+    flex: 1;
+    min-width: 0;
+}
+
+.bodyInfo-box p {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.body-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.body-content input {
+    width: calc(100% - 40px);
+    padding: 8px;
+    border: 1px solid #E1E6EC;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.body-content p {
+    font-size: 16px;
+    color: #888;
+}
+
+.addressInfo {
+    width: calc(100% - 40px);
+    padding: 10px;
+    border: 1px solid #E1E6EC;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.addressInfo-icon {
+    width: 24px;
+    height: 24px;
+    margin-left: -35px;
+    margin-top: 4px;
+}
+
+.addressSearch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.addressSearch input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E1E6EC;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.infoInput-container input::placeholder {
+    color: #888;
+}
+
+.infoInput-container input:focus {
+    border-color: #80BAFF;
+    outline: none;
+}
+
+.modiInfo-saveBtn{
+    width: calc(100% - 40px);
+    border-radius: 15px;
+    border: none;
+    background-color: #80BAFF;
+    color: #fff;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    position: absolute;
+    bottom: 20px; 
+    box-sizing: border-box;
+}

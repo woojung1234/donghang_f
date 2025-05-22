@@ -1,4 +1,4 @@
-# 똑똑 Node.js 백엔드 서버
+# 동행행 Node.js 백엔드 서버
 
 Java Spring Boot에서 Node.js Express로 변환된 백엔드 서버입니다.
 

@@ -1,0 +1,29 @@
+.home-header{
+    padding: 20px 20px 10px;
+    background-color: #FFF8F3;
+    margin: 0px;
+    display: flex;
+    align-items:end;
+    box-sizing: border-box;
+}
+.home-blue{
+    background-color: #F8FBFF !important;
+}
+.home-header div{
+    display: flex;
+    align-items: center;
+}
+.home-logo{
+    width: 36px;
+    margin-right: 10px;
+}
+.home-name{
+    font-size: 20px;
+    font-weight: bold;
+    color: #2C2C2C;
+    margin: 0px;
+}
+.home-arrow{
+    margin: 0px 5px;
+    height: 20px;
+}

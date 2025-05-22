@@ -1,0 +1,52 @@
+.alarm-date{
+    border-bottom: 1px solid #686868;
+    font-size: 16px;
+    color: #2C2C2C;
+}
+.alarmHistory-content{
+    border-bottom: 1px solid #E1E6EC;
+    margin-bottom: 10px;
+}
+.alarm-text-wrap{
+    display: flex;
+    align-items:center;
+    justify-content: space-between;
+}
+.alarm-text{
+    display: flex;
+    align-items:center;
+    width: 90%;
+}
+.alarm-text p{
+    font-size: 18px;
+    color: #2C2C2C;
+    margin: 0px 0px;
+    display: inline-block;
+
+
+}
+.alarm-category{
+    color: #FF5959;
+}
+.alarm-category-blue{
+    color: #ff961b;
+}
+.alarmImg{
+    width: 18px;
+    margin: 0px 10px;
+}
+.alarm-circle{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #FF5959;
+    float: right;
+    margin-right: 10px;
+}
+
+.alarm-time{
+    font-size: 16px;
+    color: #A7A7A7;
+    text-align: right;
+    margin: 0px 10px 5px;
+}

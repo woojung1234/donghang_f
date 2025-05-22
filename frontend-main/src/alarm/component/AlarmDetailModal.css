@@ -1,0 +1,39 @@
+.adModal-title{
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c2c2c;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #D9D9D9;
+    box-sizing: border-box;
+    height: 50px;
+    margin-bottom: 0;
+}
+.adModal-info-title p {
+    font-size: 20px;
+    font-weight: bold;
+}
+.adModal-content{
+    display: flex;
+    justify-content: space-between;
+    height: 200px;
+}
+.adModal-content p{
+    font-size: 18px;
+}
+.adModal-dashed{
+    margin-top: -15px;
+}
+.adModalBtn{
+    width: 89%;
+    height: 50px;
+    background-color: #2C2C2C;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    margin: 20px 0px 0px 0px;
+    position: absolute;
+    bottom: 20px;
+}

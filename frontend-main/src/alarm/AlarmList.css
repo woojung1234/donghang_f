@@ -1,0 +1,59 @@
+.alarmList-container {
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 20px;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    overflow-x: auto;
+    background-color: white;
+    margin-bottom: 5px;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+.filter-button {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-right: 8px;
+}
+
+.filter-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #666;
+}
+
+/* Ensure the filter container doesn't create horizontal scrolling */
+@media (max-width: 480px) {
+    .filter-container {
+        justify-content: flex-start;
+    }
+    
+    .filter-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}

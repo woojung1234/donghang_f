@@ -1,0 +1,40 @@
+.chat-section-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 130px;
+  width: 90%;
+  border-radius: 8px;
+  background-color: #ff961b;
+  box-shadow: 0px 2px 5px #888;
+  margin: 20px auto;
+  padding: 0px 10px;
+  box-sizing: border-box;
+}
+.blue-main{
+  background-color: #80BAFF !important;
+}
+.icon-chat{
+  height: 130px;
+  width: auto;
+}
+.icon-alarm{
+  width: 23%;
+  margin: 0px 5px;
+}
+.chat-section-button{
+  display: flex;
+  align-items: center;
+
+}
+.head-text{
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+  margin: 5px 0px;
+}
+.info-text{
+  font-size: 16px;
+  color: #2C2C2C;
+  margin: 5px 0px;
+}

@@ -1,0 +1,126 @@
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #F8FBFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.info-container {
+  margin-bottom: 7%;
+}
+
+.user-name {
+  color: #007bff;
+  font-size: 18px;
+}
+
+.for {
+  color: #686868;
+  font-size: 18px;
+}
+
+.infomation {
+  margin-top: -5%;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.img-welfare {
+  margin-top: 10%;
+  margin-bottom: 25%;
+  width: 225px;
+  height: 200px;
+}
+
+.main-section {
+  width: 80%;
+  padding: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.detailed-reserve {
+  border-width: 3px;
+  border-color: #80BAFF;
+}
+
+.go-reserve {
+  border-width: 3px;
+  border-color: #80BAFF;
+  background-color: #80BAFF;
+}
+
+.main-text {
+  font-size: 18px;
+  color: #888;
+  margin: 10px 0;
+}
+
+.detailed-reserve-text {
+  color: #80BAFF;
+  font-weight: bold;
+}
+
+.go-reserve-text {
+  color: white;
+  font-weight: bold;
+}
+
+.main-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 40px;
+  }
+
+  .header {
+    margin-bottom: 30px;
+  }
+
+  .main-section {
+    padding: 30px;
+  }
+
+  .main-text {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 60px;
+  }
+
+  .main-section {
+    padding: 40px;
+  }
+
+  .main-text {
+    font-size: 24px;
+  }
+}
