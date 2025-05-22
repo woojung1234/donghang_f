@@ -1,125 +1,150 @@
-.container {
-  max-width: 390px;
-  margin: 0 auto;
-  background-color: white;
-  min-height: 100vh; /* 전체 높이로 채우기 */
-  display: flex;
-  flex-direction: column;
+.welfare-check-pw-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
 }
 
-
-.pay-container {
-  margin-left: 15px;
-  margin-right: 15px;
-  margin-top: 10%;
-  text-align: center;
-  height: 60px;
+.check-pw-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-.infomation {
-  font-weight: bold;
-  font-size: 22px;
-  margin-top: -15px;
-  color: #2c2c2c;
+.pw-header {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.password-container {
-  margin-top: 50px;
-  display: flex;
-  justify-content: center;
-}
-
-.password-section {
-  display: flex;
-  width: 70%;
-  justify-content: space-between;
-}
-
-.graycircle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #d9d9d9;
-}
-
-.bluecircle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #80BAFF;
-}
-
-.hidden-input {
-  opacity: 0;
-  position: absolute;
-  z-index: -1;
-}
-
-.incorrect-message{
-  color: #FF5959;
-  font-size: 16px;
-  height: 20px;
-  font-weight: bold;
-  text-align: center;
-}
-.go-pay {
-  width: 90%;
-  position: absolute;
-  bottom: 20px;
-  left: 5%;
-}
-
-.go-pay-text {
-  height: 60px;
-  text-align: center;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: #80BAFF;
-  box-sizing: border-box;
-  border-radius: 15px;
-  margin: 0px;
-  padding: 20px;
-}
-
-.main-link {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* 반응형 디자인 */
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-    padding: 40px;
-  }
-
-  .header {
-    margin-bottom: 30px;
-  }
-
-  .main-section {
-    padding: 30px;
-  }
-
-  .main-text {
-    font-size: 20px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-    padding: 60px;
-  }
-
-  .main-section {
-    padding: 40px;
-  }
-
-  .main-text {
+.pw-header h2 {
+    margin-bottom: 10px;
+    color: #333;
     font-size: 24px;
-  }
+}
+
+.pw-header p {
+    color: #666;
+    line-height: 1.5;
+}
+
+.pw-input-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.pw-display {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.pw-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #666;
+}
+
+.pw-dot.filled {
+    background: #667eea;
+    color: white;
+}
+
+.pw-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    letter-spacing: 5px;
+}
+
+.pw-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.pw-info {
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.pw-info p {
+    margin: 5px 0;
+    color: #0066cc;
+    font-size: 14px;
+}
+
+.pw-actions {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.forgot-pw-btn {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.pw-submit-section {
+    display: flex;
+    gap: 15px;
+}
+
+.cancel-btn,
+.submit-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.submit-btn {
+    background: #667eea;
+    color: white;
+}
+
+.submit-btn.disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
 }

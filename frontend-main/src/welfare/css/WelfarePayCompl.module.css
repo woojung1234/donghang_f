@@ -1,167 +1,243 @@
-.container {
-  max-width: 390px;
-  margin: 0 auto;
-  background-color: white;
-  min-height: 100vh; /* 전체 높이로 채우기 */
+.welfare-pay-compl-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
 }
 
-.header {
-  padding: 10px;
-  background-color: white;
+.pay-compl-content {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.header-info {
-  width: 100%;
-  background-color: white;
+.success-header {
+    text-align: center;
+    background: white;
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
 }
 
-.header-name {
-  margin-top: 30%;
-  margin-left: 2%;
-  font-size: 22px;
-  font-weight: bold;
-  color: #2c2c2c;
+.success-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
 }
 
-.header-date {
-  margin-left: 3%;
-  margin-top: 1%;
-  font-size: 18px;
-  color: #888;
+.success-header h2 {
+    color: #333;
+    margin-bottom: 10px;
 }
 
-.pay-com {
-  color: #007bff;
+.success-header p {
+    color: #666;
 }
 
-.main-container {
-  width: 90%;
-  height: 100%;
-  margin: 0 auto;
-  margin-top: 10%;
+.payment-details-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    overflow: hidden;
 }
 
-hr {
-  border: 1px solid #d9d9d9;
+.payment-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
-.pay-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2c2c2c;
+.payment-icon {
+    font-size: 30px;
 }
 
-dotted-hr {
-  border: none;
-  border: 1px dashed #d9d9d9;
+.payment-title h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
 }
 
-.gender {
-  color: #686868;
+.payment-title p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
 }
 
-.pay-info-cate {
-  font-size: 18px;
-  color: #686868;
+.payment-info-list {
+    padding: 20px;
 }
 
-.pay-info-title {
-  font-size: 18px;
-  font-weight: bold;
-  float: right;
-  color: #2c2c2c;
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.pay-info-tprice {
-  font-size: 18px;
-  font-weight: bold;
-  color: #2c2c2c;
+.info-row:last-child {
+    border-bottom: none;
 }
 
-.pay-info-price {
-  font-size: 22px;
-  font-weight: bold;
-  float: right;
-  color: #2c2c2c;
+.info-label {
+    color: #666;
+    font-size: 14px;
 }
 
-.main-section {
-  width: 90%;
-  height: 100%;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  border: 1px solid #ccc;
-  border-radius: 15px;
-  text-align: center;
-  margin: 0 auto;
-  bottom: 20px;
+.info-value {
+    font-weight: 500;
+    color: #333;
 }
 
-.go-main {
-  height: 60px;
-  text-align: center;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: #80BAFF;
-  box-sizing: border-box;
-  border-radius: 15px;
-  padding: 20px;
-  position: absolute;
-  left: 20px;
-  bottom: 20px;
+.info-value.amount {
+    font-size: 18px;
+    font-weight: 600;
+    color: #667eea;
 }
 
-.main-text {
-  text-align: center;
-  margin: 0 auto;
-  font-size: 18px;
-  color: white;
+.info-value.payment-id {
+    font-family: monospace;
+    font-size: 12px;
 }
 
-.go-main-text {
-  color: white;
-  font-weight: bold;
+.info-value.status-completed {
+    color: #28a745;
+    font-weight: 600;
 }
 
-.main-link {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
+.additional-info {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    padding: 25px;
 }
 
-/* 반응형 디자인 */
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-    padding: 40px;
-  }
+.info-box h4 {
+    margin-bottom: 15px;
+    color: #333;
+}
 
-  .header {
-    margin-bottom: 30px;
-  }
+.info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-  .main-section {
-    padding: 30px;
-  }
+.info-box li {
+    padding: 8px 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
 
-  .main-text {
+.first-time-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.notice-icon {
     font-size: 20px;
-  }
 }
 
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-    padding: 60px;
-  }
+.first-time-notice p {
+    margin: 0;
+    color: #0066cc;
+    font-weight: 500;
+}
 
-  .main-section {
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.primary-btn,
+.secondary-btn {
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.primary-btn {
+    background: #667eea;
+    color: white;
+}
+
+.primary-btn:hover {
+    background: #5a67d8;
+}
+
+.secondary-btn {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.secondary-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.payment-footer {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-footer p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.loading-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-section {
+    text-align: center;
     padding: 40px;
-  }
+}
 
-  .main-text {
-    font-size: 24px;
-  }
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .pay-compl-content {
+        padding: 15px;
+    }
 }
