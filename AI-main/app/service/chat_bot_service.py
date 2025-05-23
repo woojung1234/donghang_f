@@ -11,7 +11,7 @@ headers = {
 
 def get_chatbot_response(contents):
     data = {
-        "model": "gpt-4o-mini",
+        "model": "gpt-3.5-turbo",
         "messages": [
             {
                 "role": "system",

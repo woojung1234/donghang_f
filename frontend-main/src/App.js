@@ -88,7 +88,10 @@ function App() {
     }}>
       <Routes>
         {/* 온보딩 */}
-        <Route path="/" element={<OnboardingNew />} />
+        <Route path="/" element={<LoginId />} />
+
+        {/* 온보딩은 별도 경로로 이동 */}
+        <Route path="/onboarding" element={<OnboardingNew />} />
         
         {/* 메인 화면 */}
         <Route path="/main" element={<PrivateRoute><MainA /></PrivateRoute>} />
