@@ -38,10 +38,42 @@ function VoiceChat(props) {
   const [chatHistory, setChatHistory] = useState([]);
   // 현재 사용자 입력
   const [currentInput, setCurrentInput] = useState("");
+  // 서버 연결 상태
+  const [serverConnected, setServerConnected] = useState(true);
   
   const chatContainerRef = useRef(null);
 
   const navi = useNavigate();
+  
+  // AI 서버 연결 상태 확인
+  useEffect(() => {
+    const checkServerConnection = async () => {
+      try {
+        const AI_SERVICE_URL = process.env.REACT_APP_AI_URL || 'http://localhost:8000';
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
+        const response = await fetch(`${AI_SERVICE_URL}/health`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        if (response.ok) {
+          setServerConnected(true);
+          setError(null);
+        } else {
+          setServerConnected(false);
+          setError("AI 서버에 연결할 수 없습니다. 오프라인 모드로 전환합니다.");
+        }
+      } catch (err) {
+        console.warn("AI 서버 연결 확인 실패:", err);
+        setServerConnected(false);
+        setError("AI 서버에 연결할 수 없습니다. 오프라인 모드로 전환합니다.");
+      }
+    };
+    
+    checkServerConnection();
+  }, []);
   
   useEffect(() => {
     async function initializeChat() {
@@ -84,6 +116,15 @@ function VoiceChat(props) {
     }
 
     initializeChat();
+    
+    // 컴포넌트 언마운트 시 음성 인식 중지
+    return () => {
+      try {
+        endRecord();
+      } catch (e) {
+        console.error("음성 인식 정리 오류:", e);
+      }
+    };
   }, []);
 
   // 대화 기록이 업데이트될 때마다 스크롤을 맨 아래로 이동
@@ -218,6 +259,13 @@ function VoiceChat(props) {
             {isSpeaking && <span className="speaking-text">대답하고 있어요...</span>}
             {!isListening && !isSpeaking && <span className="idle-text">대화를 시작해보세요</span>}
           </div>
+          
+          {/* 서버 연결 상태 표시 */}
+          {!serverConnected && (
+            <div className="server-status">
+              <span className="offline-indicator">오프라인 모드</span>
+            </div>
+          )}
         </div>
       </div>
       
@@ -228,6 +276,15 @@ function VoiceChat(props) {
       <div className="chat-history-container">
         <div className="chat-container" ref={chatContainerRef}>
           {renderChatHistory()}
+          
+          {/* 음성 인식 상태 표시 */}
+          {isListening && (
+            <div className="listening-indicator">
+              <div className="listening-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
