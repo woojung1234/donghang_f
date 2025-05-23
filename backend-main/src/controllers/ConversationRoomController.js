@@ -27,11 +27,13 @@ class ConversationRoomController {
   static async createConversationRoom(req, res, next) {
     try {
       const userNo = req.user.userNo;
-
-      const roomNo = await ConversationRoomService.createRoom({
-        title: '새 대화',
+      // title 필드를 roomName으로 매핑하여 전달
+      const roomData = {
+        roomName: req.body.title || '새 대화',
         userNo
-      });
+      };
+
+      const roomNo = await ConversationRoomService.createRoom(roomData);
 
       console.log(`🏠 New conversation room created - UserNo: ${userNo}, RoomNo: ${roomNo.conversationRoomNo}`);
 
@@ -148,7 +150,8 @@ class ConversationRoomController {
       const { title } = req.body;
       const userNo = req.user.userNo;
 
-      await ConversationRoomService.updateRoom(conversationRoomNo, { title }, userNo);
+      // title 필드를 roomName으로 매핑하여 전달
+      await ConversationRoomService.updateRoom(conversationRoomNo, { roomName: title }, userNo);
 
       console.log(`🔄 Conversation room updated - RoomNo: ${conversationRoomNo}`);
 
