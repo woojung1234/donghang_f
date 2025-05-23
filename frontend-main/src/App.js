@@ -24,7 +24,7 @@ import SignUpMain from 'signUp/SignUpMain';
 import Register from 'signUp/component/Register';
 import InfoInput from 'signUp/component/InfoInput';
 import VerifyCode from 'signUp/component/VerifyCode';
-import RoleCheck from 'signUp/component/RoleCheck';
+// RoleCheck 컴포넌트 제거
 import QuickLoginSetup from 'signUp/component/QuickLoginSetup';
 import PinSetup from 'signUp/component/PinSetup';
 import PinCheck from 'signUp/component/PinCheck';
@@ -120,12 +120,11 @@ function App() {
         <Route path="/loginid" element={<LoginId />} />
         <Route path="/loginpw" element={<LoginPw />} />
         
-        {/* 회원가입 */}
+        {/* 회원가입 - rolecheck 단계 제거 */}
         <Route path="/signup/*" element={<SignUpMain />}>
           <Route path="register" element={<Register />} />
           <Route path="infoinput" element={<InfoInput />} />
           <Route path="verifycode" element={<VerifyCode />} />
-          <Route path="rolecheck" element={<RoleCheck />} />
           <Route path="quickloginsetup" element={<QuickLoginSetup />} />  
           <Route path="pinsetup" element={<PinSetup />} /> 
           <Route path="pincheck" element={<PinCheck />} />   
