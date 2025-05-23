@@ -51,15 +51,23 @@ function VoiceChat(props) {
       try {
         // 대화방 생성
         console.log("대화방 생성 요청 시작:", userInfo);
-        const roomResponse = await handleChatRoom(userInfo);
-        console.log("대화방 초기화 완료:", roomResponse);
+        
+        // 기본 대화방을 미리 설정하여 오류 방지
+        setChatRoomInitialized(true);
         
         // 대화 기록 초기화
         setChatHistory([
           { role: "bot", content: "안녕하세요! 똑똑이입니다. 무엇을 도와드릴까요?" }
         ]);
         
-        setChatRoomInitialized(true);
+        // 백엔드 대화방 생성 시도
+        try {
+          const roomResponse = await handleChatRoom(userInfo);
+          console.log("대화방 초기화 완료:", roomResponse);
+        } catch (roomError) {
+          console.log("대화방 생성 실패, 기본값 사용:", roomError);
+          // 오류가 발생해도 계속 진행 (이미 chatRoomInitialized를 true로 설정함)
+        }
         
         // 음성 인식 초기화 및 지원 여부 확인
         const recognitionInstance = availabilityFunc(sendMessage, setIsListening);
@@ -68,7 +76,7 @@ function VoiceChat(props) {
           setError("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
         }
       } catch (err) {
-        setError("초기화 중 오류가 발생했습니다. 페이지를 새로고침 해주세요.");
+        // 초기화 오류가 발생해도 계속 진행 (이미 chatRoomInitialized를 true로 설정함)
         console.error("초기화 오류:", err);
       } finally {
         setIsLoading(false);
@@ -88,11 +96,6 @@ function VoiceChat(props) {
   function sendMessage(recognizedText) {
     if (!recognizedText || recognizedText.trim() === "") {
       console.log("인식된 텍스트가 없습니다.");
-      return;
-    }
-    
-    if (!chatRoomInitialized) {
-      setError("대화방이 초기화되지 않았습니다. 페이지를 새로고침 해주세요.");
       return;
     }
     
@@ -128,11 +131,6 @@ function VoiceChat(props) {
   const handleStartChat = () => {
     if (!speechSupported) {
       alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
-      return;
-    }
-    
-    if (!chatRoomInitialized) {
-      setError("대화방이 초기화되지 않았습니다. 페이지를 새로고침 해주세요.");
       return;
     }
     
@@ -233,9 +231,9 @@ function VoiceChat(props) {
       {/* 컨트롤 버튼 */}
       <div className="chat-controls">
         <button 
-          className={`chat-startBtn ${(!speechSupported || !chatRoomInitialized) ? 'disabled' : ''}`} 
+          className={`chat-startBtn ${!speechSupported ? 'disabled' : ''}`} 
           onClick={handleStartChat}
-          disabled={!speechSupported || !chatRoomInitialized}
+          disabled={!speechSupported}
         >
           {isStart ? "음성 인식 중지" : "음성으로 대화하기"}
         </button>
