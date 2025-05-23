@@ -204,23 +204,34 @@ function VoiceChat(props) {
   return (
     <div className="voicechat-section">
       <VoiceHeader />
-      {isSpeaking && <SpeakLoading />}
-      {isLoading && <Loading />}
       
-      {/* 대화 내용 표시 */}
-      <div className="chat-container" ref={chatContainerRef}>
-        {renderChatHistory()}
-        {isListening && (
-          <div className="listening-indicator">
-            <p>듣고 있어요...</p>
-            <div className="listening-dots">
-              <span></span><span></span><span></span>
-            </div>
+      {/* 중앙 캐릭터 영역 */}
+      <div className="chatbot-character-container">
+        <div className={`chatbot-character ${isListening ? 'listening' : ''} ${isSpeaking ? 'speaking' : ''}`}>
+          <img 
+            src={chatbot} 
+            alt="챗봇 캐릭터" 
+            className={`character-image ${isListening ? 'listening' : ''} ${isSpeaking ? 'speaking' : ''}`} 
+          />
+          <div className="character-status">
+            {isListening && <span className="listening-text">듣고 있어요...</span>}
+            {isSpeaking && <span className="speaking-text">대답하고 있어요...</span>}
+            {!isListening && !isSpeaking && <span className="idle-text">대화를 시작해보세요</span>}
           </div>
-        )}
+        </div>
       </div>
       
-      {/* 상태 메시지 영역 */}
+      {/* 로딩 표시 */}
+      {isLoading && <div className="loading-overlay"><Loading /></div>}
+      
+      {/* 대화 내용 표시 영역 (하단에 위치) */}
+      <div className="chat-history-container">
+        <div className="chat-container" ref={chatContainerRef}>
+          {renderChatHistory()}
+        </div>
+      </div>
+      
+      {/* 오류 메시지 */}
       {error && (
         <div className="error-container">
           <p className="error-text">{error}</p>
@@ -228,10 +239,10 @@ function VoiceChat(props) {
         </div>
       )}
       
-      {/* 컨트롤 버튼 */}
+      {/* 음성 인식 버튼 */}
       <div className="chat-controls">
         <button 
-          className={`chat-startBtn ${!speechSupported ? 'disabled' : ''}`} 
+          className={`chat-startBtn ${!speechSupported ? 'disabled' : ''} ${isStart ? 'recording' : ''}`} 
           onClick={handleStartChat}
           disabled={!speechSupported}
         >
