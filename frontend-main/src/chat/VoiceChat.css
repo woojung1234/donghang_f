@@ -46,6 +46,17 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  transition: all 0.2s ease;
+}
+
+.chat-startBtn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.chat-startBtn.disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .textbox {
@@ -67,8 +78,49 @@
   overflow-y: auto;
   outline: none;
 }
-.listening-text{
+
+.listening-text {
   font-size: 22px;
   font-weight: bold;
   margin-top: 100px;
+  color: #FF7A00;
+  text-align: center;
+}
+
+/* 에러 메시지 스타일 */
+.error-container {
+  position: fixed;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 100;
+  width: 80%;
+  max-width: 350px;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.retry-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+  background-color: #2980b9;
 }
