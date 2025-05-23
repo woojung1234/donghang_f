@@ -8,7 +8,7 @@ import {
 import "chat/VoiceChat.css";
 import VoiceHeader from "chat/VoiceHeader";
 import chatbot from "image/chat-char.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import Loading from "./Loading";
@@ -34,6 +34,12 @@ function VoiceChat(props) {
   const [speechSupported, setSpeechSupported] = useState(true);
   // 대화방 상태 추가
   const [chatRoomInitialized, setChatRoomInitialized] = useState(false);
+  // 대화 기록
+  const [chatHistory, setChatHistory] = useState([]);
+  // 현재 사용자 입력
+  const [currentInput, setCurrentInput] = useState("");
+  
+  const chatContainerRef = useRef(null);
 
   const navi = useNavigate();
   
@@ -45,9 +51,14 @@ function VoiceChat(props) {
       try {
         // 대화방 생성
         console.log("대화방 생성 요청 시작:", userInfo);
-        // 대화방 번호 기본값 설정 (인증 문제를 우회하기 위한 임시 조치)
-        const roomResponse = { conversationRoomNo: 1 };
+        const roomResponse = await handleChatRoom(userInfo);
         console.log("대화방 초기화 완료:", roomResponse);
+        
+        // 대화 기록 초기화
+        setChatHistory([
+          { role: "bot", content: "안녕하세요! 똑똑이입니다. 무엇을 도와드릴까요?" }
+        ]);
+        
         setChatRoomInitialized(true);
         
         // 음성 인식 초기화 및 지원 여부 확인
@@ -67,6 +78,13 @@ function VoiceChat(props) {
     initializeChat();
   }, []);
 
+  // 대화 기록이 업데이트될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
   function sendMessage(recognizedText) {
     if (!recognizedText || recognizedText.trim() === "") {
       console.log("인식된 텍스트가 없습니다.");
@@ -78,6 +96,10 @@ function VoiceChat(props) {
       return;
     }
     
+    // 사용자 입력을 대화 기록에 추가
+    setCurrentInput(recognizedText);
+    setChatHistory(prev => [...prev, { role: "user", content: recognizedText }]);
+    
     setChatResponse("");
     setIsLoading(true);
     setIsListening(false);
@@ -85,7 +107,7 @@ function VoiceChat(props) {
     
     handleAutoSub(
       recognizedText,
-      setChatResponse,
+      handleBotResponse,
       setIsLoading,
       setIsSpeaking,
       setIsOpen,
@@ -94,6 +116,13 @@ function VoiceChat(props) {
       setWelfareBookStartDate,
       setWelfareBookUseTime
     );
+  }
+
+  // 봇 응답을 처리하는 함수
+  function handleBotResponse(response) {
+    setChatResponse(response);
+    // 봇 응답을 대화 기록에 추가
+    setChatHistory(prev => [...prev, { role: "bot", content: response }]);
   }
 
   const handleStartChat = () => {
@@ -165,15 +194,35 @@ function VoiceChat(props) {
     endRecord();
   };
 
+  // 대화 기록 렌더링
+  const renderChatHistory = () => {
+    return chatHistory.map((item, index) => (
+      <div key={index} className={`chat-bubble ${item.role}`}>
+        <div className="chat-content">{item.content}</div>
+      </div>
+    ));
+  };
+
   return (
     <div className="voicechat-section">
       <VoiceHeader />
       {isSpeaking && <SpeakLoading />}
       {isLoading && <Loading />}
-      <img src={chatbot} alt="챗봇" className="chatbot" />
+      
+      {/* 대화 내용 표시 */}
+      <div className="chat-container" ref={chatContainerRef}>
+        {renderChatHistory()}
+        {isListening && (
+          <div className="listening-indicator">
+            <p>듣고 있어요...</p>
+            <div className="listening-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        )}
+      </div>
       
       {/* 상태 메시지 영역 */}
-      {isListening && <p className="listening-text">똑똑이가 듣고 있어요</p>}
       {error && (
         <div className="error-container">
           <p className="error-text">{error}</p>
@@ -181,21 +230,18 @@ function VoiceChat(props) {
         </div>
       )}
       
-      <button className="hiddenBtn" onClick={toggleModal}>
-        {visible ? "닫기" : "답변보이기"}
-      </button>
-      <button 
-        className={`chat-startBtn ${(!speechSupported || !chatRoomInitialized) ? 'disabled' : ''}`} 
-        onClick={handleStartChat}
-        disabled={!speechSupported || !chatRoomInitialized}
-      >
-        {isStart ? "중지" : "똑똑!"}
-      </button>
+      {/* 컨트롤 버튼 */}
+      <div className="chat-controls">
+        <button 
+          className={`chat-startBtn ${(!speechSupported || !chatRoomInitialized) ? 'disabled' : ''}`} 
+          onClick={handleStartChat}
+          disabled={!speechSupported || !chatRoomInitialized}
+        >
+          {isStart ? "음성 인식 중지" : "음성으로 대화하기"}
+        </button>
+      </div>
 
       {/* 모달 컴포넌트 */}
-      <Modal isOpen={visible} onRequestClose={toggleModal} style={customStyles}>
-        <textarea className="textbox" value={chatResponse} readOnly />
-      </Modal>
       {isOpen && (
         <VoiceChatMovePageModal
           isOpen={isOpen}
