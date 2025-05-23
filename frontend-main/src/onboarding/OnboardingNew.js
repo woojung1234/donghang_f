@@ -13,45 +13,18 @@ function OnboardingNew(props) {
     if (!ACCESS_TOKEN) {
       navi("/loginid");
     } else {
-      // 로그인된 경우 사용자 유형에 따라 적절한 페이지로 리다이렉트
-      const loginUser = localStorage.getItem("loginUser");
-      if (loginUser === "PROTECTOR") {
-        handleMatchCheck();
-      } else {
-        navi('/home');
-      }
+      // 로그인된 경우 홈으로 리다이렉트
+      navi('/home');
     }
   }, [navi]); // navi를 의존성 배열에 추가
 
-  const handleMatchCheck = () => {
-    call("/api/v1/match", "GET", null)
-        .then((response) => {
-            if (response.matchStatus === "ACCEPT") {
-                navi('/home');
-            } else {
-                navi('/match');
-            }
-        })
-        .catch((error) => {
-            if (error.matchStatus === null) {
-                navi('/match');
-            } else {
-                console.log(error);
-                alert("실패");
-            }
-        });
-  };
-
   const handleBtnClick = () => {
     const ACCESS_TOKEN = localStorage.getItem("ACCESS_TOKEN");
-    const loginUser = localStorage.getItem("loginUser");
     if (ACCESS_TOKEN) {
-      if (loginUser === "PROTECTOR") {
-        handleMatchCheck();
-      } else {
-        navi('/home');
-      }
+      // 로그인 상태이면 바로 홈으로 이동
+      navi('/home');
     } else {
+      // 로그인 상태가 아니면 로그인 페이지로 이동
       navi("/loginid");
     }
   };
