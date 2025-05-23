@@ -1,9 +1,9 @@
 // 파일: src/App.js
 // 카드 관련 라우팅 정리 및 음성 입력 소비 기록 시스템으로 변경
 
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import PrivateRoute from 'PrivateRoute';
 
 // 온보딩 및 메인
@@ -71,6 +71,21 @@ export const CommonContext = createContext();
 
 function App() {
   const [loginUser, setLoginUser] = useState({});
+  
+  // 로그인 정보 로드
+  useEffect(() => {
+    const userType = localStorage.getItem("loginUser");
+    const userNo = localStorage.getItem("userNo");
+    
+    if (userType && userNo) {
+      // 로그인 정보가 있으면 상태 업데이트
+      setLoginUser({
+        userType: userType,
+        userNo: userNo
+      });
+      console.log("로그인 정보 로드됨:", userType, userNo);
+    }
+  }, []);
   
   // 음성 입력 관련 전역 상태 추가
   const [voiceSettings, setVoiceSettings] = useState({
