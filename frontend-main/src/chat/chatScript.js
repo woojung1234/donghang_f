@@ -169,13 +169,18 @@ export function endRecord() {
 
 // 채팅 방을 설정하는 함수
 export function handleChatRoom(userInfo) {
-  // 기본 대화방 정보 설정
-  const chatRoomInfo = userInfo || { title: "새 대화" };
+  // 대화방 정보 설정
+  const chatRoomData = {
+    // 백엔드에서 필요로 하는 필드명 'roomName'으로 전달
+    roomName: userInfo?.title || "음성 대화"
+  };
   
-  return call("/api/v1/conversations/rooms", "POST", chatRoomInfo)
+  console.log("대화방 생성 요청 데이터:", chatRoomData);
+  
+  return call("/api/v1/conversation-room", "POST", chatRoomData)
     .then((response) => {
-      if (response && response.room && response.room.conversationRoomNo) {
-        roomNo = response.room.conversationRoomNo;
+      if (response && response.conversationRoomNo) {
+        roomNo = response.conversationRoomNo;
         console.log("대화방 생성 성공:", roomNo);
         return response;
       } else {
