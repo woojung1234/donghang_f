@@ -2,7 +2,8 @@ import { call } from "login/service/ApiService";
 
 // 기본 대화방 번호 (API 호출이 실패할 경우 대비)
 var roomNo = 1;
-var recognition;
+var recognition = null;
+var isRecognitionActive = false;
 
 // 각 키워드별 다양한 응답 목록 (오프라인 모드용)
 const responseVariations = {
@@ -43,7 +44,9 @@ async function callAIService(message) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      // 타임아웃 설정 (5초)
+      signal: AbortSignal.timeout(5000)
     });
     
     if (!response.ok) {
@@ -98,6 +101,17 @@ export function handleAutoSub(
   setIsLoading(true);
   setIsSpeaking(false);
 
+  // 음성 인식 중지 (응답 처리 중에는 인식 중지)
+  if (recognition) {
+    try {
+      isRecognitionActive = false;
+      recognition.stop();
+      console.log("응답 처리 중 음성 인식 중지");
+    } catch (e) {
+      console.error("음성 인식 중지 오류:", e);
+    }
+  }
+
   // 응답 처리 함수
   const processResponse = async () => {
     try {
@@ -128,18 +142,24 @@ export function handleAutoSub(
         // 말하기 상태 해제
         setIsSpeaking(false);
         
-        // 음성 인식 재시작
-        startAutoRecord();
-        
         // 모달 상태 설정 (현재는 필요없지만 나중에 확장 가능)
         setIsOpen(false);
+        
+        // 음성 인식 재시작 (약간의 지연 후)
+        setTimeout(() => {
+          startAutoRecord();
+        }, 500);
       }, 1000);
     } catch (error) {
       console.error("응답 처리 중 오류 발생:", error);
       setChatResponse("죄송합니다. 응답을 처리하는 동안 오류가 발생했습니다.");
       setIsSpeaking(false);
       setIsLoading(false);
-      startAutoRecord();
+      
+      // 음성 인식 재시작 (약간의 지연 후)
+      setTimeout(() => {
+        startAutoRecord();
+      }, 500);
     }
   };
 
@@ -150,6 +170,18 @@ export function handleAutoSub(
 // 음성 인식의 자동 시작 상태를 제어하는 함수
 export function availabilityFunc(sendMessage, setIsListening) {
   try {
+    // 이미 인스턴스가 있다면 중지 및 정리
+    if (recognition) {
+      try {
+        recognition.stop();
+        recognition = null;
+        isRecognitionActive = false;
+        console.log("기존 음성 인식 인스턴스 정리");
+      } catch (e) {
+        console.error("기존 인스턴스 정리 오류:", e);
+      }
+    }
+    
     // SpeechRecognition API 지원 여부 확인
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
       alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
@@ -170,6 +202,7 @@ export function availabilityFunc(sendMessage, setIsListening) {
     newRecognition.addEventListener("error", (event) => {
       console.error("음성 인식 오류:", event.error);
       setIsListening(false);
+      isRecognitionActive = false;
       
       // 특정 오류에 따른 처리
       if (event.error === "not-allowed") {
@@ -180,15 +213,17 @@ export function availabilityFunc(sendMessage, setIsListening) {
         console.log(`음성 인식 오류: ${event.error}`);
       }
       
-      // 오류 발생 후 1초 뒤에 다시 시작 시도
+      // 오류 발생 후 1초 뒤에 다시 시작 시도 (이미 실행 중이 아닐 경우에만)
       setTimeout(() => {
         try {
-          if (newRecognition) {
+          if (newRecognition && !isRecognitionActive) {
             newRecognition.start();
+            isRecognitionActive = true;
             console.log("오류 후 음성 인식 재시작");
           }
         } catch (e) {
           console.error("재시작 오류:", e);
+          isRecognitionActive = false;
         }
       }, 1000);
     });
@@ -206,18 +241,26 @@ export function availabilityFunc(sendMessage, setIsListening) {
     newRecognition.addEventListener("result", (e) => {
       const recognizedText = e.results[0][0].transcript;
       console.log("인식된 텍스트:", recognizedText);
+      isRecognitionActive = false;
       sendMessage(recognizedText);
     });
 
-    // 인식 종료 시 자동 재시작
+    // 인식 종료 시 자동 재시작 (이미 실행 중이 아닐 경우에만)
     newRecognition.addEventListener("end", () => {
       console.log("음성 인식 세션 종료");
-      try {
-        newRecognition.start();
-        console.log("음성 인식 자동 재시작");
-      } catch (e) {
-        console.error("자동 재시작 오류:", e);
-      }
+      // 플래그로 상태 확인 후 재시작
+      setTimeout(() => {
+        try {
+          if (newRecognition && !isRecognitionActive) {
+            newRecognition.start();
+            isRecognitionActive = true;
+            console.log("음성 인식 자동 재시작");
+          }
+        } catch (e) {
+          console.error("자동 재시작 오류:", e);
+          isRecognitionActive = false;
+        }
+      }, 500);
     });
 
     console.log("음성 인식이 초기화되었습니다.");
@@ -225,6 +268,7 @@ export function availabilityFunc(sendMessage, setIsListening) {
     return newRecognition;
   } catch (error) {
     console.error("음성 인식 초기화 오류:", error);
+    isRecognitionActive = false;
     return null;
   }
 }
@@ -232,23 +276,31 @@ export function availabilityFunc(sendMessage, setIsListening) {
 // 음성 인식을 자동으로 시작하는 함수
 export function startAutoRecord() {
   try {
-    if (recognition) {
+    // 이미 실행 중이면 중복 시작 방지
+    if (recognition && !isRecognitionActive) {
       recognition.start();
+      isRecognitionActive = true;
       console.log("음성 인식 자동 시작");
+    } else if (isRecognitionActive) {
+      console.log("음성 인식이 이미 실행 중입니다.");
     } else {
       console.error("음성 인식 객체가 초기화되지 않았습니다.");
     }
   } catch (error) {
     console.error("음성 인식 시작 오류:", error);
+    isRecognitionActive = false;
+    
     // 시작 오류 시 1초 후 다시 시도
     setTimeout(() => {
       try {
-        if (recognition) {
+        if (recognition && !isRecognitionActive) {
           recognition.start();
+          isRecognitionActive = true;
           console.log("오류 후 음성 인식 시작 재시도");
         }
       } catch (e) {
         console.error("재시도 오류:", e);
+        isRecognitionActive = false;
       }
     }, 1000);
   }
@@ -259,12 +311,14 @@ export function endRecord() {
   try {
     if (recognition && recognition.stop) {
       recognition.stop();
+      isRecognitionActive = false;
       console.log("음성 인식 중단");
     } else {
       console.error("음성 인식 객체가 없거나 stop 메서드가 없습니다.");
     }
   } catch (error) {
     console.error("음성 인식 중단 오류:", error);
+    isRecognitionActive = false;
   }
 }
 
