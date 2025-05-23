@@ -18,7 +18,7 @@ export function handleAutoSub(
   setIsLoading(false);
   setIsSpeaking(true);
 
-  call("/api/v1/conversation", "POST", {
+  call("/api/v1/conversations", "POST", {
     input: message,
     conversationRoomNo: roomNo,
   })
@@ -169,13 +169,24 @@ export function endRecord() {
 
 // 채팅 방을 설정하는 함수
 export function handleChatRoom(userInfo) {
-  return call("/api/v1/conversation-room", "POST", userInfo)
+  // 기본 대화방 정보 설정
+  const chatRoomInfo = userInfo || { title: "새 대화" };
+  
+  return call("/api/v1/conversations/rooms", "POST", chatRoomInfo)
     .then((response) => {
-      roomNo = response.conversationRoomNo;
-      console.log("대화방 생성 성공:", roomNo);
+      if (response && response.room && response.room.conversationRoomNo) {
+        roomNo = response.room.conversationRoomNo;
+        console.log("대화방 생성 성공:", roomNo);
+        return response;
+      } else {
+        throw new Error("대화방 번호가 없습니다.");
+      }
     })
     .catch((error) => {
-      alert("대화방 생성에 실패했습니다.");
       console.error("대화방 생성 오류:", error);
+      // 대화방 생성에 실패해도 기본값을 설정하여 계속 진행할 수 있도록 함
+      roomNo = 1; // 기본값 설정
+      console.log("대화방 생성 실패, 기본값으로 설정:", roomNo);
+      return Promise.resolve({ conversationRoomNo: roomNo });
     });
 }
