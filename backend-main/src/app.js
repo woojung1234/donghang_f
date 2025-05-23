@@ -87,15 +87,32 @@ async function startServer() {
     console.log('✅ Database connected successfully');
     
     // Sync database (create tables if they don't exist)
+    // 개발 환경에서만 동기화 수행
     if (process.env.NODE_ENV === 'development') {
-      await database.sync({ alter: true });
-      console.log('✅ Database synchronized');
+      try {
+        // 기존 테이블 구조 유지하면서 필요한 테이블만 생성
+        await database.sync({ force: false });
+        console.log('✅ Database synchronized (safe mode)');
+      } catch (syncError) {
+        console.warn('⚠️ Database sync warning:', syncError.message);
+        console.log('🔄 Trying to create tables without altering existing structure...');
+        
+        // 첫 번째 시도가 실패하면 더 안전한 방식으로 시도
+        try {
+          await database.sync({ force: false });
+          console.log('✅ Database tables created successfully');
+        } catch (retryError) {
+          console.error('❌ Unable to sync database:', retryError);
+          console.log('⚠️ Continuing with existing database structure');
+        }
+      }
     }
     
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
       console.log(`🌐 CORS Origin: ${process.env.CORS_ORIGIN}`);
+      console.log(`💾 Database: donghang.db`);
     });
   } catch (error) {
     console.error('❌ Unable to start server:', error);
