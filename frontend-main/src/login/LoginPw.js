@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import LoginBtn from './component/button/LoginBtn';
 import LoginHeader from './component/header/LoginHeader';
 import { call } from './service/ApiService';
 import { useNavigate } from 'react-router-dom';
+import { CommonContext } from '../App';
 
 function LoginPw(props) {
     const [pw,setPw] =useState("");
@@ -10,6 +11,7 @@ function LoginPw(props) {
     const loginUserNo = localStorage.getItem("userNo");
     const [errorMessage, setErrorMessage] = useState("");
     const navi = useNavigate();
+    const { setLoginUser } = useContext(CommonContext);
     const isButtonDisabled = pw.length < 6;
 
     useEffect(() => {
@@ -29,10 +31,16 @@ function LoginPw(props) {
         call('/api/v1/auth/login/simple', "POST",
             { userNo: loginUserNo, userSimplePassword: userSimplePassword }
         ).then((response) => {
-            console.log(response);
+            console.log("간편 로그인 성공:", response);
             localStorage.setItem("ACCESS_TOKEN", response.accessToken);
             localStorage.setItem("loginUser", "USER"); // Always set to USER
             localStorage.setItem("userNo", response.userNo);
+
+            // Context 상태 업데이트
+            setLoginUser({
+                userType: "USER",
+                userNo: response.userNo
+            });
 
             // 모든 사용자는 홈으로 리다이렉트
             navi("/home");
