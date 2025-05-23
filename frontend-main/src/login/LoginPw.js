@@ -21,25 +21,6 @@ function LoginPw(props) {
         const value = e.target.value.slice(0, 6);
         setPw(value);
     };
-   
-    const handleMatchCheck = () => {
-        call("/api/v1/match", "GET", null)
-            .then((response) => {
-                if (response.matchStatus === "ACCEPT") {
-                    navi('/home');
-                } else {
-                    navi('/match');
-                }
-            })
-            .catch((error) => {
-                if (error.matchStatus === null) {
-                    navi('/match');
-                } else {
-                    console.log(error);
-                    alert("실패");
-                }
-            });
-    };
 
     const handleSubmit = (event) => {
         event.preventDefault(); // default 이벤트 취소
@@ -50,15 +31,11 @@ function LoginPw(props) {
         ).then((response) => {
             console.log(response);
             localStorage.setItem("ACCESS_TOKEN", response.accessToken);
-            localStorage.setItem("loginUser", response.userType);
+            localStorage.setItem("loginUser", "USER"); // Always set to USER
             localStorage.setItem("userNo", response.userNo);
 
-
-            if (response.userType === "PROTECTOR") {
-                handleMatchCheck();
-            } else {
-                navi("/home");
-            }
+            // 모든 사용자는 홈으로 리다이렉트
+            navi("/home");
 
         }).catch((error) => {
             console.error("간편비밀번호로그인 실패", error);
