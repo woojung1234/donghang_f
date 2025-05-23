@@ -1,3 +1,80 @@
 *, *::before, *::after {
     box-sizing: border-box;
 }
+
+/* AI 음성 대화 컨테이너 스타일 */
+.ai-voice-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    margin-top: 20px;
+    background-color: #FFF8F3;
+    border-radius: 15px;
+}
+
+/* 챗봇 이미지 스타일 */
+.chatbot {
+    display: flex;
+    position: relative;
+    align-items: center;
+    width: 40%;
+    max-width: 200px;
+    margin-bottom: 15px;
+}
+
+/* 숨김 버튼 스타일 */
+.hiddenBtn {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #FF961B;
+    color: #fff;
+    width: 100px;
+    z-index: 99;
+}
+
+/* 채팅 시작 버튼 스타일 */
+.chat-startBtn {
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #FF961B;
+    color: #fff;
+    font-weight: bold;
+    width: 80%;
+    max-width: 350px;
+}
+
+/* 텍스트 상자 스타일 */
+.textbox {
+    font-family: 'Pretendard', sans-serif;
+    width: 90%;
+    max-width: 330px;
+    height: 200px;
+    display: flex;
+    font-size: 18px;
+    padding: 10px;
+    line-height: 170%;
+    background: none;
+    border: none;
+    color: #333;
+    z-index: 100;
+    overflow-y: auto;
+    outline: none;
+    margin: 15px 0;
+}
+
+/* 듣기 중 텍스트 스타일 */
+.listening-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #FF961B;
+}
