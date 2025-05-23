@@ -16,7 +16,7 @@ import SpeakLoading from "./SpeakLoading";
 import VoiceChatMovePageModal from "./VoiceChatMovePageModal";
 
 function VoiceChat(props) {
-  const [userInfo, setUserInfo] = useState("");
+  const [userInfo, setUserInfo] = useState({ title: "음성 대화" });
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [chatResponse, setChatResponse] = useState("");
@@ -32,13 +32,21 @@ function VoiceChat(props) {
   // 오류 상태 추가
   const [error, setError] = useState(null);
   const [speechSupported, setSpeechSupported] = useState(true);
+  // 대화방 상태 추가
+  const [chatRoomInitialized, setChatRoomInitialized] = useState(false);
 
   const navi = useNavigate();
   
   useEffect(() => {
     async function initializeChat() {
+      setError(null);
+      setIsLoading(true);
+      
       try {
-        await handleChatRoom(userInfo);
+        // 대화방 생성
+        const roomResponse = await handleChatRoom(userInfo);
+        console.log("대화방 초기화 완료:", roomResponse);
+        setChatRoomInitialized(true);
         
         // 음성 인식 초기화 및 지원 여부 확인
         const recognitionInstance = availabilityFunc(sendMessage, setIsListening);
@@ -47,17 +55,24 @@ function VoiceChat(props) {
           setError("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
         }
       } catch (err) {
-        setError("음성 인식 초기화 중 오류가 발생했습니다.");
+        setError("초기화 중 오류가 발생했습니다. 페이지를 새로고침 해주세요.");
         console.error("초기화 오류:", err);
+      } finally {
+        setIsLoading(false);
       }
     }
 
     initializeChat();
-  }, [userInfo]);
+  }, []);
 
   function sendMessage(recognizedText) {
     if (!recognizedText || recognizedText.trim() === "") {
       console.log("인식된 텍스트가 없습니다.");
+      return;
+    }
+    
+    if (!chatRoomInitialized) {
+      setError("대화방이 초기화되지 않았습니다. 페이지를 새로고침 해주세요.");
       return;
     }
     
@@ -82,6 +97,11 @@ function VoiceChat(props) {
   const handleStartChat = () => {
     if (!speechSupported) {
       alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
+      return;
+    }
+    
+    if (!chatRoomInitialized) {
+      setError("대화방이 초기화되지 않았습니다. 페이지를 새로고침 해주세요.");
       return;
     }
     
@@ -163,9 +183,9 @@ function VoiceChat(props) {
         {visible ? "닫기" : "답변보이기"}
       </button>
       <button 
-        className={`chat-startBtn ${!speechSupported ? 'disabled' : ''}`} 
+        className={`chat-startBtn ${(!speechSupported || !chatRoomInitialized) ? 'disabled' : ''}`} 
         onClick={handleStartChat}
-        disabled={!speechSupported}
+        disabled={!speechSupported || !chatRoomInitialized}
       >
         {isStart ? "중지" : "똑똑!"}
       </button>
