@@ -19,25 +19,6 @@ function LoginId(props) {
     const handleGoSignUp = () =>{
         navi("/signup/register")
     }
-
-    const handleMatchCheck = () => {
-        call("/api/v1/match", "GET", null)
-            .then((response) => {
-                if (response.matchStatus === "ACCEPT") {
-                    navi('/home');
-                } else {
-                    navi('/match');
-                }
-            })
-            .catch((error) => {
-                if (error.matchStatus === null) {
-                    navi('/match');
-                } else {
-                    console.log(error);
-                    alert("실패");
-                }
-            });
-    };
     
     const handleSubmit = (event) => {
         event.preventDefault(); //default이벤트 취소
@@ -56,16 +37,12 @@ function LoginId(props) {
         call("/api/v1/auth/login/normal", "POST", { userId: userId, userPassword: userPassword }).then((response)=>{
             if (response.accessToken) {
               // 로컬 스토리지에 토큰 저장
-              localStorage.setItem("loginUser", response.userType);
+              localStorage.setItem("loginUser", "USER"); // Always set to USER
               localStorage.setItem("userNo", response.userNo);
               localStorage.setItem(ACCESS_TOKEN, response.accessToken);
 
-              // token이 존재하는 경우 Todo 화면으로 리디렉트
-              if (response.userType === "PROTECTOR") {
-                handleMatchCheck();
-              } else {
-                navi('/home');
-              }
+              // 모든 사용자는 홈으로 리다이렉트
+              navi('/home');
           } 
           }).catch(
             (error)=>{
