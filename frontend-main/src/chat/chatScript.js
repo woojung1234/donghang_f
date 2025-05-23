@@ -16,23 +16,32 @@ export function handleAutoSub(
   setWelfareBookStartDate,
   setWelfareBookUseTime
 ) {
-  setIsLoading(false);
-  setIsSpeaking(true);
+  // 먼저 로딩 상태 설정
+  setIsLoading(true);
+  setIsSpeaking(false);
 
   // 간단한 더미 응답 생성 (네트워크 요청 없이 즉시 응답)
   const generateLocalResponse = (message) => {
+    const lowercaseMessage = message.toLowerCase();
     const responses = {
       "안녕": "안녕하세요! 무엇을 도와드릴까요?",
       "이름": "저는 똑똑이라고 합니다. 무엇을 도와드릴까요?",
       "도움": "복지 서비스 안내, 일정 관리, 건강 관리 등을 도와드릴 수 있어요.",
       "기능": "음성으로 대화하고, 다양한 정보를 알려드릴 수 있어요.",
       "고마워": "천만에요! 더 필요한 것이 있으면 말씀해주세요.",
-      "감사": "별말씀을요! 더 도움이 필요하시면 말씀해주세요."
+      "감사": "별말씀을요! 더 도움이 필요하시면 말씀해주세요.",
+      // 추가 키워드와 응답
+      "날씨": "오늘은 맑은 날씨가 예상됩니다. 외출하기 좋은 날이에요.",
+      "건강": "규칙적인 운동과 균형 잡힌 식단이 건강 유지에 중요합니다. 오늘 건강 체크를 도와드릴까요?",
+      "취미": "독서, 음악 감상, 걷기 등 다양한 취미를 즐기실 수 있어요. 새로운 취미를 추천해 드릴까요?",
+      "복지": "현재 이용 가능한 복지 서비스에 대해 알려드릴게요. 어떤 분야에 관심이 있으신가요?",
+      "일정": "오늘의 일정을 관리해 드릴 수 있어요. 새로운 일정을 추가하시겠어요?",
+      "약": "약 복용 시간을 알려드릴 수 있어요. 복용 알림을 설정하시겠어요?"
     };
 
     // 메시지에 키워드가 포함되어 있는지 확인
     for (const [keyword, response] of Object.entries(responses)) {
-      if (message.includes(keyword)) {
+      if (lowercaseMessage.includes(keyword)) {
         return response;
       }
     }
@@ -41,53 +50,38 @@ export function handleAutoSub(
     return "네, 말씀해주세요. 무엇을 도와드릴까요?";
   };
 
-  // 지연 시뮬레이션을 위한 Promise
-  const delayedResponse = () => {
-    return new Promise((resolve) => {
-      // 대화 내용을 처리하는 지연 시간 (1-2초)
-      const delay = Math.floor(Math.random() * 1000) + 1000;
-      
-      setTimeout(() => {
-        resolve({
-          content: generateLocalResponse(message),
-          audioData: "",
-          actionRequired: false
-        });
-      }, delay);
-    });
-  };
-
-  // 로컬 처리만 하는 방식으로 변경 (네트워크 문제 해결을 위해)
-  delayedResponse()
-    .then((response) => {
-      // 응답 처리
-      const content = response.content;
-      const actionRequired = response.actionRequired || false;
-      
-      // 응답 설정
-      setChatResponse(content);
-      
-      // 로딩 및 말하기 상태 업데이트
+  // 직접 응답 생성 및 처리 (Promise 사용하지 않고 바로 처리)
+  setTimeout(() => {
+    try {
+      // 로딩 상태 해제하고 말하기 상태로 전환
       setIsLoading(false);
-      setIsSpeaking(false);
+      setIsSpeaking(true);
       
-      // 음성 인식 재시작
-      startAutoRecord();
+      // 응답 내용 생성
+      const content = generateLocalResponse(message);
       
-      // 액션이 필요한 경우 처리
-      if (actionRequired) {
-        setIsOpen(true);
-      } else {
+      // 1초 후 응답 표시
+      setTimeout(() => {
+        // 응답 설정
+        setChatResponse(content);
+        
+        // 말하기 상태 해제
+        setIsSpeaking(false);
+        
+        // 음성 인식 재시작
+        startAutoRecord();
+        
+        // 모달 상태 설정 (현재는 필요없지만 나중에 확장 가능)
         setIsOpen(false);
-      }
-    })
-    .catch((error) => {
+      }, 1000);
+    } catch (error) {
       console.error("응답 처리 오류:", error);
       setChatResponse("죄송합니다. 응답을 처리하는 동안 오류가 발생했습니다.");
       setIsSpeaking(false);
       setIsLoading(false);
       startAutoRecord();
-    });
+    }
+  }, 1000);
 }
 
 // 음성 인식의 자동 시작 상태를 제어하는 함수
