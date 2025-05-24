@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
-const PUBLIC_DATA_API_KEY = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
+// 백엔드 서버 URL (포트 9090)
+const API_BASE_URL = 'http://localhost:9090';
 
-// 복지 서비스 목록 조회 (내부 API 사용)
+// 복지 서비스 목록 조회 (백엔드 서버에서 공공데이터 가져오기)
 export const getWelfareServices = async (category = '', page = 1, limit = 10) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/welfare`, {
@@ -20,15 +20,19 @@ export const getWelfareServices = async (category = '', page = 1, limit = 10) =>
   }
 };
 
-// 공공 데이터 포털에서 복지 서비스 목록 조회 (직접 호출)
+// 공공 데이터 포털에서 복지 서비스 목록 조회 (백엔드를 통해)
 export const getPublicWelfareServices = async (page = 1, perPage = 10) => {
   try {
-    const response = await axios.get('/api/welfare', {
+    console.log(`API 호출: ${API_BASE_URL}/api/welfare?page=${page}&limit=${perPage}`);
+    
+    const response = await axios.get(`${API_BASE_URL}/api/welfare`, {
       params: {
         page,
-        perPage
+        limit: perPage
       }
     });
+    
+    console.log('API 응답:', response.data);
     return response.data;
   } catch (error) {
     console.error('공공 복지 서비스 목록 조회 오류:', error);
@@ -88,11 +92,23 @@ export const getPeerStatistics = async (age, gender) => {
   }
 };
 
+// API 연결 테스트
+export const testWelfareConnection = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/welfare/test-connection`);
+    return response.data;
+  } catch (error) {
+    console.error('API 연결 테스트 오류:', error);
+    throw error;
+  }
+};
+
 export default {
   getWelfareServices,
   getPublicWelfareServices,
   searchWelfareServices,
   getWelfareServiceById,
   syncWelfareServices,
-  getPeerStatistics
+  getPeerStatistics,
+  testWelfareConnection
 };
