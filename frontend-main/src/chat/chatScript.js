@@ -58,7 +58,10 @@ async function callAIService(message) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': window.location.origin // 현재 오리진 정보 추가
       },
+      mode: 'cors', // CORS 모드 추가
+      credentials: 'include', // 쿠키를 포함한 요청 활성화
       // 타임아웃 설정 (5초)
       signal: AbortSignal.timeout(5000)
     });
