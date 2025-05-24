@@ -13,8 +13,8 @@ function WelfareServices() {
       try {
         console.log('복지 서비스 데이터 가져오기 시작');
         
-        // 공공 API 호출 시도
-        const apiUrl = '/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
+        // 간소화된 API 경로 사용
+        const apiUrl = '/api/welfare';
         
         console.log('API URL:', apiUrl);
         
@@ -22,6 +22,7 @@ function WelfareServices() {
           params: {
             page: 1,
             perPage: 20,
+            // 필요에 따라 추가 파라미터 설정
           }
         });
         
@@ -56,11 +57,11 @@ function WelfareServices() {
         setError(`복지 서비스 데이터를 가져오는 중 오류가 발생했습니다: ${err.message}`);
         setLoading(false);
         
-        // 임시 데이터로 테스트
+        // 임시 데이터로 테스트 (실제 API 연동 전 테스트용)
         setServices([
           {
             서비스명: '노인 돌봄 서비스',
-            제공기관: '복지부',
+            제공기관: '보건복지부',
             서비스설명: '독거노인 및 노인부부가구를 위한 돌봄 서비스를 제공합니다.',
             지원대상: '65세 이상 노인',
             신청방법: '주민센터 방문 신청',
@@ -73,6 +74,14 @@ function WelfareServices() {
             지원대상: '65세 이상 노인',
             신청방법: '건강보험공단 홈페이지 또는 방문 신청',
             url: 'https://www.nhis.or.kr'
+          },
+          {
+            서비스명: '기초연금',
+            제공기관: '국민연금공단',
+            서비스설명: '노인의 안정적인 생활을 위한 기초연금을 지급합니다.',
+            지원대상: '만 65세 이상, 소득인정액 기준 하위 70%',
+            신청방법: '국민연금공단 또는 주민센터 방문 신청',
+            url: 'https://www.nps.or.kr'
           }
         ]);
       }
@@ -102,6 +111,9 @@ function WelfareServices() {
         ) : error ? (
           <div className={styles.errorContainer}>
             <p>{error}</p>
+            <p className={styles.errorNote}>
+              * 현재 임시 데이터를 표시하고 있습니다. API 연동 문제가 해결되면 실제 데이터로 대체됩니다.
+            </p>
           </div>
         ) : services.length > 0 ? (
           <div className={styles.servicesContainer}>
