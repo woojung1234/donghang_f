@@ -47,7 +47,7 @@ function getOfflineResponse(message) {
 // AI 서비스에 API 요청하는 함수
 async function callAIService(message) {
   try {
-    // 환경 변수에서 AI 서비스 URL 가져오기 (8000 포트로 수정)
+    // 환경 변수에서 AI 서비스 URL 가져오기
     const AI_SERVICE_URL = process.env.REACT_APP_AI_URL || 'http://localhost:8000';
     const url = `${AI_SERVICE_URL}/api/v1/chatbot/chatting?contents=${encodeURIComponent(message)}`;
     
@@ -58,16 +58,17 @@ async function callAIService(message) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Origin': window.location.origin // 현재 오리진 정보 추가
       },
-      mode: 'cors', // CORS 모드 추가
-      credentials: 'include', // 쿠키를 포함한 요청 활성화
-      // 타임아웃 설정 (5초)
-      signal: AbortSignal.timeout(5000)
+      mode: 'cors',
+      credentials: 'include',
+      // 타임아웃 설정 (10초로 늘림)
+      signal: AbortSignal.timeout(10000)
     });
     
+    console.log(`AI 서비스 응답 상태: ${response.status}`);
+    
     if (!response.ok) {
-      throw new Error(`AI 서비스 응답 오류: ${response.status}`);
+      throw new Error(`AI 서비스 응답 오류: ${response.status} ${response.statusText}`);
     }
     
     const data = await response.json();
@@ -94,12 +95,16 @@ export function handleAutoSub(
   setIsLoading(false);
   setIsSpeaking(true);
 
+  console.log("API 요청 메시지:", message);
+  
   // API 호출 시도
   call("/api/v1/conversation", "POST", {
     input: message,
     conversationRoomNo: roomNo,
   })
     .then((response) => {
+      console.log("서버 응답 데이터:", response);
+      
       const audioData = response.audioData;
       const content = response.content;
       const actionRequired = response.actionRequired;
@@ -166,6 +171,7 @@ export function handleAutoSub(
     .catch((error) => {
       console.error("API 호출 오류:", error);
       // AI 서비스를 대체 응답 소스로 사용
+      console.log("대체 AI 서비스 호출 시도");
       callAIService(message).then(response => {
         setChatResponse(response);
         setIsLoading(false);
@@ -271,19 +277,23 @@ export function endRecord() {
 export function handleChatRoom(userInfo) {
   // 기본값 설정으로 항상 성공하도록 수정
   try {
+    console.log("대화방 생성 시도...");
     return call("/api/v1/conversation-room", "POST", userInfo)
       .then((response) => {
         roomNo = response.conversationRoomNo;
+        console.log(`대화방이 생성되었습니다. roomNo: ${roomNo}`);
         return response;
       })
       .catch((error) => {
         console.error("대화방 생성 오류:", error);
         // 오류 발생해도 기본값 사용하여 계속 진행
+        console.log("기본 대화방 번호(1)를 사용합니다.");
         return { conversationRoomNo: 1 };
       });
   } catch (e) {
     console.error("handleChatRoom 호출 오류:", e);
     // 어떤 오류가 발생해도 Promise를 반환하여 앱이 계속 작동하도록 함
+    console.log("기본 대화방 번호(1)를 사용합니다.");
     return Promise.resolve({ conversationRoomNo: 1 });
   }
 }
