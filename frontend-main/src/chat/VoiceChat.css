@@ -70,6 +70,25 @@
   color: #777;
 }
 
+/* 서버 연결 상태 및 음성 인식 지원 표시 */
+.server-status, .speech-status {
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.offline-indicator {
+  color: #e74c3c;
+}
+
+.speech-unsupported {
+  color: #e74c3c;
+}
+
 /* 대화 내용 영역 (하단에 고정) */
 .chat-history-container {
   position: fixed;
@@ -356,6 +375,54 @@
 .modal-confirm {
   background-color: #FF961B;
   color: white;
+}
+
+/* 텍스트 입력 폴백 UI */
+.text-input-fallback {
+  position: fixed;
+  bottom: 80px;
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  z-index: 3;
+}
+
+.text-input-container {
+  display: flex;
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 25px;
+  padding: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text-input-field {
+  flex: 1;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+}
+
+.text-send-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #FF961B;
+  border: none;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.text-send-button:hover {
+  background-color: #e68a19;
 }
 
 /* 모바일 반응형 조정 */
