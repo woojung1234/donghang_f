@@ -49,7 +49,8 @@ async function callAIService(message) {
   try {
     // 환경 변수에서 AI 서비스 URL 가져오기
     const AI_SERVICE_URL = process.env.REACT_APP_AI_URL || 'http://localhost:8000';
-    const url = `${AI_SERVICE_URL}/api/v1/chatbot/chatting?contents=${encodeURIComponent(message)}`;
+    // 직접 라우트 사용 (백업용)
+    const url = `${AI_SERVICE_URL}/api/v1/chatbot/chatting-direct?contents=${encodeURIComponent(message)}`;
     
     console.log("AI 서비스 요청 URL:", url);
     
@@ -60,7 +61,6 @@ async function callAIService(message) {
         'Content-Type': 'application/json',
       },
       mode: 'cors',
-      credentials: 'include',
       // 타임아웃 설정 (10초로 늘림)
       signal: AbortSignal.timeout(10000)
     });
@@ -95,92 +95,26 @@ export function handleAutoSub(
   setIsLoading(false);
   setIsSpeaking(true);
 
-  console.log("API 요청 메시지:", message);
+  console.log("대화 처리:", message);
   
-  // API 호출 시도
-  call("/api/v1/conversation", "POST", {
-    input: message,
-    conversationRoomNo: roomNo,
-  })
-    .then((response) => {
-      console.log("서버 응답 데이터:", response);
-      
-      const audioData = response.audioData;
-      const content = response.content;
-      const actionRequired = response.actionRequired;
-      const redirectionResult = response.redirectionResult;
-
-      const reservationResult = response.reservationResult || {};
-
-      const welfareNo = reservationResult.welfareNo || ""; // welfareNo가 없으면 빈 문자열
-      const welfareBookStartDate = reservationResult.welfareBookStartDate || ""; // 기본값 설정
-      const welfareBookUseTime = reservationResult.welfareBookUseTime || "";
-      setChatResponse(content);
-      setWelfareNo(welfareNo);
-      setWelfareBookStartDate(welfareBookStartDate);
-      setWelfareBookUseTime(welfareBookUseTime);
-
-      // 오디오 처리
-      if (audioData) {
-        try {
-          const byteCharacters = atob(audioData);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const audioBlob = new Blob([byteArray], { type: "audio/wav" });
-
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          audio.play();
-          setIsLoading(true);
-          setIsSpeaking(false);
-          audio.onended = () => {
-            setIsLoading(false);
-            startAutoRecord();
-
-            if (actionRequired === true && redirectionResult) {
-              setServiceUrl(redirectionResult.serviceUrl);
-              setIsOpen(true);
-            } else if (actionRequired === true && reservationResult) {
-              setServiceUrl("/welfare-input/check-spec");
-              setIsOpen(true);
-            } else {
-              setIsOpen(false);
-            }
-          };
-        } catch (e) {
-          console.error("오디오 처리 오류:", e);
-          handleFallbackResponse(
-            setChatResponse, 
-            setIsLoading, 
-            setIsSpeaking, 
-            startAutoRecord
-          );
-        }
-      } else {
-        // 오디오 데이터가 없을 경우 텍스트만 표시
-        setIsLoading(false);
-        setIsSpeaking(false);
-        setTimeout(() => {
-          startAutoRecord();
-        }, 1000);
-      }
-    })
-    .catch((error) => {
-      console.error("API 호출 오류:", error);
-      // AI 서비스를 대체 응답 소스로 사용
-      console.log("대체 AI 서비스 호출 시도");
-      callAIService(message).then(response => {
-        setChatResponse(response);
-        setIsLoading(false);
-        setIsSpeaking(false);
-        setTimeout(() => {
-          startAutoRecord();
-        }, 1000);
-      });
-    });
+  // 직접 AI 서비스 호출 (백엔드 우회)
+  callAIService(message).then(response => {
+    console.log("AI 응답:", response);
+    setChatResponse(response);
+    setIsLoading(false);
+    setIsSpeaking(false);
+    setTimeout(() => {
+      startAutoRecord();
+    }, 1000);
+  }).catch(error => {
+    console.error("AI 서비스 오류:", error);
+    setChatResponse("죄송합니다. 대화를 처리하는 중 오류가 발생했습니다.");
+    setIsLoading(false);
+    setIsSpeaking(false);
+    setTimeout(() => {
+      startAutoRecord();
+    }, 1000);
+  });
 }
 
 // 오류 발생 시 대체 응답 생성
@@ -275,25 +209,7 @@ export function endRecord() {
 
 // 채팅 방을 설정하는 함수
 export function handleChatRoom(userInfo) {
-  // 기본값 설정으로 항상 성공하도록 수정
-  try {
-    console.log("대화방 생성 시도...");
-    return call("/api/v1/conversation-room", "POST", userInfo)
-      .then((response) => {
-        roomNo = response.conversationRoomNo;
-        console.log(`대화방이 생성되었습니다. roomNo: ${roomNo}`);
-        return response;
-      })
-      .catch((error) => {
-        console.error("대화방 생성 오류:", error);
-        // 오류 발생해도 기본값 사용하여 계속 진행
-        console.log("기본 대화방 번호(1)를 사용합니다.");
-        return { conversationRoomNo: 1 };
-      });
-  } catch (e) {
-    console.error("handleChatRoom 호출 오류:", e);
-    // 어떤 오류가 발생해도 Promise를 반환하여 앱이 계속 작동하도록 함
-    console.log("기본 대화방 번호(1)를 사용합니다.");
-    return Promise.resolve({ conversationRoomNo: 1 });
-  }
+  console.log("대화방 생성 함수 호출됨");
+  // 백엔드 서버를 우회하고 항상 성공으로 처리
+  return Promise.resolve({ conversationRoomNo: 1 });
 }
