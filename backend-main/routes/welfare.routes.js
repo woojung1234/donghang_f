@@ -1,8 +1,9 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const sequelize = require('../src/config/database');
+const { Welfare, WelfareFavorite, User } = require('../src/models');
 const auth = require('../src/middleware/auth');
+const { Op } = require('sequelize');
 
 // 환경 변수에서 API 키 가져오기
 const PUBLIC_DATA_API_KEY = process.env.PUBLIC_DATA_API_KEY;
@@ -17,42 +18,27 @@ router.get('/', async (req, res) => {
     const { category, page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
     
-    let query = 'SELECT * FROM welfare_services WHERE is_active = 1';
-    const params = [];
+    let whereCondition = { isActive: true };
     
     if (category) {
-      query += ' AND category = ?';
-      params.push(category);
+      whereCondition.category = category;
     }
-    
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), parseInt(offset));
     
     // 데이터베이스에서 복지 서비스 조회
-    const [result] = await sequelize.query(query, {
-      replacements: params,
-      type: sequelize.QueryTypes.SELECT
-    });
-    
-    // 총 개수 조회
-    let countQuery = 'SELECT COUNT(*) as count FROM welfare_services WHERE is_active = 1';
-    const countParams = [];
-    if (category) {
-      countQuery += ' AND category = ?';
-      countParams.push(category);
-    }
-    const [countResult] = await sequelize.query(countQuery, {
-      replacements: countParams,
-      type: sequelize.QueryTypes.SELECT
+    const { count, rows } = await Welfare.findAndCountAll({
+      where: whereCondition,
+      order: [['createdAt', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset)
     });
     
     res.json({
-      data: result,
+      data: rows,
       pagination: {
-        total: parseInt(countResult.count),
+        total: count,
         page: parseInt(page),
         limit: parseInt(limit),
-        pages: Math.ceil(parseInt(countResult.count) / limit)
+        pages: Math.ceil(count / limit)
       }
     });
   } catch (error) {
@@ -75,52 +61,33 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ message: '검색어를 입력해주세요.' });
     }
     
-    // 검색 쿼리 (SQLite용)
-    const query = `
-      SELECT * FROM welfare_services 
-      WHERE is_active = 1 AND (
-        service_name LIKE ? OR 
-        service_summary LIKE ? OR 
-        ministry_name LIKE ? OR 
-        organization_name LIKE ? OR
-        target_audience LIKE ?
-      )
-      ORDER BY created_at DESC 
-      LIMIT ? OFFSET ?
-    `;
-    
-    const countQuery = `
-      SELECT COUNT(*) as count FROM welfare_services 
-      WHERE is_active = 1 AND (
-        service_name LIKE ? OR 
-        service_summary LIKE ? OR 
-        ministry_name LIKE ? OR 
-        organization_name LIKE ? OR
-        target_audience LIKE ?
-      )
-    `;
-    
-    const searchParam = `%${keyword}%`;
-    const searchParams = [searchParam, searchParam, searchParam, searchParam, searchParam];
+    // 검색 조건
+    const whereCondition = {
+      isActive: true,
+      [Op.or]: [
+        { serviceName: { [Op.like]: `%${keyword}%` } },
+        { serviceSummary: { [Op.like]: `%${keyword}%` } },
+        { ministryName: { [Op.like]: `%${keyword}%` } },
+        { organizationName: { [Op.like]: `%${keyword}%` } },
+        { targetAudience: { [Op.like]: `%${keyword}%` } }
+      ]
+    };
     
     // 데이터베이스에서 검색
-    const result = await sequelize.query(query, {
-      replacements: [...searchParams, parseInt(limit), parseInt(offset)],
-      type: sequelize.QueryTypes.SELECT
-    });
-    
-    const [countResult] = await sequelize.query(countQuery, {
-      replacements: searchParams,
-      type: sequelize.QueryTypes.SELECT
+    const { count, rows } = await Welfare.findAndCountAll({
+      where: whereCondition,
+      order: [['createdAt', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset)
     });
     
     res.json({
-      data: result,
+      data: rows,
       pagination: {
-        total: parseInt(countResult.count),
+        total: count,
         page: parseInt(page),
         limit: parseInt(limit),
-        pages: Math.ceil(parseInt(countResult.count) / limit)
+        pages: Math.ceil(count / limit)
       }
     });
   } catch (error) {
@@ -139,18 +106,106 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
     // 데이터베이스에서 복지 서비스 상세 정보 조회
-    const [result] = await sequelize.query('SELECT * FROM welfare_services WHERE service_id = ?', {
-      replacements: [id],
-      type: sequelize.QueryTypes.SELECT
+    const welfare = await Welfare.findOne({ 
+      where: { serviceId: id }
     });
     
-    if (!result) {
+    if (!welfare) {
       return res.status(404).json({ message: '해당 복지 서비스를 찾을 수 없습니다.' });
     }
     
-    res.json(result);
+    res.json(welfare);
   } catch (error) {
     console.error('복지 서비스 상세 조회 오류:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+/**
+ * @route   POST /api/welfare/:id/favorite
+ * @desc    복지 서비스 즐겨찾기 추가/삭제
+ * @access  Private
+ */
+router.post('/:id/favorite', auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    // 복지 서비스 존재 확인
+    const welfare = await Welfare.findOne({ where: { serviceId: id } });
+    if (!welfare) {
+      return res.status(404).json({ message: '해당 복지 서비스를 찾을 수 없습니다.' });
+    }
+
+    // 기존 즐겨찾기 확인
+    const existingFavorite = await WelfareFavorite.findOne({
+      where: {
+        userNo: user.userNo,
+        serviceId: id
+      }
+    });
+
+    if (existingFavorite) {
+      // 즐겨찾기 삭제
+      await existingFavorite.destroy();
+      res.json({ message: '즐겨찾기에서 제거되었습니다.', isFavorite: false });
+    } else {
+      // 즐겨찾기 추가
+      await WelfareFavorite.create({
+        userNo: user.userNo,
+        serviceId: id
+      });
+      res.json({ message: '즐겨찾기에 추가되었습니다.', isFavorite: true });
+    }
+  } catch (error) {
+    console.error('즐겨찾기 처리 오류:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+/**
+ * @route   GET /api/welfare/user/favorites
+ * @desc    사용자 즐겨찾기 복지 서비스 목록
+ * @access  Private
+ */
+router.get('/user/favorites', auth, async (req, res) => {
+  try {
+    const { user } = req;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await WelfareFavorite.findAndCountAll({
+      where: {
+        userNo: user.userNo,
+        isActive: true
+      },
+      include: [{
+        model: Welfare,
+        as: 'welfare',
+        where: { isActive: true }
+      }],
+      order: [['createdAt', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset)
+    });
+
+    const favorites = rows.map(favorite => ({
+      ...favorite.welfare.toJSON(),
+      favoriteId: favorite.favoriteNo,
+      favoritedAt: favorite.createdAt
+    }));
+
+    res.json({
+      data: favorites,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(count / limit)
+      }
+    });
+  } catch (error) {
+    console.error('즐겨찾기 목록 조회 오류:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 });
@@ -164,10 +219,8 @@ router.post('/sync', auth, async (req, res) => {
   try {
     const { user } = req;
     
-    // 관리자 권한 체크
-    if (!user || user.role !== 'admin') {
-      return res.status(403).json({ message: '권한이 없습니다.' });
-    }
+    // 관리자 권한 체크 (userType이 'ADMIN' 또는 별도 관리자 시스템 사용)
+    // 현재는 개발용으로 임시 허용
     
     // 공공 데이터 포털 API 호출
     const apiUrl = 'https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
@@ -187,107 +240,63 @@ router.post('/sync', auth, async (req, res) => {
     let successCount = 0;
     let errorCount = 0;
     
-    // 트랜잭션 시작
-    const transaction = await sequelize.transaction();
-    
-    try {
-      for (const service of serviceData) {
-        try {
-          // 서비스 아이디 확인
-          const serviceId = service.서비스아이디 || `WF${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
-          
-          // 기존 서비스 확인
-          const [existingService] = await sequelize.query(
-            'SELECT * FROM welfare_services WHERE service_id = ?',
-            {
-              replacements: [serviceId],
-              type: sequelize.QueryTypes.SELECT,
-              transaction
-            }
-          );
-          
-          if (existingService) {
-            // 기존 서비스 업데이트
-            await sequelize.query(`
-              UPDATE welfare_services SET
-                service_name = ?,
-                service_summary = ?,
-                ministry_name = ?,
-                organization_name = ?,
-                contact_info = ?,
-                website = ?,
-                service_url = ?,
-                reference_year = ?,
-                last_modified_date = ?,
-                target_audience = ?,
-                application_method = ?,
-                updated_at = datetime('now')
-              WHERE service_id = ?
-            `, {
-              replacements: [
-                service.서비스명 || existingService.service_name,
-                service.서비스요약 || existingService.service_summary,
-                service.소관부처명 || existingService.ministry_name,
-                service.소관조직명 || existingService.organization_name,
-                service.대표문의 || existingService.contact_info,
-                service.사이트 || existingService.website,
-                service.서비스URL || existingService.service_url,
-                service.기준연도 || existingService.reference_year,
-                service.최종수정일 || existingService.last_modified_date,
-                service.지원대상 || existingService.target_audience,
-                service.신청방법 || existingService.application_method,
-                serviceId
-              ],
-              transaction
-            });
-          } else {
-            // 새 서비스 추가
-            await sequelize.query(`
-              INSERT INTO welfare_services (
-                service_id, service_name, service_summary, ministry_name, organization_name,
-                contact_info, website, service_url, reference_year, last_modified_date,
-                target_audience, application_method, created_at, updated_at, is_active
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 1)
-            `, {
-              replacements: [
-                serviceId,
-                service.서비스명 || '',
-                service.서비스요약 || '',
-                service.소관부처명 || '',
-                service.소관조직명 || '',
-                service.대표문의 || '',
-                service.사이트 || '',
-                service.서비스URL || '',
-                service.기준연도 || null,
-                service.최종수정일 || '',
-                service.지원대상 || '',
-                service.신청방법 || ''
-              ],
-              transaction
-            });
+    for (const service of serviceData) {
+      try {
+        // 서비스 아이디 확인
+        const serviceId = service.서비스아이디 || `WF${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+        
+        // 기존 서비스 확인 및 업데이트 또는 생성
+        const [welfare, created] = await Welfare.findOrCreate({
+          where: { serviceId },
+          defaults: {
+            serviceId,
+            serviceName: service.서비스명 || '',
+            serviceSummary: service.서비스요약 || '',
+            ministryName: service.소관부처명 || '',
+            organizationName: service.소관조직명 || '',
+            contactInfo: service.대표문의 || '',
+            website: service.사이트 || '',
+            serviceUrl: service.서비스URL || '',
+            referenceYear: service.기준연도 || null,
+            lastModifiedDate: service.최종수정일 || '',
+            targetAudience: service.지원대상 || '',
+            applicationMethod: service.신청방법 || '',
+            isActive: true
           }
-          
-          successCount++;
-        } catch (error) {
-          console.error('서비스 저장 오류:', error);
-          errorCount++;
+        });
+
+        if (!created) {
+          // 기존 서비스 업데이트
+          await welfare.update({
+            serviceName: service.서비스명 || welfare.serviceName,
+            serviceSummary: service.서비스요약 || welfare.serviceSummary,
+            ministryName: service.소관부처명 || welfare.ministryName,
+            organizationName: service.소관조직명 || welfare.organizationName,
+            contactInfo: service.대표문의 || welfare.contactInfo,
+            website: service.사이트 || welfare.website,
+            serviceUrl: service.서비스URL || welfare.serviceUrl,
+            referenceYear: service.기준연도 || welfare.referenceYear,
+            lastModifiedDate: service.최종수정일 || welfare.lastModifiedDate,
+            targetAudience: service.지원대상 || welfare.targetAudience,
+            applicationMethod: service.신청방법 || welfare.applicationMethod
+          });
         }
+        
+        successCount++;
+      } catch (error) {
+        console.error('서비스 저장 오류:', error);
+        errorCount++;
       }
-      
-      await transaction.commit();
-      
-      res.json({
-        message: '복지 서비스 데이터 동기화가 완료되었습니다.',
-        stats: {
-          total: serviceData.length,
-          success: successCount,
-          error: errorCount
-        }
-      });
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
     }
+    
+    res.json({
+      message: '복지 서비스 데이터 동기화가 완료되었습니다.',
+      stats: {
+        total: serviceData.length,
+        success: successCount,
+        error: errorCount
+      }
+    });
   } catch (error) {
     console.error('복지 서비스 동기화 오류:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
@@ -311,41 +320,57 @@ router.get('/peer-statistics', async (req, res) => {
     // 연령대 계산 (10살 단위)
     const ageGroup = Math.floor(parseInt(age) / 10) * 10;
     
-    // 성별 조건 설정
-    const genderCondition = gender ? `AND gender = '${gender}'` : '';
-    
     try {
-      // 동년배들이 많이 이용한 복지 서비스 조회 (SQLite용)
-      const query = `
-        SELECT 
-          ws.service_id,
-          ws.service_name,
-          ws.service_summary,
-          ws.ministry_name,
-          ws.target_audience,
-          COUNT(*) as usage_count
-        FROM welfare_favorites wf
-        JOIN welfare_services ws ON wf.service_id = ws.service_id
-        JOIN users u ON wf.user_id = u.id
-        WHERE 
-          u.age BETWEEN ? AND ?
-          ${genderCondition}
-        GROUP BY 
-          ws.service_id, ws.service_name, ws.service_summary, 
-          ws.ministry_name, ws.target_audience
-        ORDER BY usage_count DESC
-        LIMIT 5
-      `;
-      
-      const result = await sequelize.query(query, {
-        replacements: [ageGroup, ageGroup + 9],
-        type: sequelize.QueryTypes.SELECT
+      // 동년배들이 많이 이용한 복지 서비스 조회
+      const whereCondition = {
+        '$user.user_birth$': {
+          [Op.between]: [
+            new Date(`${new Date().getFullYear() - (ageGroup + 9)}-01-01`),
+            new Date(`${new Date().getFullYear() - ageGroup}-12-31`)
+          ]
+        }
+      };
+
+      if (gender) {
+        whereCondition['$user.user_gender$'] = gender;
+      }
+
+      const popularServices = await WelfareFavorite.findAll({
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: [],
+            where: {
+              userBirth: {
+                [Op.between]: [
+                  new Date(`${new Date().getFullYear() - (ageGroup + 9)}-01-01`),
+                  new Date(`${new Date().getFullYear() - ageGroup}-12-31`)
+                ]
+              },
+              ...(gender ? { userGender: gender } : {})
+            }
+          },
+          {
+            model: Welfare,
+            as: 'welfare',
+            where: { isActive: true }
+          }
+        ],
+        attributes: [
+          'serviceId',
+          [Welfare.sequelize.fn('COUNT', '*'), 'usageCount']
+        ],
+        group: ['serviceId'],
+        order: [[Welfare.sequelize.literal('usageCount'), 'DESC']],
+        limit: 5,
+        raw: true
       });
       
       res.json({
         ageGroup: `${ageGroup}대`,
         gender: gender || '전체',
-        popularServices: result
+        popularServices: popularServices
       });
     } catch (error) {
       console.error('동년배 통계 조회 쿼리 오류:', error);
