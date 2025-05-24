@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +32,16 @@ try:
     from app.api.v1 import chatbot_router
 except Exception as e:
     logger.error(f"Error loading chatbot_router: {str(e)}")
-    # 계속 진행, 최소한 애플리케이션은 시작할 수 있도록
+    # 임시 라우터 생성
+    from fastapi import APIRouter
+    chatbot_router = APIRouter()
+    
+    @chatbot_router.get("/chat")
+    async def dummy_chat():
+        return {"message": "Chatbot API is not fully loaded"}
+    
+    # 객체에 라우터 속성 추가
+    chatbot_router.router = chatbot_router
 
 # 기타 라우터 로드 시도 (선택적)
 try:
@@ -83,3 +93,14 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+# 서버 실행 코드 추가
+if __name__ == "__main__":
+    from app.core.setting import settings
+    
+    # 환경 변수에서 가져온 설정 값으로 서버 실행
+    host = settings.host
+    port = int(settings.port)
+    
+    logger.info(f"Starting server on {host}:{port}")
+    uvicorn.run("app.main:app", host=host, port=port, reload=True)
