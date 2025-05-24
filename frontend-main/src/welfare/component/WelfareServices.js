@@ -1,39 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Header from 'header/BlueHeader';
 import styles from 'welfare/css/WelfareServices.module.css';
+import { getPublicWelfareServices } from 'services/welfareService';
 
 function WelfareServices() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
 
   useEffect(() => {
     const fetchWelfareServices = async () => {
       try {
         console.log('복지 서비스 데이터 가져오기 시작');
         
-        // 간소화된 API 경로 사용
-        const apiUrl = '/api/welfare';
-        
-        console.log('API URL:', apiUrl);
-        
-        const response = await axios.get(apiUrl, {
-          params: {
-            page: 1,
-            perPage: 20,
-            // 필요에 따라 추가 파라미터 설정
-          }
-        });
+        // 서비스 모듈을 통한 API 호출
+        const response = await getPublicWelfareServices(page, perPage);
         
         console.log('API 응답:', response);
         
         // API 응답 데이터 처리
-        if (response.data && response.data.data) {
-          console.log('복지 서비스 데이터 받음:', response.data.data);
-          setServices(response.data.data);
+        if (response && response.data) {
+          console.log('복지 서비스 데이터 받음:', response.data);
+          setServices(response.data);
         } else {
-          console.log('데이터 없음 또는 형식 불일치:', response.data);
+          console.log('데이터 없음 또는 형식 불일치:', response);
           setServices([]);
         }
         setLoading(false);
@@ -60,35 +52,44 @@ function WelfareServices() {
         // 임시 데이터로 테스트 (실제 API 연동 전 테스트용)
         setServices([
           {
+            서비스아이디: 'WF0001',
             서비스명: '노인 돌봄 서비스',
-            제공기관: '보건복지부',
-            서비스설명: '독거노인 및 노인부부가구를 위한 돌봄 서비스를 제공합니다.',
+            서비스요약: '독거노인 및 노인부부가구를 위한 돌봄 서비스를 제공합니다.',
+            소관부처명: '보건복지부',
+            소관조직명: '노인정책과',
+            대표문의: '129',
             지원대상: '65세 이상 노인',
             신청방법: '주민센터 방문 신청',
-            url: 'https://www.bokjiro.go.kr'
+            서비스URL: 'https://www.bokjiro.go.kr'
           },
           {
+            서비스아이디: 'WF0002',
             서비스명: '노인 건강 검진',
-            제공기관: '국민건강보험공단',
-            서비스설명: '노인을 위한 무료 건강 검진 서비스를 제공합니다.',
+            서비스요약: '노인을 위한 무료 건강 검진 서비스를 제공합니다.',
+            소관부처명: '보건복지부',
+            소관조직명: '건강정책과',
+            대표문의: '1577-1000',
             지원대상: '65세 이상 노인',
             신청방법: '건강보험공단 홈페이지 또는 방문 신청',
-            url: 'https://www.nhis.or.kr'
+            서비스URL: 'https://www.nhis.or.kr'
           },
           {
+            서비스아이디: 'WF0003',
             서비스명: '기초연금',
-            제공기관: '국민연금공단',
-            서비스설명: '노인의 안정적인 생활을 위한 기초연금을 지급합니다.',
+            서비스요약: '노인의 안정적인 생활을 위한 기초연금을 지급합니다.',
+            소관부처명: '보건복지부',
+            소관조직명: '국민연금공단',
+            대표문의: '1355',
             지원대상: '만 65세 이상, 소득인정액 기준 하위 70%',
             신청방법: '국민연금공단 또는 주민센터 방문 신청',
-            url: 'https://www.nps.or.kr'
+            서비스URL: 'https://www.nps.or.kr'
           }
         ]);
       }
     };
 
     fetchWelfareServices();
-  }, []);
+  }, [page, perPage]);
 
   const handleServiceClick = (url) => {
     if (url) {
@@ -119,13 +120,13 @@ function WelfareServices() {
           <div className={styles.servicesContainer}>
             {services.map((service, index) => (
               <div 
-                key={index} 
+                key={service.서비스아이디 || index} 
                 className={styles.serviceCard}
-                onClick={() => handleServiceClick(service.url)}
+                onClick={() => handleServiceClick(service.서비스URL)}
               >
                 <h2 className={styles.serviceName}>{service.서비스명}</h2>
-                <p className={styles.serviceProvider}>{service.제공기관}</p>
-                <p className={styles.serviceDescription}>{service.서비스설명}</p>
+                <p className={styles.serviceProvider}>{service.소관부처명} {service.소관조직명 ? `(${service.소관조직명})` : ''}</p>
+                <p className={styles.serviceDescription}>{service.서비스요약}</p>
                 <div className={styles.serviceDetails}>
                   {service.지원대상 && (
                     <p className={styles.serviceTarget}>
@@ -135,6 +136,11 @@ function WelfareServices() {
                   {service.신청방법 && (
                     <p className={styles.serviceApplication}>
                       <span className={styles.label}>신청방법:</span> {service.신청방법}
+                    </p>
+                  )}
+                  {service.대표문의 && (
+                    <p className={styles.serviceContact}>
+                      <span className={styles.label}>문의:</span> {service.대표문의}
                     </p>
                   )}
                 </div>
