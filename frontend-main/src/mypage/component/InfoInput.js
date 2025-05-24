@@ -3,6 +3,7 @@ import React from 'react';
 import glasses from "image/glasses.png";
 import { useEffect, useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
+import './InfoInput.css'; // CSS 파일 import 추가
 
 // 주소 검색 컴포넌트 구현
 const AddressSearchComponent = ({ onComplete, onClose }) => {
