@@ -13,15 +13,15 @@ class ConversationRoomService {
           userNo,
           isActive: true
         },
-        order: [['updated_at', 'DESC']], // 컬럼명 수정
+        order: [['updated_at', 'DESC']],
         include: [
           {
             model: ConversationLog,
             as: 'lastMessage',
             required: false,
             limit: 1,
-            order: [['created_at', 'DESC']], // 컬럼명 수정
-            attributes: ['message_content', 'created_at', 'message_type'] // 실제 컬럼명 사용
+            order: [['created_at', 'DESC']],
+            attributes: ['message_content', 'created_at', 'message_type']
           }
         ]
       });
@@ -32,8 +32,8 @@ class ConversationRoomService {
         conversationRoomCreatedAt: room.createdAt,
         conversationRoomUpdatedAt: room.updatedAt,
         lastMessage: room.lastMessage ? {
-          message: room.lastMessage.messageContent, // 실제 필드명 사용
-          sender: room.lastMessage.messageType, // 실제 필드명 사용
+          message: room.lastMessage.messageContent,
+          sender: room.lastMessage.messageType,
           createdAt: room.lastMessage.createdAt
         } : null
       }));
@@ -153,7 +153,7 @@ class ConversationRoomService {
         where: {
           isActive: true
         },
-        order: [['updated_at', 'DESC']], // 컬럼명 수정
+        order: [['updated_at', 'DESC']],
         include: [
           {
             model: User,
@@ -187,10 +187,9 @@ class ConversationRoomService {
    */
   static async getLastConversationTime(userNo) {
     try {
-      // 직접 SQL 쿼리 사용으로 변경 (더 안전함)
       const { sequelize } = require('../models');
       
-      const [results] = await sequelize.query(`
+      const results = await sequelize.query(`
         SELECT cl.created_at
         FROM conversation_logs cl
         INNER JOIN conversation_rooms cr ON cl.conversation_room_no = cr.room_no
@@ -202,7 +201,8 @@ class ConversationRoomService {
         type: sequelize.QueryTypes.SELECT
       });
 
-      return results.length > 0 ? results[0].created_at : null;
+      // SQLite에서는 결과가 배열로 직접 반환됨
+      return results && results.length > 0 ? results[0].created_at : null;
 
     } catch (error) {
       console.error('❌ ConversationRoomService.getLastConversationTime Error:', error);
