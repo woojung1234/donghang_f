@@ -7,15 +7,6 @@ import uvicorn
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
-# 모델 다운로드 시도 - 실패해도 계속 진행
-try:
-    from app.utils import download_model
-    download_model()
-    logger.info("Model download process completed")
-except Exception as e:
-    logger.error(f"Error during model download: {str(e)}")
-    logger.warning("Continuing without model download")
-
 # 핵심 모듈 로드
 try:
     from app.core import lifespan
@@ -46,21 +37,13 @@ app.add_middleware(
     expose_headers=["Content-Type", "Authorization"]
 )
 
-# 수동으로 라우터 구성
-from app.api.v1.chatbot_router import router as chatbot_router
-
-# 라우터 등록
-app.include_router(chatbot_router)
-logger.info("Chatbot router registered successfully")
-
-# 기타 라우터 로드 시도 (선택적)
+# 메인 라우터 등록
 try:
-    from app.api.v1 import tts_router, etc_router
-    app.include_router(tts_router.router)
-    app.include_router(etc_router.router)
-    logger.info("Extra routers registered successfully")
+    from app.api.v1.chatbot_router import router as chatbot_router
+    app.include_router(chatbot_router)
+    logger.info("✅ 챗봇 라우터 등록 성공")
 except Exception as e:
-    logger.error(f"Failed to register extra routers: {str(e)}")
+    logger.error(f"❌ 챗봇 라우터 등록 실패: {str(e)}")
 
 # 기본 경로
 @app.get("/")
@@ -72,6 +55,15 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+# 직접 라우트 등록 (백업용)
+@app.get("/api/v1/chatbot/chatting-direct")
+async def chatbot_response_direct(contents: str):
+    """백업용 직접 등록 라우트"""
+    from app.service.chat_bot_service import get_chatbot_response
+    response = get_chatbot_response(contents)
+    logger.info(f"직접 라우트 호출 - 입력: {contents}, 응답: {response[:50]}...")
+    return {"response": response}
+
 # 서버 실행 코드 추가
 if __name__ == "__main__":
     from app.core.setting import settings
@@ -80,6 +72,6 @@ if __name__ == "__main__":
     host = settings.host
     port = int(settings.port)
     
-    logger.info(f"Starting server on {host}:{port}")
-    logger.info(f"CORS Origins: {', '.join(allowed_origins)}")
+    logger.info(f"🚀 서버 시작: {host}:{port}")
+    logger.info(f"🌐 CORS 허용 도메인: {', '.join(allowed_origins)}")
     uvicorn.run("app.main:app", host=host, port=port, reload=True)
