@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -30,7 +30,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS 미들웨어 추가 - 더 넓은 허용 범위로 설정
+# CORS 미들웨어 추가
 allowed_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -48,7 +48,18 @@ app.add_middleware(
     expose_headers=["Content-Type", "Authorization"]
 )
 
-# 라우터 등록
+# 챗봇 서비스 함수 직접 임포트 (전역에서)
+try:
+    from app.service.chat_bot_service import get_chatbot_response
+    logger.info("✅ 챗봇 서비스 로드 성공")
+    chatbot_service_available = True
+except Exception as e:
+    logger.error(f"❌ 챗봇 서비스 로드 실패: {str(e)}")
+    chatbot_service_available = False
+    def get_chatbot_response(text):
+        return f"챗봇 서비스 로드 실패: {text}에 대한 응답을 처리할 수 없습니다."
+
+# 라우터 등록 시도
 def register_routers():
     """라우터들을 안전하게 등록"""
     routers_to_register = [
@@ -83,18 +94,64 @@ async def root():
 async def health_check():
     return {"status": "healthy", "service": "donghang-ai"}
 
-# 백업용 직접 라우트 (문제 해결을 위한 임시)
-@app.get("/api/v1/chatbot/chatting-backup")
-async def chatbot_backup(contents: str):
-    """백업용 챗봇 엔드포인트"""
+# 프론트엔드에서 요청하는 모든 챗봇 엔드포인트들을 직접 등록
+@app.get("/api/v1/chatbot/chatting")
+async def chatbot_main(contents: str = Query(...), request: Request = None):
+    """메인 챗봇 엔드포인트"""
     try:
-        from app.service.chat_bot_service import get_chatbot_response
+        client_host = request.client.host if request and request.client else "unknown"
+        logger.info(f"[MAIN] 챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
+        
         response = get_chatbot_response(contents)
-        logger.info(f"백업 라우트 사용 - 입력: {contents}")
+        logger.info(f"[MAIN] 챗봇 응답: {response[:100]}...")
+        
         return {"response": response}
     except Exception as e:
-        logger.error(f"백업 라우트 오류: {str(e)}")
+        logger.error(f"[MAIN] 챗봇 응답 오류: {str(e)}")
         return {"error": str(e), "response": "죄송합니다. 현재 서비스에 문제가 있습니다."}
+
+@app.get("/api/v1/chatbot/chatting-direct")
+async def chatbot_direct(contents: str = Query(...), request: Request = None):
+    """직접 챗봇 엔드포인트"""
+    try:
+        client_host = request.client.host if request and request.client else "unknown"
+        logger.info(f"[DIRECT] 챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
+        
+        response = get_chatbot_response(contents)
+        logger.info(f"[DIRECT] 챗봇 응답: {response[:100]}...")
+        
+        return {"response": response}
+    except Exception as e:
+        logger.error(f"[DIRECT] 챗봇 응답 오류: {str(e)}")
+        return {"error": str(e), "response": "죄송합니다. 현재 서비스에 문제가 있습니다."}
+
+@app.get("/api/v1/chatbot/chatting-backup")
+async def chatbot_backup(contents: str = Query(...), request: Request = None):
+    """백업 챗봇 엔드포인트"""
+    try:
+        client_host = request.client.host if request and request.client else "unknown"
+        logger.info(f"[BACKUP] 챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
+        
+        response = get_chatbot_response(contents)
+        logger.info(f"[BACKUP] 챗봇 응답: {response[:100]}...")
+        
+        return {"response": response}
+    except Exception as e:
+        logger.error(f"[BACKUP] 챗봇 응답 오류: {str(e)}")
+        return {"error": str(e), "response": "죄송합니다. 현재 서비스에 문제가 있습니다."}
+
+# OPTIONS 요청 처리
+@app.options("/api/v1/chatbot/chatting")
+async def chatbot_options():
+    return {"message": "OK"}
+
+@app.options("/api/v1/chatbot/chatting-direct")
+async def chatbot_direct_options():
+    return {"message": "OK"}
+
+@app.options("/api/v1/chatbot/chatting-backup")
+async def chatbot_backup_options():
+    return {"message": "OK"}
 
 # 디버깅을 위한 라우트 정보 출력
 @app.get("/debug/routes")
@@ -108,7 +165,10 @@ async def debug_routes():
                 "methods": list(route.methods) if route.methods else [],
                 "name": getattr(route, 'name', 'unknown')
             })
-    return {"routes": routes_info}
+    return {
+        "routes": routes_info,
+        "chatbot_service": "Available" if chatbot_service_available else "Not Available"
+    }
 
 # 서버 실행
 if __name__ == "__main__":
@@ -123,6 +183,7 @@ if __name__ == "__main__":
     
     logger.info(f"🚀 서버 시작: {host}:{port}")
     logger.info(f"🌐 CORS 설정: {allowed_origins}")
+    logger.info(f"🤖 챗봇 서비스 상태: {'사용 가능' if chatbot_service_available else '사용 불가'}")
     
     uvicorn.run(
         "app.main:app", 
