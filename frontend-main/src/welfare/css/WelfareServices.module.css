@@ -1,0 +1,121 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentContainer {
+  padding: 20px;
+  flex: 1;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.loadingContainer,
+.errorContainer,
+.noServicesContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.servicesContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.serviceCard {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.serviceCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #3182CE;
+  margin-bottom: 8px;
+}
+
+.serviceProvider {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.serviceDescription {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.serviceDetails {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.serviceTarget,
+.serviceApplication {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.label {
+  font-weight: bold;
+  color: #555;
+}
+
+.moreButton {
+  background-color: #3182CE;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.moreButton:hover {
+  background-color: #2B6CB0;
+}
+
+/* 태블릿 화면에 대한 반응형 디자인 */
+@media (min-width: 768px) {
+  .servicesContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 데스크탑 화면에 대한 반응형 디자인 */
+@media (min-width: 1024px) {
+  .servicesContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
