@@ -53,9 +53,9 @@ async def get_conversation_room(room_id: int):
         "created_at": "2025-05-24T09:00:00"
     }
 
-# 대화방 생성 API
+# 대화방 생성 API - 수정: Body의 기본값 처리 개선
 @router.post("/api/v1/conversation-room")
-async def create_conversation_room(data: Optional[RoomCreate] = Body(default=None)):
+async def create_conversation_room(data: RoomCreate = Body(default_factory=RoomCreate)):
     """
     대화방 생성 API
     """
@@ -105,19 +105,20 @@ async def process_conversation(data: ConversationInput, request: Request):
         logger.error(f"대화 처리 오류: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
-# 챗봇 응답 API
+# 챗봇 응답 API - CORS 처리 개선
 @router.get("/api/v1/chatbot/chatting")
-async def chatbot_response(contents: str = Query(...), request: Request):
+async def chatbot_response(contents: str = Query(...), request: Request = None):
     """
     챗봇 응답 API
     """
     try:
         # 요청 로깅
-        client_host = request.client.host if request.client else "unknown"
+        client_host = request.client.host if request and request.client else "unknown"
         logger.info(f"챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
         
         response = get_chatbot_response(contents)
         logger.info(f"챗봇 응답: {response[:100]}...")
+        
         return {"response": response}
     except Exception as e:
         logger.error(f"챗봇 응답 오류: {str(e)}", exc_info=True)
@@ -126,3 +127,11 @@ async def chatbot_response(contents: str = Query(...), request: Request):
             "message": "챗봇 응답을 처리하는 중 오류가 발생했습니다.",
             "details": str(e)
         })
+
+# OPTIONS 요청 처리를 위한 추가 엔드포인트
+@router.options("/api/v1/chatbot/chatting")
+async def chatbot_options():
+    """
+    CORS preflight 요청 처리
+    """
+    return {"message": "OK"}
