@@ -23,12 +23,25 @@
 .errorContainer,
 .noServicesContainer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 200px;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.errorContainer {
+  border-left: 4px solid #e53e3e;
+}
+
+.errorNote {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .servicesContainer {
