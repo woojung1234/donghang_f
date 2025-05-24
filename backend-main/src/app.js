@@ -31,10 +31,20 @@ const PORT = process.env.PORT || 9090;
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - 모든 오리진 허용
+// CORS configuration - 특정 오리진 허용
+const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 app.use(cors({
-  origin: '*',
-  credentials: true
+  origin: function(origin, callback) {
+    // 서버-서버 간 요청은 origin이 없을 수 있음 (null일 수 있음)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy violation'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Logging
@@ -111,7 +121,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🌐 CORS Origin: *`);
+      console.log(`🌐 CORS Origin: ${allowedOrigins.join(', ')}`);
       console.log(`💾 Database: donghang.db`);
     });
   } catch (error) {
