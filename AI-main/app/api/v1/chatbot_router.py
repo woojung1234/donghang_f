@@ -1,7 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from typing import Optional, Dict, Any
+from pydantic import BaseModel
 
 from app.service.chat_bot_service import get_chatbot_response
+
+class ConversationInput(BaseModel):
+    input: str
+    conversationRoomNo: int = 1
+
+class RoomCreate(BaseModel):
+    roomName: Optional[str] = None
+    userId: Optional[int] = None
 
 router = APIRouter(
     prefix="/api/v1",
@@ -33,7 +42,7 @@ async def get_conversation_room(room_id: int):
 
 # 대화방 생성 API
 @router.post("/conversation-room")
-async def create_conversation_room(data: dict = None):
+async def create_conversation_room(data: RoomCreate = Body(default=None)):
     """
     대화방 생성 API
     """
@@ -55,18 +64,18 @@ async def match_endpoint():
 
 # 대화 처리 API
 @router.post("/conversation")
-async def process_conversation(data: dict):
+async def process_conversation(data: ConversationInput):
     """
     대화 처리 API
     """
     try:
-        input_text = data.get("input", "")
-        room_no = data.get("conversationRoomNo", 1)
+        input_text = data.input
+        room_no = data.conversationRoomNo
         
         # 챗봇 응답 생성
         response_text = get_chatbot_response(input_text)
         
-        # 더미 오디오 데이터 (실제로는 TTS 서비스에서 생성해야 함)
+        # 더미 오디오 데이터 (빈 문자열)
         dummy_audio_data = ""
         
         return {
