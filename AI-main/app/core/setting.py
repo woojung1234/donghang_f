@@ -15,7 +15,7 @@ class APIKeyValidationError(Exception):
 
 class Settings(BaseSettings):
     # OpenAI API 키 (필수)
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-dummy-key-for-testing")
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "dummy-key")
     
     # 서버 설정 (선택적)
     port: str = os.getenv("PORT", "8000")
@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     # 로깅 (선택적)
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     
+    # 오프라인 모드 (API 키 없을 때 로컬 응답 사용)
+    offline_mode: bool = os.getenv("OFFLINE_MODE", "False").lower() in ("true", "1", "yes")
+    
     model_config = ConfigDict(
         env_file=".env",
         env_file_encoding='utf-8',
@@ -41,11 +44,26 @@ class Settings(BaseSettings):
 # 설정 로드 시도
 try:
     settings = Settings()
+    
+    # 로깅
     logger.info("✅ Settings loaded successfully.")
+    logger.info(f"💻 Server: {settings.host}:{settings.port}")
+    logger.info(f"🔄 Offline mode: {'Enabled' if settings.offline_mode else 'Disabled'}")
+    
+    # API 키 로깅 (보안상의 이유로 일부만 표시)
+    if not settings.offline_mode and settings.openai_api_key != "dummy-key":
+        masked_key = settings.openai_api_key[:4] + "*" * (len(settings.openai_api_key) - 8) + settings.openai_api_key[-4:]
+        logger.info(f"🔑 API Key: {masked_key}")
+    else:
+        if settings.offline_mode:
+            logger.info("🔑 API Key: Not required (offline mode)")
+        else:
+            logger.warning("⚠️ API Key: Not set or using dummy key")
+            
 except ValidationError as e:
     logger.error(f"❌ Error loading settings: {str(e)}")
     # 오류가 발생해도 기본 설정으로 계속 진행
-    settings = Settings(openai_api_key="sk-dummy-key-for-testing")
+    settings = Settings(openai_api_key="dummy-key", offline_mode=True)
     logger.warning("⚠️ Using default settings due to validation error.")
 
 # 명시적으로 settings 객체 내보내기
