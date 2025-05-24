@@ -48,13 +48,8 @@ function WelfareList() {
       }
     }
 
-
-    const goDetailReserved = () => {
-      navigate('/welfare-reserved-list');
-    }
-
-    const goDolbomMain = () => {
-      navigate('/welfare-input/dolbom-main');
+    const goWelfareServices = () => {
+      navigate('/welfare-services');
     }
 
     useEffect(() => {
@@ -111,12 +106,8 @@ function WelfareList() {
                 </div>
 
                 <div className={styles["main-button-container"]}>
-                    <div className={styles["reserve-list-container"]} onClick={goDetailReserved}>
-                          <p className={styles["reserved-list-btn"]}>예약 내역 보기</p>
-                    </div>
-
-                    <div className={styles["reserve-btn-container"]}  onClick={goDolbomMain} >
-                        <p className={styles["reserve-btn"]}>예약하러 가기</p>
+                    <div className={styles["reserve-list-container"]} onClick={goWelfareServices}>
+                          <p className={styles["reserved-list-btn"]}>복지 서비스 더 보기</p>
                     </div>
                 </div>
 
