@@ -42,8 +42,8 @@ const defaultResponses = [
 // AI 서비스에 API 요청하는 함수
 async function callAIService(message) {
   try {
-    // 환경 변수에서 AI 서비스 URL 가져오기
-    const AI_SERVICE_URL = process.env.REACT_APP_AI_URL || 'http://localhost:8000';
+    // 환경 변수에서 AI 서비스 URL 가져오기 (9090 포트로 수정)
+    const AI_SERVICE_URL = process.env.REACT_APP_AI_URL || 'http://localhost:9090';
     const url = `${AI_SERVICE_URL}/api/v1/chatbot/chatting?contents=${encodeURIComponent(message)}`;
     
     console.log("AI 서비스 요청 URL:", url);
