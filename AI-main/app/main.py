@@ -32,16 +32,7 @@ try:
     from app.api.v1 import chatbot_router
 except Exception as e:
     logger.error(f"Error loading chatbot_router: {str(e)}")
-    # 임시 라우터 생성
-    from fastapi import APIRouter
-    chatbot_router = APIRouter()
-    
-    @chatbot_router.get("/chat")
-    async def dummy_chat():
-        return {"message": "Chatbot API is not fully loaded"}
-    
-    # 객체에 라우터 속성 추가
-    chatbot_router.router = chatbot_router
+    # 계속 진행, 최소한 애플리케이션은 시작할 수 있도록
 
 # 기타 라우터 로드 시도 (선택적)
 try:
@@ -68,7 +59,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API 라우터 등록 - 사용 가능한 라우터만 등록
+# API 라우터 등록 - 직접 모든 라우트를 앱에 포함
 try:
     app.include_router(chatbot_router.router)
     logger.info("Chatbot router registered successfully")
