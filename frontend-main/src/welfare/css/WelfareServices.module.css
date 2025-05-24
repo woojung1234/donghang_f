@@ -92,15 +92,22 @@
 }
 
 .serviceTarget,
-.serviceApplication {
+.serviceApplication,
+.serviceContact {
   font-size: 14px;
   line-height: 1.5;
   margin-bottom: 8px;
 }
 
+.serviceContact {
+  color: #2B6CB0;
+  font-weight: 500;
+}
+
 .label {
   font-weight: bold;
   color: #555;
+  margin-right: 5px;
 }
 
 .moreButton {
@@ -117,6 +124,74 @@
 
 .moreButton:hover {
   background-color: #2B6CB0;
+}
+
+/* 검색 필터 영역 */
+.filterContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  background-color: white;
+  font-size: 14px;
+  min-width: 150px;
+}
+
+.searchButton {
+  background-color: #3182CE;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 페이지네이션 영역 */
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+.pageButton {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pageButton:hover {
+  background-color: #f7fafc;
+}
+
+.currentPage {
+  background-color: #3182CE;
+  color: white;
+  border: 1px solid #3182CE;
 }
 
 /* 태블릿 화면에 대한 반응형 디자인 */
