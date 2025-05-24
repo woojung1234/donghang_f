@@ -1,8 +1,12 @@
-from fastapi import APIRouter, HTTPException, Body, Query, Response
+from fastapi import APIRouter, HTTPException, Body, Query, Response, Request
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel
+import logging
 
 from app.service.chat_bot_service import get_chatbot_response
+
+# 로거 설정
+logger = logging.getLogger(__name__)
 
 class ConversationInput(BaseModel):
     input: str
@@ -71,11 +75,15 @@ async def match_endpoint():
 
 # 대화 처리 API
 @router.post("/api/v1/conversation")
-async def process_conversation(data: ConversationInput):
+async def process_conversation(data: ConversationInput, request: Request):
     """
     대화 처리 API
     """
     try:
+        # 요청 로깅
+        client_host = request.client.host if request.client else "unknown"
+        logger.info(f"대화 처리 API 호출 - 클라이언트: {client_host}, 입력: {data.input}")
+        
         input_text = data.input
         room_no = data.conversationRoomNo
         
@@ -92,13 +100,26 @@ async def process_conversation(data: ConversationInput):
             reservationResult=None
         )
     except Exception as e:
+        logger.error(f"대화 처리 오류: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 # 챗봇 응답 API
 @router.get("/api/v1/chatbot/chatting")
-async def chatbot_response(contents: str = Query(...)):
+async def chatbot_response(contents: str = Query(...), request: Request):
     """
     챗봇 응답 API
     """
-    response = get_chatbot_response(contents)
-    return {"response": response}
+    try:
+        # 요청 로깅
+        client_host = request.client.host if request.client else "unknown"
+        logger.info(f"챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
+        
+        response = get_chatbot_response(contents)
+        return {"response": response}
+    except Exception as e:
+        logger.error(f"챗봇 응답 오류: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail={
+            "error": "Internal Server Error",
+            "message": "챗봇 응답을 처리하는 중 오류가 발생했습니다.",
+            "details": str(e)
+        })
