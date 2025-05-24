@@ -4,6 +4,15 @@ import { call } from "login/service/ApiService";
 var roomNo = 1;
 var recognition = null;
 var isRecognitionActive = false;
+var isSpeechRecognitionSupported = false; // 브라우저 지원 여부 체크 변수 추가
+
+// 브라우저에서 음성인식 지원 여부 체크
+try {
+  isSpeechRecognitionSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+} catch (e) {
+  console.error("음성 인식 지원 확인 중 오류:", e);
+  isSpeechRecognitionSupported = false;
+}
 
 // 각 키워드별 다양한 응답 목록 (오프라인 모드용)
 const responseVariations = {
@@ -64,25 +73,32 @@ async function callAIService(message) {
 
 // 오프라인 응답 생성 함수
 function getOfflineResponse(message) {
-  const lowercaseMessage = message.toLowerCase();
-  
-  // 키워드 확인
-  for (const keyword of Object.keys(responseVariations)) {
-    if (lowercaseMessage.includes(keyword)) {
-      const responses = responseVariations[keyword];
-      return responses[Math.floor(Math.random() * responses.length)];
+  if (!message) return defaultResponses[0]; // 메시지가 없을 경우 기본 응답 제공
+
+  try {
+    const lowercaseMessage = message.toLowerCase();
+    
+    // 키워드 확인
+    for (const keyword of Object.keys(responseVariations)) {
+      if (lowercaseMessage.includes(keyword)) {
+        const responses = responseVariations[keyword];
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
     }
+    
+    // 추가 패턴 매칭
+    if (lowercaseMessage.includes("어디") || lowercaseMessage.includes("위치")) {
+      return "현재 위치는 지도에서 확인할 수 있어요. 더 자세한 안내가 필요하신가요?";
+    } else if (lowercaseMessage.includes("시간") || lowercaseMessage.includes("몇시")) {
+      return "현재 시간은 " + new Date().toLocaleTimeString() + "입니다. 도움이 필요하신가요?";
+    }
+    
+    // 기본 응답
+    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+  } catch (error) {
+    console.error("오프라인 응답 생성 오류:", error);
+    return "대화를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.";
   }
-  
-  // 추가 패턴 매칭
-  if (lowercaseMessage.includes("어디") || lowercaseMessage.includes("위치")) {
-    return "현재 위치는 지도에서 확인할 수 있어요. 더 자세한 안내가 필요하신가요?";
-  } else if (lowercaseMessage.includes("시간") || lowercaseMessage.includes("몇시")) {
-    return "현재 시간은 " + new Date().toLocaleTimeString() + "입니다. 도움이 필요하신가요?";
-  }
-  
-  // 기본 응답
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }
 
 // 음성 끝났을 때 자동 답변 실행
@@ -102,14 +118,18 @@ export function handleAutoSub(
   setIsSpeaking(false);
 
   // 음성 인식 중지 (응답 처리 중에는 인식 중지)
-  if (recognition) {
-    try {
-      isRecognitionActive = false;
-      recognition.stop();
-      console.log("응답 처리 중 음성 인식 중지");
-    } catch (e) {
-      console.error("음성 인식 중지 오류:", e);
+  try {
+    if (recognition && isSpeechRecognitionSupported) {
+      try {
+        isRecognitionActive = false;
+        recognition.stop();
+        console.log("응답 처리 중 음성 인식 중지");
+      } catch (e) {
+        console.error("음성 인식 중지 오류:", e);
+      }
     }
+  } catch (error) {
+    console.error("음성 인식 중지 처리 오류:", error);
   }
 
   // 응답 처리 함수
@@ -147,7 +167,13 @@ export function handleAutoSub(
         
         // 음성 인식 재시작 (약간의 지연 후)
         setTimeout(() => {
-          startAutoRecord();
+          if (isSpeechRecognitionSupported) {
+            try {
+              startAutoRecord();
+            } catch (e) {
+              console.error("음성 인식 재시작 오류:", e);
+            }
+          }
         }, 500);
       }, 1000);
     } catch (error) {
@@ -158,7 +184,13 @@ export function handleAutoSub(
       
       // 음성 인식 재시작 (약간의 지연 후)
       setTimeout(() => {
-        startAutoRecord();
+        if (isSpeechRecognitionSupported) {
+          try {
+            startAutoRecord();
+          } catch (e) {
+            console.error("음성 인식 재시작 오류:", e);
+          }
+        }
       }, 500);
     }
   };
@@ -169,6 +201,11 @@ export function handleAutoSub(
 
 // 음성 인식의 자동 시작 상태를 제어하는 함수
 export function availabilityFunc(sendMessage, setIsListening) {
+  if (!isSpeechRecognitionSupported) {
+    console.warn("이 브라우저는 음성 인식을 지원하지 않습니다.");
+    return null;
+  }
+
   try {
     // 이미 인스턴스가 있다면 중지 및 정리
     if (recognition) {
@@ -184,8 +221,8 @@ export function availabilityFunc(sendMessage, setIsListening) {
     
     // SpeechRecognition API 지원 여부 확인
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
       console.error("SpeechRecognition API를 지원하지 않는 브라우저입니다.");
+      isSpeechRecognitionSupported = false;
       return null;
     }
     
@@ -206,7 +243,7 @@ export function availabilityFunc(sendMessage, setIsListening) {
       
       // 특정 오류에 따른 처리
       if (event.error === "not-allowed") {
-        alert("마이크 권한이 필요합니다. 설정에서 마이크 권한을 허용해주세요.");
+        console.warn("마이크 권한이 허용되지 않았습니다.");
       } else if (event.error === "no-speech") {
         console.log("음성이 감지되지 않았습니다.");
       } else {
@@ -216,7 +253,7 @@ export function availabilityFunc(sendMessage, setIsListening) {
       // 오류 발생 후 1초 뒤에 다시 시작 시도 (이미 실행 중이 아닐 경우에만)
       setTimeout(() => {
         try {
-          if (newRecognition && !isRecognitionActive) {
+          if (newRecognition && !isRecognitionActive && isSpeechRecognitionSupported) {
             newRecognition.start();
             isRecognitionActive = true;
             console.log("오류 후 음성 인식 재시작");
@@ -239,10 +276,15 @@ export function availabilityFunc(sendMessage, setIsListening) {
     });
 
     newRecognition.addEventListener("result", (e) => {
-      const recognizedText = e.results[0][0].transcript;
-      console.log("인식된 텍스트:", recognizedText);
-      isRecognitionActive = false;
-      sendMessage(recognizedText);
+      try {
+        const recognizedText = e.results[0][0].transcript;
+        console.log("인식된 텍스트:", recognizedText);
+        isRecognitionActive = false;
+        sendMessage(recognizedText);
+      } catch (error) {
+        console.error("음성 인식 결과 처리 오류:", error);
+        isRecognitionActive = false;
+      }
     });
 
     // 인식 종료 시 자동 재시작 (이미 실행 중이 아닐 경우에만)
@@ -251,7 +293,7 @@ export function availabilityFunc(sendMessage, setIsListening) {
       // 플래그로 상태 확인 후 재시작
       setTimeout(() => {
         try {
-          if (newRecognition && !isRecognitionActive) {
+          if (newRecognition && !isRecognitionActive && isSpeechRecognitionSupported) {
             newRecognition.start();
             isRecognitionActive = true;
             console.log("음성 인식 자동 재시작");
@@ -275,6 +317,11 @@ export function availabilityFunc(sendMessage, setIsListening) {
 
 // 음성 인식을 자동으로 시작하는 함수
 export function startAutoRecord() {
+  if (!isSpeechRecognitionSupported) {
+    console.warn("이 브라우저는 음성 인식을 지원하지 않습니다.");
+    return;
+  }
+
   try {
     // 이미 실행 중이면 중복 시작 방지
     if (recognition && !isRecognitionActive) {
@@ -284,7 +331,7 @@ export function startAutoRecord() {
     } else if (isRecognitionActive) {
       console.log("음성 인식이 이미 실행 중입니다.");
     } else {
-      console.error("음성 인식 객체가 초기화되지 않았습니다.");
+      console.warn("음성 인식 객체가 초기화되지 않았습니다.");
     }
   } catch (error) {
     console.error("음성 인식 시작 오류:", error);
@@ -293,7 +340,7 @@ export function startAutoRecord() {
     // 시작 오류 시 1초 후 다시 시도
     setTimeout(() => {
       try {
-        if (recognition && !isRecognitionActive) {
+        if (recognition && !isRecognitionActive && isSpeechRecognitionSupported) {
           recognition.start();
           isRecognitionActive = true;
           console.log("오류 후 음성 인식 시작 재시도");
@@ -308,13 +355,18 @@ export function startAutoRecord() {
 
 // 음성 인식을 중단하는 함수
 export function endRecord() {
+  if (!isSpeechRecognitionSupported) {
+    // 음성 인식을 지원하지 않는 경우 조용히 반환
+    return;
+  }
+
   try {
-    if (recognition && recognition.stop) {
+    if (recognition && typeof recognition.stop === 'function') {
       recognition.stop();
       isRecognitionActive = false;
       console.log("음성 인식 중단");
     } else {
-      console.error("음성 인식 객체가 없거나 stop 메서드가 없습니다.");
+      console.warn("음성 인식 객체가 없거나 stop 메서드가 없습니다.");
     }
   } catch (error) {
     console.error("음성 인식 중단 오류:", error);
@@ -324,6 +376,12 @@ export function endRecord() {
 
 // 채팅 방을 설정하는 함수 (백엔드 연결 없이 성공하도록 수정)
 export function handleChatRoom(userInfo) {
-  // 백엔드 연결 문제로 인해 항상 성공하는 Promise 반환
-  return Promise.resolve({ conversationRoomNo: roomNo });
+  try {
+    // 백엔드 연결 문제로 인해 항상 성공하는 Promise 반환
+    return Promise.resolve({ conversationRoomNo: roomNo });
+  } catch (error) {
+    console.error("채팅방 설정 오류:", error);
+    // 오류가 발생해도 기본값으로 성공 응답
+    return Promise.resolve({ conversationRoomNo: 1 });
+  }
 }
