@@ -212,38 +212,54 @@ router.get('/user/favorites', auth, async (req, res) => {
 
 /**
  * @route   POST /api/welfare/sync
- * @desc    공공 데이터 포털에서 복지 서비스 데이터 동기화 (관리자 전용)
- * @access  Private (Admin)
+ * @desc    공공 데이터 포털에서 복지 서비스 데이터 동기화
+ * @access  Public (테스트용)
  */
-router.post('/sync', auth, async (req, res) => {
+router.post('/sync', async (req, res) => {
   try {
-    const { user } = req;
+    if (!PUBLIC_DATA_API_KEY) {
+      return res.status(400).json({ 
+        message: 'API 키가 설정되지 않았습니다. .env 파일에서 PUBLIC_DATA_API_KEY를 설정해주세요.' 
+      });
+    }
     
-    // 관리자 권한 체크 (userType이 'ADMIN' 또는 별도 관리자 시스템 사용)
-    // 현재는 개발용으로 임시 허용
+    console.log('🔄 공공데이터 API 호출 시작...');
     
-    // 공공 데이터 포털 API 호출
+    // 공공 데이터 포털 API 호출 (이미지에서 본 올바른 URL 사용)
     const apiUrl = 'https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
+    
     const response = await axios.get(apiUrl, {
       params: {
         serviceKey: PUBLIC_DATA_API_KEY,
         page: 1,
-        perPage: 1000
-      }
+        perPage: 100, // 첫 번째 테스트로 100개만
+        returnType: 'JSON'
+      },
+      timeout: 30000 // 30초 타임아웃
     });
     
+    console.log('📡 API 응답 받음:', response.status);
+    
     if (!response.data || !response.data.data) {
-      return res.status(500).json({ message: '공공 데이터 포털에서 데이터를 가져오는데 실패했습니다.' });
+      console.error('❌ API 응답 데이터 없음:', response.data);
+      return res.status(500).json({ 
+        message: '공공 데이터 포털에서 데이터를 가져오는데 실패했습니다.',
+        details: response.data
+      });
     }
     
     const serviceData = response.data.data;
+    console.log(`📊 받은 데이터 개수: ${serviceData.length}`);
+    
     let successCount = 0;
     let errorCount = 0;
     
-    for (const service of serviceData) {
+    for (const service of serviceData.slice(0, 10)) { // 테스트용으로 처음 10개만
       try {
-        // 서비스 아이디 확인
-        const serviceId = service.서비스아이디 || `WF${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+        // 서비스 아이디 생성
+        const serviceId = service.서비스아이디 || `WF${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        
+        console.log(`🔄 처리 중: ${service.서비스명}`);
         
         // 기존 서비스 확인 및 업데이트 또는 생성
         const [welfare, created] = await Welfare.findOrCreate({
@@ -261,6 +277,7 @@ router.post('/sync', auth, async (req, res) => {
             lastModifiedDate: service.최종수정일 || '',
             targetAudience: service.지원대상 || '',
             applicationMethod: service.신청방법 || '',
+            category: service.서비스분야 || '기타',
             isActive: true
           }
         });
@@ -278,13 +295,15 @@ router.post('/sync', auth, async (req, res) => {
             referenceYear: service.기준연도 || welfare.referenceYear,
             lastModifiedDate: service.최종수정일 || welfare.lastModifiedDate,
             targetAudience: service.지원대상 || welfare.targetAudience,
-            applicationMethod: service.신청방법 || welfare.applicationMethod
+            applicationMethod: service.신청방법 || welfare.applicationMethod,
+            category: service.서비스분야 || welfare.category
           });
         }
         
         successCount++;
+        console.log(`✅ 성공: ${service.서비스명}`);
       } catch (error) {
-        console.error('서비스 저장 오류:', error);
+        console.error(`❌ 서비스 저장 오류 [${service.서비스명}]:`, error.message);
         errorCount++;
       }
     }
@@ -293,13 +312,35 @@ router.post('/sync', auth, async (req, res) => {
       message: '복지 서비스 데이터 동기화가 완료되었습니다.',
       stats: {
         total: serviceData.length,
+        processed: Math.min(10, serviceData.length),
         success: successCount,
         error: errorCount
+      },
+      apiResponse: {
+        totalCount: response.data.totalCount,
+        currentCount: response.data.currentCount
       }
     });
   } catch (error) {
-    console.error('복지 서비스 동기화 오류:', error);
-    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    console.error('❌ 복지 서비스 동기화 오류:', error.message);
+    
+    if (error.code === 'ECONNABORTED') {
+      return res.status(408).json({ message: 'API 호출 시간 초과가 발생했습니다.' });
+    }
+    
+    if (error.response) {
+      console.error('API 오류 응답:', error.response.status, error.response.data);
+      return res.status(500).json({ 
+        message: 'API 호출 중 오류가 발생했습니다.',
+        status: error.response.status,
+        details: error.response.data
+      });
+    }
+    
+    res.status(500).json({ 
+      message: '서버 오류가 발생했습니다.',
+      error: error.message
+    });
   }
 });
 
