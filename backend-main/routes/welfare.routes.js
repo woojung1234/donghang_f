@@ -1,8 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const pool = require('../config/db');
-const auth = require('../middleware/auth');
+const pool = require('../src/config/database');
+const auth = require('../src/middleware/auth');
 
 // 환경 변수에서 API 키 가져오기
 const PUBLIC_DATA_API_KEY = process.env.PUBLIC_DATA_API_KEY;
