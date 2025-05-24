@@ -21,7 +21,8 @@ export function call(api, method, request) {
     headers: headers,
     url: process.env.REACT_APP_API_URL + api,
     method: method,
-    // credentials: 'include',
+    mode: 'cors', // CORS 모드 추가
+    credentials: 'include', // 쿠키를 포함한 요청 활성화
     body: method !== 'GET' ? JSON.stringify(request) : null,
   };
 
@@ -71,7 +72,6 @@ export function call(api, method, request) {
     return Promise.reject(error);
   });
 }
-
 
 
 
