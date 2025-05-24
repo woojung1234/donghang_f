@@ -11,26 +11,70 @@ function WelfareServices() {
   useEffect(() => {
     const fetchWelfareServices = async () => {
       try {
-        // 공공 API 호출 (프록시 설정으로 자동으로 API 키가 적용됨)
-        const response = await axios.get('/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d', {
+        console.log('복지 서비스 데이터 가져오기 시작');
+        
+        // 공공 API 호출 시도
+        const apiUrl = '/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
+        
+        console.log('API URL:', apiUrl);
+        
+        const response = await axios.get(apiUrl, {
           params: {
             page: 1,
             perPage: 20,
-            // 필요한 경우 추가 매개변수도 여기에 설정
           }
         });
         
+        console.log('API 응답:', response);
+        
         // API 응답 데이터 처리
         if (response.data && response.data.data) {
+          console.log('복지 서비스 데이터 받음:', response.data.data);
           setServices(response.data.data);
         } else {
+          console.log('데이터 없음 또는 형식 불일치:', response.data);
           setServices([]);
         }
         setLoading(false);
       } catch (err) {
         console.error('복지 서비스 데이터를 가져오는 중 오류가 발생했습니다:', err);
-        setError('복지 서비스 데이터를 가져오는 중 오류가 발생했습니다.');
+        
+        // 더 자세한 오류 정보 로깅
+        if (err.response) {
+          // 서버 응답이 있는 경우
+          console.error('오류 응답:', err.response.data);
+          console.error('오류 상태:', err.response.status);
+          console.error('오류 헤더:', err.response.headers);
+        } else if (err.request) {
+          // 요청은 보냈지만 응답이 없는 경우
+          console.error('요청은 보냈으나 응답이 없음:', err.request);
+        } else {
+          // 요청 설정 중에 오류가 발생한 경우
+          console.error('요청 설정 오류:', err.message);
+        }
+        
+        setError(`복지 서비스 데이터를 가져오는 중 오류가 발생했습니다: ${err.message}`);
         setLoading(false);
+        
+        // 임시 데이터로 테스트
+        setServices([
+          {
+            서비스명: '노인 돌봄 서비스',
+            제공기관: '복지부',
+            서비스설명: '독거노인 및 노인부부가구를 위한 돌봄 서비스를 제공합니다.',
+            지원대상: '65세 이상 노인',
+            신청방법: '주민센터 방문 신청',
+            url: 'https://www.bokjiro.go.kr'
+          },
+          {
+            서비스명: '노인 건강 검진',
+            제공기관: '국민건강보험공단',
+            서비스설명: '노인을 위한 무료 건강 검진 서비스를 제공합니다.',
+            지원대상: '65세 이상 노인',
+            신청방법: '건강보험공단 홈페이지 또는 방문 신청',
+            url: 'https://www.nhis.or.kr'
+          }
+        ]);
       }
     };
 
