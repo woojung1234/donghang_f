@@ -92,11 +92,12 @@ Notification.belongsTo(User, {
   as: 'user'
 });
 
-// ConversationLog와 ConversationRoom 관계에서 lastMessage 관계 추가
+// ConversationLog와 ConversationRoom 관계에서 lastMessage 관계를 수정
+// createdAt 대신 created_at 컬럼 사용
 ConversationRoom.hasOne(ConversationLog, {
   foreignKey: 'conversationRoomNo',
   as: 'lastMessage',
-  order: [['createdAt', 'DESC']]
+  order: [['created_at', 'DESC']]
 });
 
 // 모델들을 내보내기
