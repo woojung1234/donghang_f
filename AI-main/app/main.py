@@ -51,12 +51,14 @@ app = FastAPI(
 )
 
 # CORS 미들웨어 추가 - 프론트엔드와의 통신을 위해 필요
+allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 모든 오리진 허용
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Type", "Authorization"]
 )
 
 # API 라우터 등록 - 직접 모든 라우트를 앱에 포함
@@ -94,4 +96,5 @@ if __name__ == "__main__":
     port = int(settings.port)
     
     logger.info(f"Starting server on {host}:{port}")
+    logger.info(f"CORS Origins: {', '.join(allowed_origins)}")
     uvicorn.run("app.main:app", host=host, port=port, reload=True)
