@@ -31,9 +31,9 @@ const PORT = process.env.PORT || 9090;
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - 모든 오리진 허용
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: '*',
   credentials: true
 }));
 
@@ -111,7 +111,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🌐 CORS Origin: ${process.env.CORS_ORIGIN}`);
+      console.log(`🌐 CORS Origin: *`);
       console.log(`💾 Database: donghang.db`);
     });
   } catch (error) {
