@@ -45,6 +45,20 @@ function VoiceChat(props) {
 
   const navi = useNavigate();
   
+  // 브라우저 음성 인식 지원 여부 확인
+  useEffect(() => {
+    const checkSpeechSupport = () => {
+      const supported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+      setSpeechSupported(supported);
+      
+      if (!supported) {
+        setError("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
+      }
+    };
+    
+    checkSpeechSupport();
+  }, []);
+  
   // AI 서버 연결 상태 확인
   useEffect(() => {
     const checkServerConnection = async () => {
@@ -77,7 +91,6 @@ function VoiceChat(props) {
   
   useEffect(() => {
     async function initializeChat() {
-      setError(null);
       setIsLoading(true);
       
       try {
@@ -102,10 +115,18 @@ function VoiceChat(props) {
         }
         
         // 음성 인식 초기화 및 지원 여부 확인
-        const recognitionInstance = availabilityFunc(sendMessage, setIsListening);
-        if (!recognitionInstance) {
-          setSpeechSupported(false);
-          setError("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
+        if (speechSupported) {
+          try {
+            const recognitionInstance = availabilityFunc(sendMessage, setIsListening);
+            if (!recognitionInstance) {
+              setSpeechSupported(false);
+              setError("음성 인식을 초기화할 수 없습니다. 브라우저 권한을 확인해주세요.");
+            }
+          } catch (recognitionError) {
+            console.error("음성 인식 초기화 오류:", recognitionError);
+            setSpeechSupported(false);
+            setError("음성 인식을 초기화할 수 없습니다.");
+          }
         }
       } catch (err) {
         // 초기화 오류가 발생해도 계속 진행 (이미 chatRoomInitialized를 true로 설정함)
@@ -120,12 +141,14 @@ function VoiceChat(props) {
     // 컴포넌트 언마운트 시 음성 인식 중지
     return () => {
       try {
-        endRecord();
+        if (speechSupported) {
+          endRecord();
+        }
       } catch (e) {
         console.error("음성 인식 정리 오류:", e);
       }
     };
-  }, []);
+  }, [speechSupported]);
 
   // 대화 기록이 업데이트될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
@@ -135,43 +158,59 @@ function VoiceChat(props) {
   }, [chatHistory]);
 
   function sendMessage(recognizedText) {
-    if (!recognizedText || recognizedText.trim() === "") {
-      console.log("인식된 텍스트가 없습니다.");
+    // 텍스트가 없거나 초기화되지 않은 경우 반환
+    if (!recognizedText || recognizedText.trim() === "" || !chatRoomInitialized) {
+      console.log("인식된 텍스트가 없거나 채팅방이 초기화되지 않았습니다.");
       return;
     }
     
-    // 사용자 입력을 대화 기록에 추가
-    setCurrentInput(recognizedText);
-    setChatHistory(prev => [...prev, { role: "user", content: recognizedText }]);
-    
-    setChatResponse("");
-    setIsLoading(true);
-    setIsListening(false);
-    setError(null);
-    
-    handleAutoSub(
-      recognizedText,
-      handleBotResponse,
-      setIsLoading,
-      setIsSpeaking,
-      setIsOpen,
-      setServiceUrl,
-      setWelfareNo,
-      setWelfareBookStartDate,
-      setWelfareBookUseTime
-    );
+    try {
+      // 사용자 입력을 대화 기록에 추가
+      setCurrentInput(recognizedText);
+      setChatHistory(prev => [...prev, { role: "user", content: recognizedText }]);
+      
+      setChatResponse("");
+      setIsLoading(true);
+      setIsListening(false);
+      setError(null);
+      
+      handleAutoSub(
+        recognizedText,
+        handleBotResponse,
+        setIsLoading,
+        setIsSpeaking,
+        setIsOpen,
+        setServiceUrl,
+        setWelfareNo,
+        setWelfareBookStartDate,
+        setWelfareBookUseTime
+      );
+    } catch (error) {
+      console.error("메시지 전송 오류:", error);
+      setIsLoading(false);
+      setError("메시지를 처리하는 중 오류가 발생했습니다.");
+    }
   }
 
   // 봇 응답을 처리하는 함수
   function handleBotResponse(response) {
-    setChatResponse(response);
-    // 봇 응답을 대화 기록에 추가
-    setChatHistory(prev => [...prev, { role: "bot", content: response }]);
+    try {
+      if (!response) {
+        response = "죄송합니다. 응답을 받지 못했습니다.";
+      }
+      
+      setChatResponse(response);
+      // 봇 응답을 대화 기록에 추가
+      setChatHistory(prev => [...prev, { role: "bot", content: response }]);
+    } catch (error) {
+      console.error("봇 응답 처리 오류:", error);
+      setError("응답을 처리하는 중 오류가 발생했습니다.");
+    }
   }
 
   const handleStartChat = () => {
     if (!speechSupported) {
-      alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
+      setError("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.");
       return;
     }
     
@@ -230,7 +269,15 @@ function VoiceChat(props) {
     }
     console.log("이동 처리");
     closeModal();
-    endRecord();
+    
+    // 음성 인식 중지 (오류 방지를 위해 try/catch로 감싸기)
+    try {
+      if (speechSupported) {
+        endRecord();
+      }
+    } catch (e) {
+      console.error("음성 인식 중지 오류:", e);
+    }
   };
 
   // 대화 기록 렌더링
@@ -264,6 +311,13 @@ function VoiceChat(props) {
           {!serverConnected && (
             <div className="server-status">
               <span className="offline-indicator">오프라인 모드</span>
+            </div>
+          )}
+          
+          {/* 음성 인식 지원 안 함 표시 */}
+          {!speechSupported && (
+            <div className="speech-status">
+              <span className="speech-unsupported">음성 인식 미지원</span>
             </div>
           )}
         </div>
