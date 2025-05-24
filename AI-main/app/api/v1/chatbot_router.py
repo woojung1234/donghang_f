@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Body
-from typing import Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, Body, Query, Response
+from typing import Optional, Dict, Any, List
 from pydantic import BaseModel
 
 from app.service.chat_bot_service import get_chatbot_response
@@ -12,13 +12,20 @@ class RoomCreate(BaseModel):
     roomName: Optional[str] = None
     userId: Optional[int] = None
 
+class ConversationResponse(BaseModel):
+    status: str = "success"
+    content: str
+    audioData: str = ""
+    actionRequired: bool = False
+    redirectionResult: Optional[Dict[str, Any]] = None
+    reservationResult: Optional[Dict[str, Any]] = None
+
 router = APIRouter(
-    prefix="/api/v1",
     tags=["Chatbot"]
 )
 
 # 대화방 마지막 대화 시간 API
-@router.get("/conversation-room/last-conversation-time")
+@router.get("/api/v1/conversation-room/last-conversation-time")
 async def last_conversation_time():
     """
     프론트엔드가 요청하는 마지막 대화 시간 엔드포인트
@@ -29,7 +36,7 @@ async def last_conversation_time():
     }
 
 # 대화방 정보 API
-@router.get("/conversation-room/{room_id}")
+@router.get("/api/v1/conversation-room/{room_id}")
 async def get_conversation_room(room_id: int):
     """
     대화방 정보를 반환하는 API
@@ -41,8 +48,8 @@ async def get_conversation_room(room_id: int):
     }
 
 # 대화방 생성 API
-@router.post("/conversation-room")
-async def create_conversation_room(data: RoomCreate = Body(default=None)):
+@router.post("/api/v1/conversation-room")
+async def create_conversation_room(data: Optional[RoomCreate] = Body(default=None)):
     """
     대화방 생성 API
     """
@@ -52,7 +59,7 @@ async def create_conversation_room(data: RoomCreate = Body(default=None)):
     }
 
 # 일치 정보 API
-@router.get("/match")
+@router.get("/api/v1/match")
 async def match_endpoint():
     """
     프론트엔드가 요청하는 match 엔드포인트
@@ -63,7 +70,7 @@ async def match_endpoint():
     }
 
 # 대화 처리 API
-@router.post("/conversation")
+@router.post("/api/v1/conversation")
 async def process_conversation(data: ConversationInput):
     """
     대화 처리 API
@@ -75,23 +82,21 @@ async def process_conversation(data: ConversationInput):
         # 챗봇 응답 생성
         response_text = get_chatbot_response(input_text)
         
-        # 더미 오디오 데이터 (빈 문자열)
-        dummy_audio_data = ""
-        
-        return {
-            "status": "success",
-            "content": response_text,
-            "audioData": dummy_audio_data,
-            "actionRequired": False,
-            "redirectionResult": None,
-            "reservationResult": None
-        }
+        # 응답 구성
+        return ConversationResponse(
+            status="success",
+            content=response_text,
+            audioData="",
+            actionRequired=False,
+            redirectionResult=None,
+            reservationResult=None
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # 챗봇 응답 API
-@router.get("/chatbot/chatting")
-async def chatbot_response(contents: str):
+@router.get("/api/v1/chatbot/chatting")
+async def chatbot_response(contents: str = Query(...)):
     """
     챗봇 응답 API
     """
