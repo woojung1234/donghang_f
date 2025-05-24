@@ -31,9 +31,12 @@ export function call(api, method, request) {
     options.url += '?' + buildQueryString(request);
   }
 
+  console.log(`API 요청: ${method} ${options.url}`);
+
   //비동기통신: axios, ajax, fetch, promise...
   return fetch(options.url, options)
   .then((response) => {
+    console.log(`API 응답 상태: ${response.status}`);
     const contentType = response.headers.get("content-type");
 
     //헤더에 값이 있으면 로컬 스토리지에 ACCESS TOKEN 저장하기
@@ -44,7 +47,6 @@ export function call(api, method, request) {
     // 응답이 JSON 형식인지 확인
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return response.json().then((json) => {
-        console.log(json);
         if (!response.ok) {
           return Promise.reject(json);
         }
@@ -53,7 +55,6 @@ export function call(api, method, request) {
     } else if (contentType && contentType.indexOf("text/plain") !== -1) {
       // 응답이 텍스트 형식인 경우 처리
       return response.text().then((text) => {
-        console.log(text);
         if (!response.ok) {
           return Promise.reject(text);
         }
@@ -61,11 +62,14 @@ export function call(api, method, request) {
       });
     } else {
       // 예상치 못한 Content-Type의 경우
-      return Promise.reject("Unexpected content type: " + contentType);
+      if (!response.ok) {
+        return Promise.reject(`Error ${response.status}: ${response.statusText}`);
+      }
+      return {};
     }
   })
   .catch((error) => {
-    console.log(error);
+    console.error("API 호출 오류:", error);
     if (error.status === undefined || error.status === 403) {
      // window.location.href = "/login"; // redirect
     }
