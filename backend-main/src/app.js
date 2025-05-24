@@ -25,6 +25,9 @@ const welfareBookRoutes = require('./routes/welfare-book');
 const notificationRoutes = require('./routes/notifications');
 const pageRoutes = require('./routes/pages');
 
+// 복지 서비스 라우터 추가
+const welfareServicesRoutes = require('../routes/welfare.routes');
+
 const app = express();
 const PORT = process.env.PORT || 9090;
 
@@ -82,6 +85,9 @@ app.use('/api/v1/consumption', consumptionRoutes);
 app.use('/api/v1/welfare', welfareRoutes);
 app.use('/api/v1/welfare-book', welfareBookRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+
+// 공공 API 라우트 추가
+app.use('/api/welfare', welfareServicesRoutes);
 
 // Page Routes (정적 파일 리디렉션)
 app.use('/', pageRoutes);
