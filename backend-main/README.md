@@ -21,7 +21,7 @@ PostgreSQL이 실행 중이어야 합니다:
 
 ```bash
 # PostgreSQL 데이터베이스 생성
-createdb knockknock
+createdb donghang
 ```
 
 ### 3. 서버 실행
@@ -110,14 +110,14 @@ npm run dev
 
 ## 📝 환경변수
 
-| 변수명 | 설명 | 기본값 |
-|--------|------|--------|
-| PORT | 서버 포트 | 9090 |
+| 변수명 | 설명 | 기본값         |
+|--------|------|-------------|
+| PORT | 서버 포트 | 9090        |
 | NODE_ENV | 실행 환경 | development |
-| DB_HOST | 데이터베이스 호스트 | localhost |
-| DB_NAME | 데이터베이스 이름 | knockknock |
-| JWT_SECRET | JWT 시크릿 키 | - |
-| COOLSMS_API_KEY | CoolSMS API 키 | - |
+| DB_HOST | 데이터베이스 호스트 | localhost   |
+| DB_NAME | 데이터베이스 이름 | donghang    |
+| JWT_SECRET | JWT 시크릿 키 | -           |
+| COOLSMS_API_KEY | CoolSMS API 키 | -           |
 
 ## 🏗️ 프로젝트 구조
 
@@ -170,5 +170,5 @@ NODE_ENV=production npm start
 
 # PM2 사용 (권장)
 npm install -g pm2
-pm2 start src/app.js --name "knockknock-backend"
+pm2 start src/app.js --name "donghang-backend"
 ```

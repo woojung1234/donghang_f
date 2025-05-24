@@ -46,16 +46,16 @@ class AuthController {
       const tokens = JwtProvider.generateTokenPair({
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType
+        userType: 'USER' // Always set to USER
       });
 
-      console.log(`🔑 ID/Password Login Success - UserNo: ${user.userNo}, UserType: ${user.userType}`);
+      console.log(`🔑 ID/Password Login Success - UserNo: ${user.userNo}, UserType: USER`);
 
       res.status(200).json({
         message: '로그인 성공',
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType,
+        userType: 'USER', // Always set to USER
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken
       });
@@ -107,14 +107,14 @@ class AuthController {
       const tokens = JwtProvider.generateTokenPair({
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType
+        userType: 'USER' // Always set to USER
       });
 
       res.status(200).json({
         message: '로그인 성공',
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType,
+        userType: 'USER', // Always set to USER
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken
       });
@@ -165,14 +165,14 @@ class AuthController {
       const tokens = JwtProvider.generateTokenPair({
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType
+        userType: 'USER' // Always set to USER
       });
 
       res.status(200).json({
         message: '로그인 성공',
         userNo: user.userNo,
         userId: user.userId,
-        userType: user.userType,
+        userType: 'USER', // Always set to USER
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken
       });

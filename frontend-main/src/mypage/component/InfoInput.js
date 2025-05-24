@@ -1,8 +1,29 @@
 import React from 'react';
-// 제거된 카드 관련 기능들 주석 처리
 // import AddressSearchComponent from 'cardCreate/application/AddressSearchComponent';
 import glasses from "image/glasses.png";
 import { useEffect, useState } from 'react';
+import DaumPostcode from 'react-daum-postcode';
+import './InfoInput.css'; // CSS 파일 import 추가
+
+// 주소 검색 컴포넌트 구현
+const AddressSearchComponent = ({ onComplete, onClose }) => {
+    const handleComplete = (data) => {
+        onComplete(data);
+    };
+
+    return (
+        <div className="postcode-modal">
+            <div className="postcode-modal-content">
+                <button className="close-btn" onClick={onClose}>닫기</button>
+                <DaumPostcode
+                    onComplete={handleComplete}
+                    autoClose={false}
+                    style={{ width: '100%', height: '400px' }}
+                />
+            </div>
+        </div>
+    );
+};
 
 function InfoInput({ protegeInfo, handleChange }) {
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);

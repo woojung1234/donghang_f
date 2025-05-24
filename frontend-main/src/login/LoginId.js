@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginBtn from './component/button/LoginBtn';
 import LoginHeader from './component/header/LoginHeader';
 import "./Login.css";
 import { call } from './service/ApiService';
+import { CommonContext } from '../App';
 
 function LoginId(props) {
     const ACCESS_TOKEN = "ACCESS_TOKEN";
@@ -13,31 +14,13 @@ function LoginId(props) {
     const[pwErrorMessage, setPwErrorMessage] = useState('');
     const [isUserIdError, setIsUserIdError] = useState(false);
     const [isUserPwError, setIsUserPwError] = useState(false);
+    const { setLoginUser } = useContext(CommonContext);
 
     const navi = useNavigate();
 
     const handleGoSignUp = () =>{
         navi("/signup/register")
     }
-
-    const handleMatchCheck = () => {
-        call("/api/v1/match", "GET", null)
-            .then((response) => {
-                if (response.matchStatus === "ACCEPT") {
-                    navi('/home');
-                } else {
-                    navi('/match');
-                }
-            })
-            .catch((error) => {
-                if (error.matchStatus === null) {
-                    navi('/match');
-                } else {
-                    console.log(error);
-                    alert("실패");
-                }
-            });
-    };
     
     const handleSubmit = (event) => {
         event.preventDefault(); //default이벤트 취소
@@ -55,20 +38,26 @@ function LoginId(props) {
 
         call("/api/v1/auth/login/normal", "POST", { userId: userId, userPassword: userPassword }).then((response)=>{
             if (response.accessToken) {
+              console.log("로그인 성공:", response);
+            
               // 로컬 스토리지에 토큰 저장
-              localStorage.setItem("loginUser", response.userType);
+              localStorage.setItem("loginUser", "USER"); // Always set to USER
               localStorage.setItem("userNo", response.userNo);
               localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+              
+              // Context 상태 업데이트
+              setLoginUser({
+                userType: "USER",
+                userNo: response.userNo
+              });
 
-              // token이 존재하는 경우 Todo 화면으로 리디렉트
-              if (response.userType === "PROTECTOR") {
-                handleMatchCheck();
-              } else {
-                navi('/home');
-              }
+              // 모든 사용자는 홈으로 리다이렉트
+              // window.location.href = '/home'; // 페이지 새로고침 방식
+              navi('/home');
           } 
           }).catch(
             (error)=>{
+                console.error("로그인 오류:", error);
                 
                 if(error.message==='아이디가 존재하지 않습니다.'){
                     setIdErrorMessage(error.message);

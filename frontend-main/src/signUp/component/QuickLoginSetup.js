@@ -155,7 +155,8 @@ function QuickLoginSetup(props) {
                 </div>
             </div>
             <div className="signUpBtn">
-                <Link to="../rolecheck" className="signup-backBtn">이전</Link>
+                {/* 이전 버튼 클릭 시 RoleCheck 대신 VerifyCode로 이동 */}
+                <Link to="../verifycode" className="signup-backBtn">이전</Link>
                 <button className="signup-nextBtn" onClick={handleSubmit}>저장</button>
             </div>
         </div>

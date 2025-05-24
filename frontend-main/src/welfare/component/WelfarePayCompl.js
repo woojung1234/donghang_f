@@ -1,117 +1,245 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSpecHook } from 'welfare/component/WelfareInputTotal'; // 가정한 useSpecHook 사용
-import styles from 'welfare/css/WelfarePayCompl.module.css';
+// 파일: src/welfare/component/WelfarePayCompl.js
+// 카드 기반 결제 완료를 사용자 기반으로 변경 (API 엔드포인트는 유지)
 
-function WelfarePayCompl() {
-  const navigate = useNavigate();
-  const [today, setToday] = useState('');
-  const { userSpec } = useSpecHook();  // userSpec을 가져옴
+import Header from 'header/Header';
+import { call } from 'login/service/ApiService';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import 'welfare/css/WelfarePayCompl.module.css';
 
-  function displayTime(duration) {
-    switch(duration) {
-      case 1:
-        return '3시간 (09:00 ~ 12:00)';
-      case 2:
-        return '6시간 (09:00 ~ 15:00)';
-      case 3:
-        return '9시간 (09:00 ~ 18:00)';
-      case 4:
-        return '1개월';
-      case 5:
-        return '2개월';
-      case 6:
-        return '3개월';
-      case 7:
-        return '4개월';
-      case 8:
-        return '5개월';
-      case 9:
-        return '6개월';
-      default:
-        return '시간 정보 없음';
+function WelfarePayCompl(props) {
+    const location = useLocation();
+    const navi = useNavigate();
+    
+    // 카드 ID 대신 사용자 ID 사용
+    const userId = location.state?.value;
+    const paymentInfo = location.state?.paymentInfo || {};
+    
+    const [paymentDetails, setPaymentDetails] = useState(null);
+    const [userInfo, setUserInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState('');
+
+    useEffect(() => {
+        if (!userId) {
+            setErrorMsg('결제 정보를 찾을 수 없습니다.');
+            setTimeout(() => {
+                navi('/welfare-main');
+            }, 3000);
+            return;
+        }
+
+        // 결제 완료 정보 조회 및 사용자 정보 가져오기
+        fetchPaymentDetails();
+        fetchUserInfo();
+    }, [userId, navi]);
+
+    const fetchPaymentDetails = () => {
+        // 기존 결제 내역 API 활용 (사용자 ID 기반으로 변경)
+        call('/api/v1/users/payment/latest', 'GET', {
+            userId: userId
+        })
+        .then((response) => {
+            if (response && response.paymentId) {
+                setPaymentDetails(response);
+            } else {
+                // API에서 정보를 가져오지 못한 경우 기본 정보 설정
+                setPaymentDetails({
+                    paymentId: Date.now().toString(),
+                    amount: paymentInfo.amount || 0,
+                    method: paymentInfo.method || '간편결제',
+                    time: paymentInfo.time || new Date().toLocaleString(),
+                    status: 'completed',
+                    serviceType: '복지서비스'
+                });
+            }
+            setIsLoading(false);
+        })
+        .catch((error) => {
+            console.error('결제 정보 조회 오류:', error);
+            // 오류 시에도 기본 정보로 표시
+            setPaymentDetails({
+                paymentId: Date.now().toString(),
+                amount: 0,
+                method: '간편결제',
+                time: new Date().toLocaleString(),
+                status: 'completed',
+                serviceType: '복지서비스'
+            });
+            setIsLoading(false);
+        });
+    };
+
+    const fetchUserInfo = () => {
+        // 사용자 정보 조회
+        call('/api/v1/users/info', 'GET', null)
+        .then((response) => {
+            if (response) {
+                setUserInfo(response);
+            }
+        })
+        .catch((error) => {
+            console.error('사용자 정보 조회 오류:', error);
+        });
+    };
+
+    const handleGoHome = () => {
+        navi('/welfare-main');
+    };
+
+    const handleGoMyPage = () => {
+        navi('/mypage');
+    };
+
+    const handleViewHistory = () => {
+        navi('/consumption', { 
+            state: { 
+                value: { userId: userId } 
+            } 
+        });
+    };
+
+    const formatAmount = (amount) => {
+        return new Intl.NumberFormat('ko-KR').format(amount);
+    };
+
+    const getPaymentIcon = () => {
+        switch (paymentDetails?.method) {
+            case '간편결제':
+                return '💳';
+            case '계좌이체':
+                return '🏦';
+            default:
+                return '✅';
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className='welfare-pay-compl-container'>
+                <Header style={{ position: 'relative', zIndex: 5 }}/>
+                <div className="loading-section">
+                    <div className="loading-spinner"></div>
+                    <p>결제 정보를 확인하는 중...</p>
+                </div>
+            </div>
+        );
     }
-  }
 
-  function formatPrice(price) {
-    return new Intl.NumberFormat('ko-KR', {
-      minimumFractionDigits: 0 // 소수점 아래 자리수를 0으로 설정하여 정수로 표시
-    }).format(price); // currency: 'KRW' 옵션을 제거하여 원화 기호 제거
-  }
-
-  function calculatePrice(welfareBookUseTime) {
-    if ([1, 2, 3].includes(welfareBookUseTime)) {
-      return 75000 * welfareBookUseTime;
-    } else if ([4, 5, 6, 7, 8, 9].includes(welfareBookUseTime)) {
-      return 2000000 * (welfareBookUseTime - 3);
-    } else {
-      return 0;  // welfareBookUseTime이 예상 범위 밖의 값인 경우
-    }
-  }
-
-  useEffect(() => {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, '.');
-    setToday(formattedDate);
-    console.log("userSpec: " + JSON.stringify(userSpec));
-  }, []);
-
-  const goDetailReserved = () => {
-    navigate('/welfare-reserved-list');
-  };
-
-  const getProtegeName = (welfareNo)=>{
-    switch(welfareNo){
-      case 1:
-        return "일상 가사";
-      case 2:
-        return "가정 간병";
-      default:
-        return "한울 돌봄";
+    if (errorMsg) {
+        return (
+            <div className='welfare-pay-compl-container'>
+                <Header style={{ position: 'relative', zIndex: 5 }}/>
+                <div className="error-section">
+                    <span className="error-icon">⚠️</span>
+                    <p>{errorMsg}</p>
+                </div>
+            </div>
+        );
     }
 
-  }
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles["header-info"]}>
-          <h2 className={styles["header-name"]}>
-            <span className={styles["pay-com"]}>결제가 완료</span>되었습니다.
-          </h2>
-          <h2 className={styles["header-date"]}>{today}</h2>
+    return (
+        <div className='welfare-pay-compl-container'>
+            <Header style={{ position: 'relative', zIndex: 5 }}/>
+
+            <div className="pay-compl-content">
+                {/* 결제 성공 헤더 */}
+                <div className="success-header">
+                    <div className="success-icon">✅</div>
+                    <h2>결제가 완료되었습니다</h2>
+                    <p>복지 서비스 이용이 승인되었습니다</p>
+                </div>
+
+                {/* 결제 상세 정보 */}
+                <div className="payment-details-card">
+                    <div className="payment-header">
+                        <span className="payment-icon">{getPaymentIcon()}</span>
+                        <div className="payment-title">
+                            <h3>{paymentDetails?.serviceType || '복지서비스'}</h3>
+                            <p>{paymentDetails?.time}</p>
+                        </div>
+                    </div>
+
+                    <div className="payment-info-list">
+                        <div className="info-row">
+                            <span className="info-label">결제 금액</span>
+                            <span className="info-value amount">
+                                {formatAmount(paymentDetails?.amount || 0)}원
+                            </span>
+                        </div>
+                        
+                        <div className="info-row">
+                            <span className="info-label">결제 방법</span>
+                            <span className="info-value">
+                                {paymentDetails?.method || '간편결제'}
+                            </span>
+                        </div>
+                        
+                        <div className="info-row">
+                            <span className="info-label">결제자</span>
+                            <span className="info-value">
+                                {userInfo.userName || userInfo.name || '사용자'}
+                            </span>
+                        </div>
+                        
+                        <div className="info-row">
+                            <span className="info-label">결제 번호</span>
+                            <span className="info-value payment-id">
+                                {paymentDetails?.paymentId}
+                            </span>
+                        </div>
+                        
+                        <div className="info-row">
+                            <span className="info-label">결제 상태</span>
+                            <span className="info-value status-completed">
+                                결제 완료
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 추가 안내 */}
+                <div className="additional-info">
+                    <div className="info-box">
+                        <h4>📋 서비스 이용 안내</h4>
+                        <ul>
+                            <li>결제가 완료되어 서비스 이용이 가능합니다</li>
+                            <li>서비스 관련 문의는 고객센터로 연락해주세요</li>
+                            <li>결제 내역은 마이페이지에서 확인하실 수 있습니다</li>
+                        </ul>
+                    </div>
+
+                    {paymentInfo.isFirstTime && (
+                        <div className="first-time-notice">
+                            <span className="notice-icon">🎉</span>
+                            <p>결제 비밀번호가 성공적으로 설정되었습니다!</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* 액션 버튼들 */}
+            <div className="action-buttons">
+                <button className="secondary-btn" onClick={handleViewHistory}>
+                    결제 내역 보기
+                </button>
+                
+                <button className="secondary-btn" onClick={handleGoMyPage}>
+                    마이페이지
+                </button>
+                
+                <button className="primary-btn" onClick={handleGoHome}>
+                    홈으로 가기
+                </button>
+            </div>
+
+            {/* 푸터 정보 */}
+            <div className="payment-footer">
+                <p>결제 문의: 고객센터 1588-0000</p>
+                <p>평일 09:00~18:00 (토/일/공휴일 휴무)</p>
+            </div>
         </div>
-      </div>
-
-      <div className={styles["main-container"]}>
-        <hr />
-        <p className={styles["pay-title"]}>
-          {userSpec.protegeUserName} <span className={styles.gender}>({userSpec.userGender === 1 ? '남성' : '여성'})</span>
-        </p>
-        <hr className={styles["dotted-hr"]} />
-        <p>
-          <span className={styles["pay-info-cate"]}>예약 항목</span>
-          <span className={styles["pay-info-title"]}>{getProtegeName(userSpec.welfareNo)}</span>
-        </p>
-        <p>
-          <span className={styles["pay-info-cate"]}>예약 날짜</span>
-          <span className={styles["pay-info-title"]}>{userSpec.welfareBookStartDate}</span>
-        </p>
-        <p>
-          <span className={styles["pay-info-cate"]}>예약 시간</span>
-          <span className={styles["pay-info-title"]}>
-          {displayTime(userSpec.welfareBookUseTime)}</span>
-        </p>
-        <hr />
-        <p>
-          <span className={styles["pay-info-tprice"]}>최종결제금액</span>
-          <span className={styles["pay-info-price"]}>{formatPrice(calculatePrice(userSpec.welfareBookUseTime))} 원</span>
-        </p>
-      </div>
-      <div className={`${styles["main-section"]} ${styles["go-main"]}`} onClick={goDetailReserved}>
-        <p className={`${styles["main-text"]} ${styles["go-main-text"]}`}>예약내역 보러가기</p>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default WelfarePayCompl;

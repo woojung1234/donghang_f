@@ -1,107 +1,190 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styles from 'welfare/css/WelfareCheckPW.module.css'; // CSS 모듈 import
-import Header from 'header/Header.js';
-import { useLocation, useNavigate } from 'react-router-dom';
+// 파일: src/welfare/component/WelfareCheckPW.js
+// 카드 ID 기반을 사용자 ID 기반으로 변경 (API 엔드포인트는 유지)
+
+import Header from 'header/Header';
 import { call } from 'login/service/ApiService';
-import { useSpecHook } from './WelfareInputTotal';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import 'welfare/css/WelfareCheckPW.module.css';
 
-function WelfareCheckPW() {
-    const [error, serError] = useState('');
-    const navigate = useNavigate();
+function WelfareCheckPW(props) {
     const location = useLocation();
-    const cardId = location.state.value;
-    const { userSpec } = useSpecHook();
+    const navi = useNavigate();
     
-
-    const gopayComplete = () => {
-        if (password.length === 6) {
-            call('/api/v1/users/payment',"POST",{userPaymentPassword:password}).then((response)=>{
-                call('/api/v1/welfare-book/reserve', 'POST', userSpec).then((response)=>{
-                    call('/api/v1/card-history', 'POST',{
-                            cardHistoryAmount: userSpec.welfareBookTotalPrice,
-                            cardHistoryShopname: "똑똑 돌봄 서비스",
-                            cardCategoryNo: 8,
-                            cardId: cardId,
-                        }).then((response)=> {    
-                        navigate('/welfare-input/paycomplete');
-                    }).catch((error)=>{
-                        serError("카드내역 생성에 실패했습니다");
-                    });
-                }).catch((error)=>{
-                    serError("예약에 실패했습니다");
-                });
-            }).catch((error)=>{
-                serError("비밀번호가 틀립니다.");
-            });
-           
-        }
-    }
-
-    const [password, setPassword] = useState("");
-    const inputRef = useRef(null);
+    // 카드 ID 대신 사용자 ID 사용
+    const userId = location.state?.value;
+    
+    const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [attempts, setAttempts] = useState(0);
+    const maxAttempts = 5;
 
     useEffect(() => {
-        // 페이지 로드 시 input에 자동 포커스 설정
-        if (inputRef.current) {
-            inputRef.current.focus();
+        // 사용자 ID가 없으면 이전 페이지로 리다이렉트
+        if (!userId) {
+            setErrorMsg('결제 정보가 없습니다.');
+            setTimeout(() => {
+                navi('/welfare-pay');
+            }, 2000);
         }
-    }, []);
+    }, [userId, navi]);
 
-    const handleCircleClick = () => {
-        inputRef.current.focus(); // 클릭 시 input에 포커스
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        // 숫자만 입력 가능하도록 제한
+        if (/^\d*$/.test(value) && value.length <= 6) {
+            setPassword(value);
+            setErrorMsg(''); // 입력 시 에러 메시지 클리어
+        }
     };
 
-    const handleChange = (e) => {
-        let value = e.target.value.slice(0, 6);  // 최대 6자리 숫자
-
-        // Backspace 키를 눌렀을 때
-        if (e.nativeEvent.inputType === "deleteContentBackward") {
-            value = password.slice(0, -1);
+    const handleSubmit = () => {
+        if (!password) {
+            setErrorMsg('결제 비밀번호를 입력해주세요.');
+            return;
         }
 
-        setPassword(value);
+        if (password.length < 4) {
+            setErrorMsg('비밀번호는 최소 4자리 이상 입력해주세요.');
+            return;
+        }
+
+        if (attempts >= maxAttempts) {
+            setErrorMsg('비밀번호 입력 횟수를 초과했습니다.');
+            return;
+        }
+
+        setIsLoading(true);
+        setErrorMsg('');
+
+        // 기존 결제 비밀번호 확인 API 사용 (사용자 ID 기반으로 변경)
+        call('/api/v1/users/payment/verify', 'POST', {
+            userId: userId,  // 카드 ID 대신 사용자 ID 사용
+            password: password
+        })
+        .then((response) => {
+            if (response.success || response.result) {
+                // 비밀번호 확인 성공 - 결제 완료 페이지로 이동
+                navi('/welfare-pay-compl', { 
+                    state: { 
+                        value: userId,
+                        paymentInfo: {
+                            method: '간편결제',
+                            time: new Date().toLocaleString()
+                        }
+                    } 
+                });
+            } else {
+                setAttempts(prev => prev + 1);
+                const remainingAttempts = maxAttempts - attempts - 1;
+                
+                if (remainingAttempts > 0) {
+                    setErrorMsg(`비밀번호가 일치하지 않습니다. (${remainingAttempts}회 남음)`);
+                } else {
+                    setErrorMsg('비밀번호 입력 횟수를 초과했습니다.');
+                }
+                setPassword('');
+            }
+            setIsLoading(false);
+        })
+        .catch((error) => {
+            console.error('비밀번호 확인 오류:', error);
+            setErrorMsg('결제 처리 중 오류가 발생했습니다.');
+            setIsLoading(false);
+        });
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit();
+        }
+    };
+
+    const handleForgotPassword = () => {
+        // 비밀번호 재설정 페이지로 이동
+        navi('/welfare-input/welfare-set-pw', { 
+            state: { 
+                value: userId,
+                isReset: true 
+            } 
+        });
     };
 
     return (
-        <div className={styles.container}>
-            <Header />
+        <div className='welfare-check-pw-container'>
+            <Header style={{ position: 'relative', zIndex: 5 }}/>
 
-            <div className={styles["main-container"]}>
-                <div className={styles["pay-container"]}>
-                    <p className={styles.infomation}>결제 비밀번호를 입력하세요</p>
+            <div className="check-pw-content">
+                <div className="pw-header">
+                    <h2>결제 비밀번호 입력</h2>
+                    <p>안전한 결제를 위해 비밀번호를 입력해주세요</p>
                 </div>
 
-                <div className={styles["password-container"]} onClick={handleCircleClick}>
-                    <div className={styles["password-section"]}>
-                        {[1, 2, 3, 4, 5, 6].map((index) => (
-                            <div
-                                key={index}
-                                className={password.length >= index ? styles.bluecircle : styles.graycircle}
-                            />
+                <div className="pw-input-section">
+                    <div className="pw-display">
+                        {[...Array(6)].map((_, index) => (
+                            <div 
+                                key={index} 
+                                className={`pw-dot ${index < password.length ? 'filled' : ''}`}
+                            >
+                                {index < password.length ? '●' : '○'}
+                            </div>
                         ))}
                     </div>
                     
-                    {/* 비번 틀리면 css에서 나오게 하기!! */}
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        onKeyPress={handleKeyPress}
+                        placeholder="결제 비밀번호 입력"
+                        className="pw-input"
+                        maxLength="6"
+                        autoFocus
+                        disabled={isLoading || attempts >= maxAttempts}
+                    />
                 </div>
-                <p className={styles['incorrect-message']}>{error}</p> 
-                {/* 숨겨진 input 요소 */}
-                <input
-                    ref={inputRef}
-                    type="number"
-                    value={password}
-                    onChange={handleChange}
-                    className={styles["hidden-input"]}
-                />
 
-                <div
-                    className={styles["go-pay"]}
-                    onClick={password.length === 6 ? gopayComplete : null}  // 6자리일 때만 클릭 가능
-                >
-                    <p className={styles["go-pay-text"]}
-                    style={{
-                        backgroundColor: password.length === 6 ? '#80BAFF' : 'rgba(128,186,255,0.5)'
-                    }}>다음</p>
+                {errorMsg && (
+                    <div className="error-message">
+                        <span className="error-icon">⚠️</span>
+                        <span>{errorMsg}</span>
+                    </div>
+                )}
+
+                <div className="pw-info">
+                    <p>• 결제 비밀번호는 4-6자리 숫자입니다</p>
+                    <p>• 보안을 위해 {maxAttempts}회까지만 입력 가능합니다</p>
                 </div>
+
+                <div className="pw-actions">
+                    <button 
+                        className="forgot-pw-btn"
+                        onClick={handleForgotPassword}
+                        disabled={isLoading}
+                    >
+                        비밀번호를 잊으셨나요?
+                    </button>
+                </div>
+            </div>
+
+            <div className="pw-submit-section">
+                <button 
+                    className="cancel-btn"
+                    onClick={() => navi('/welfare-pay')}
+                    disabled={isLoading}
+                >
+                    취소
+                </button>
+                
+                <button 
+                    className={`submit-btn ${(!password || isLoading || attempts >= maxAttempts) ? 'disabled' : ''}`}
+                    onClick={handleSubmit}
+                    disabled={!password || isLoading || attempts >= maxAttempts}
+                >
+                    {isLoading ? '확인 중...' : '결제하기'}
+                </button>
             </div>
         </div>
     );

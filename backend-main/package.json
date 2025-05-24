@@ -1,7 +1,7 @@
 {
-  "name": "knockknock-backend",
+  "name": "donghang-backend",
   "version": "1.0.0",
-  "description": "똑똑 애플리케이션 Node.js 백엔드 서버",
+  "description": "donghang Node.js 백엔드 서버",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -9,7 +9,8 @@
     "test": "jest",
     "lint": "eslint src/",
     "seed": "node src/utils/seed-postgres.js",
-    "seed-sqlite": "node src/utils/seed.js"
+    "seed-sqlite": "node src/utils/seed.js",
+    "seed-donghang": "node src/utils/seed-donghang.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -40,7 +41,7 @@
   "keywords": [
     "nodejs",
     "express",
-    "knockknock",
+    "donghang",
     "api"
   ],
   "author": "Team",

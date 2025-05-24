@@ -1,27 +1,24 @@
 // import { CommonContext } from 'App3'; // 제거된 컨텍스트
 import Header from 'header/Header';
-import React, { /* useContext, */ useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MyBasicInfo from './component/MyBasicInfo';
 import MyExtraInfo from './component/MyExtraInfo';
 import "mypage/MyPage.css"
 import DisconnectionModal from './component/modal/DisconnectionModal';
 import { call } from 'login/service/ApiService';
 import { useNavigate } from 'react-router-dom';
+import { CommonContext } from '../App';
 // import MyMatchingInfo from './component/MyMatchingInfo'; // 제거된 매칭 기능
 
 
 
 function MyPage(props) {
 
-    // const{loginUser,setLoginUser} = useContext(CommonContext); // 제거된 컨텍스트
+    const { setLoginUser } = useContext(CommonContext); // 컨텍스트 사용
     const loginUserType = localStorage.getItem("loginUser");
     const [userInfo, setUserInfo] = useState({});
     const [error, setError] = useState(null);
     const navi = useNavigate();
-
-    // useEffect(() => {
-    //     setLoginUser(loginUserType);
-    // }, [loginUserType, setLoginUser]); // 제거된 기능
 
     useEffect(() => {
         call('/api/v1/users', 'GET', null)
@@ -32,14 +29,32 @@ function MyPage(props) {
             });
     }, []);
 
-    const handleLogoutClick = ()=>{
-        call('/api/v1/auth/logout',"POST",null)
-        .then(()=>{
-            navi("/loginid");
+    const handleLogoutClick = () => {
+        call('/api/v1/auth/logout', "POST", null)
+        .then(() => {
+            // 로컬 스토리지에서 모든 인증 정보 삭제
             localStorage.removeItem('ACCESS_TOKEN');  
-            // localStorage.removeItem('loginUser'); // 생체인증때문에 지웠습니다
+            localStorage.removeItem('loginUser');
+            localStorage.removeItem('userNo');
+            
+            // Context 상태 초기화
+            setLoginUser({});
+            
+            console.log("로그아웃 성공");
+            
+            // 로그인 페이지로 리다이렉트
+            navi("/loginid");
         })
-        .catch(()=>console.log("로그아웃 실패"));
+        .catch((error) => {
+            console.log("로그아웃 실패", error);
+            
+            // 오류가 발생해도 로컬 정보는 삭제하고 로그인 페이지로 이동
+            localStorage.removeItem('ACCESS_TOKEN');  
+            localStorage.removeItem('loginUser');
+            localStorage.removeItem('userNo');
+            setLoginUser({});
+            navi("/loginid");
+        });
     }
 
     return (

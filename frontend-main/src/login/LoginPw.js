@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import LoginBtn from './component/button/LoginBtn';
 import LoginHeader from './component/header/LoginHeader';
 import { call } from './service/ApiService';
 import { useNavigate } from 'react-router-dom';
+import { CommonContext } from '../App';
 
 function LoginPw(props) {
     const [pw,setPw] =useState("");
@@ -10,6 +11,7 @@ function LoginPw(props) {
     const loginUserNo = localStorage.getItem("userNo");
     const [errorMessage, setErrorMessage] = useState("");
     const navi = useNavigate();
+    const { setLoginUser } = useContext(CommonContext);
     const isButtonDisabled = pw.length < 6;
 
     useEffect(() => {
@@ -21,25 +23,6 @@ function LoginPw(props) {
         const value = e.target.value.slice(0, 6);
         setPw(value);
     };
-   
-    const handleMatchCheck = () => {
-        call("/api/v1/match", "GET", null)
-            .then((response) => {
-                if (response.matchStatus === "ACCEPT") {
-                    navi('/home');
-                } else {
-                    navi('/match');
-                }
-            })
-            .catch((error) => {
-                if (error.matchStatus === null) {
-                    navi('/match');
-                } else {
-                    console.log(error);
-                    alert("실패");
-                }
-            });
-    };
 
     const handleSubmit = (event) => {
         event.preventDefault(); // default 이벤트 취소
@@ -48,17 +31,19 @@ function LoginPw(props) {
         call('/api/v1/auth/login/simple', "POST",
             { userNo: loginUserNo, userSimplePassword: userSimplePassword }
         ).then((response) => {
-            console.log(response);
+            console.log("간편 로그인 성공:", response);
             localStorage.setItem("ACCESS_TOKEN", response.accessToken);
-            localStorage.setItem("loginUser", response.userType);
+            localStorage.setItem("loginUser", "USER"); // Always set to USER
             localStorage.setItem("userNo", response.userNo);
 
+            // Context 상태 업데이트
+            setLoginUser({
+                userType: "USER",
+                userNo: response.userNo
+            });
 
-            if (response.userType === "PROTECTOR") {
-                handleMatchCheck();
-            } else {
-                navi("/home");
-            }
+            // 모든 사용자는 홈으로 리다이렉트
+            navi("/home");
 
         }).catch((error) => {
             console.error("간편비밀번호로그인 실패", error);

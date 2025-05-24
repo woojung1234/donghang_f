@@ -28,7 +28,8 @@ function VerifyCode(props) {
         call(`/api/v1/users/validation/number`,"POST",{validationNum:userInfo.validation,phone:userInfo.userPhone})
         .then((response)=>{
             if(response.result === true){
-                navi("/signup/rolecheck")
+                // RoleCheck 단계를 건너뛰고 QuickLoginSetup으로 바로 이동
+                navi("/signup/quickloginsetup")
             }else{
                 setErrorMessage(response.message);
             }

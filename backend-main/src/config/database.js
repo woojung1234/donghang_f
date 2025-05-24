@@ -3,7 +3,7 @@ const path = require('path');
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, '../../knockknock.db'),
+  storage: path.join(__dirname, '../../donghang.db'),
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {
     max: 5,

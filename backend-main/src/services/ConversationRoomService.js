@@ -11,30 +11,30 @@ class ConversationRoomService {
       const rooms = await ConversationRoom.findAll({
         where: {
           userNo,
-          conversationRoomIsActive: true
+          isActive: true
         },
-        order: [['conversationRoomUpdatedAt', 'DESC']],
+        order: [['updatedAt', 'DESC']],
         include: [
           {
             model: ConversationLog,
             as: 'lastMessage',
             required: false,
             limit: 1,
-            order: [['conversationLogCreatedAt', 'DESC']],
-            attributes: ['conversationLogMessage', 'conversationLogCreatedAt', 'conversationLogSender']
+            order: [['createdAt', 'DESC']],
+            attributes: ['message', 'createdAt', 'sender']
           }
         ]
       });
 
       return rooms.map(room => ({
-        conversationRoomNo: room.conversationRoomNo,
-        conversationRoomTitle: room.conversationRoomTitle,
-        conversationRoomCreatedAt: room.conversationRoomCreatedAt,
-        conversationRoomUpdatedAt: room.conversationRoomUpdatedAt,
+        conversationRoomNo: room.roomNo,
+        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomCreatedAt: room.createdAt,
+        conversationRoomUpdatedAt: room.updatedAt,
         lastMessage: room.lastMessage ? {
-          message: room.lastMessage.conversationLogMessage,
-          sender: room.lastMessage.conversationLogSender,
-          createdAt: room.lastMessage.conversationLogCreatedAt
+          message: room.lastMessage.message,
+          sender: room.lastMessage.sender,
+          createdAt: room.lastMessage.createdAt
         } : null
       }));
 
@@ -47,7 +47,7 @@ class ConversationRoomService {
   /**
    * 새 대화방 생성
    */
-  static async createRoom({ title, userNo }) {
+  static async createRoom({ roomName, userNo }) {
     try {
       // 사용자 존재 확인
       const user = await User.findOne({
@@ -58,21 +58,22 @@ class ConversationRoomService {
         throw new Error('사용자를 찾을 수 없습니다.');
       }
 
+      // roomName 필드 사용
       const room = await ConversationRoom.create({
-        conversationRoomTitle: title,
+        roomName, // 올바른 필드명 사용
         userNo,
-        conversationRoomCreatedAt: new Date(),
-        conversationRoomUpdatedAt: new Date(),
-        conversationRoomIsActive: true
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isActive: true
       });
 
-      console.log(`🏠 New conversation room created - UserNo: ${userNo}, RoomNo: ${room.conversationRoomNo}, Title: ${title}`);
+      console.log(`🏠 New conversation room created - UserNo: ${userNo}, RoomNo: ${room.roomNo}, Title: ${roomName}`);
 
       return {
-        conversationRoomNo: room.conversationRoomNo,
-        conversationRoomTitle: room.conversationRoomTitle,
-        conversationRoomCreatedAt: room.conversationRoomCreatedAt,
-        conversationRoomUpdatedAt: room.conversationRoomUpdatedAt
+        conversationRoomNo: room.roomNo,
+        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomCreatedAt: room.createdAt,
+        conversationRoomUpdatedAt: room.updatedAt
       };
 
     } catch (error) {
@@ -84,13 +85,13 @@ class ConversationRoomService {
   /**
    * 대화방 정보 수정
    */
-  static async updateRoom(conversationRoomNo, updateData, userNo) {
+  static async updateRoom(roomNo, updateData, userNo) {
     try {
       const room = await ConversationRoom.findOne({
         where: {
-          conversationRoomNo,
+          roomNo,
           userNo,
-          conversationRoomIsActive: true
+          isActive: true
         }
       });
 
@@ -100,16 +101,16 @@ class ConversationRoomService {
 
       await room.update({
         ...updateData,
-        conversationRoomUpdatedAt: new Date()
+        updatedAt: new Date()
       });
 
-      console.log(`🏠 Conversation room updated - UserNo: ${userNo}, RoomNo: ${conversationRoomNo}`);
+      console.log(`🏠 Conversation room updated - UserNo: ${userNo}, RoomNo: ${roomNo}`);
 
       return {
-        conversationRoomNo: room.conversationRoomNo,
-        conversationRoomTitle: room.conversationRoomTitle,
-        conversationRoomCreatedAt: room.conversationRoomCreatedAt,
-        conversationRoomUpdatedAt: room.conversationRoomUpdatedAt
+        conversationRoomNo: room.roomNo,
+        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomCreatedAt: room.createdAt,
+        conversationRoomUpdatedAt: room.updatedAt
       };
 
     } catch (error) {
@@ -121,13 +122,13 @@ class ConversationRoomService {
   /**
    * 대화방 삭제 (소프트 삭제)
    */
-  static async deleteRoom(conversationRoomNo, userNo) {
+  static async deleteRoom(roomNo, userNo) {
     try {
       const room = await ConversationRoom.findOne({
         where: {
-          conversationRoomNo,
+          roomNo,
           userNo,
-          conversationRoomIsActive: true
+          isActive: true
         }
       });
 
@@ -136,11 +137,11 @@ class ConversationRoomService {
       }
 
       await room.update({
-        conversationRoomIsActive: false,
-        conversationRoomUpdatedAt: new Date()
+        isActive: false,
+        updatedAt: new Date()
       });
 
-      console.log(`🗑️ Conversation room deleted - UserNo: ${userNo}, RoomNo: ${conversationRoomNo}`);
+      console.log(`🗑️ Conversation room deleted - UserNo: ${userNo}, RoomNo: ${roomNo}`);
 
       return true;
 
@@ -157,9 +158,9 @@ class ConversationRoomService {
     try {
       const rooms = await ConversationRoom.findAll({
         where: {
-          conversationRoomIsActive: true
+          isActive: true
         },
-        order: [['conversationRoomUpdatedAt', 'DESC']],
+        order: [['updatedAt', 'DESC']],
         include: [
           {
             model: User,
@@ -170,10 +171,10 @@ class ConversationRoomService {
       });
 
       return rooms.map(room => ({
-        conversationRoomNo: room.conversationRoomNo,
-        conversationRoomTitle: room.conversationRoomTitle,
-        conversationRoomCreatedAt: room.conversationRoomCreatedAt,
-        conversationRoomUpdatedAt: room.conversationRoomUpdatedAt,
+        conversationRoomNo: room.roomNo,
+        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomCreatedAt: room.createdAt,
+        conversationRoomUpdatedAt: room.updatedAt,
         user: room.user ? {
           userNo: room.user.userNo,
           userId: room.user.userId,
@@ -202,16 +203,16 @@ class ConversationRoomService {
             as: 'conversationRoom',
             where: { 
               userNo,
-              conversationRoomIsActive: true 
+              isActive: true 
             },
             required: true
           }
         ],
-        order: [['conversationLogCreatedAt', 'DESC']],
+        order: [['createdAt', 'DESC']],
         limit: 1
       });
 
-      return lastLog ? lastLog.conversationLogCreatedAt : null;
+      return lastLog ? lastLog.createdAt : null;
 
     } catch (error) {
       console.error('❌ ConversationRoomService.getLastConversationTime Error:', error);

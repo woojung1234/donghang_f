@@ -9,7 +9,6 @@ const Welfare = require('./Welfare');
 const WelfareBook = require('./WelfareBook');
 const Notification = require('./Notification');
 
-// 모델 관계 설정 (Java Entity의 관계를 그대로 구현)
 
 // User와 ConversationRoom 관계 (1:N)
 User.hasMany(ConversationRoom, {
