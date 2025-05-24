@@ -24,7 +24,9 @@ class ConversationResponse(BaseModel):
     redirectionResult: Optional[Dict[str, Any]] = None
     reservationResult: Optional[Dict[str, Any]] = None
 
+# APIRouter 인스턴스 생성
 router = APIRouter(
+    prefix="",  # 접두사 없음
     tags=["Chatbot"]
 )
 
@@ -115,6 +117,7 @@ async def chatbot_response(contents: str = Query(...), request: Request):
         logger.info(f"챗봇 API 호출 - 클라이언트: {client_host}, 입력: {contents}")
         
         response = get_chatbot_response(contents)
+        logger.info(f"챗봇 응답: {response[:100]}...")
         return {"response": response}
     except Exception as e:
         logger.error(f"챗봇 응답 오류: {str(e)}", exc_info=True)
