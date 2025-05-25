@@ -114,6 +114,11 @@ function VoiceChat(props) {
       endRecord();
   };
 
+  // 소비내역 페이지로 이동하는 함수
+  const goToConsumptionPage = () => {
+    navi("/consumption");
+  };
+
   return (
     <div className="voicechat-section">
       <VoiceHeader />
@@ -126,6 +131,11 @@ function VoiceChat(props) {
       </button>
       <button className="chat-startBtn" onClick={handleStartChat}>
         {isStart ? "중지" : "똑똑!"}
+      </button>
+
+      {/* 소비내역 보기 버튼 */}
+      <button className="consumption-btn" onClick={goToConsumptionPage}>
+        💰 소비내역 보기
       </button>
 
       {/* Modal 컴포넌트 */}

@@ -10,7 +10,9 @@
     "lint": "eslint src/",
     "seed": "node src/utils/seed-postgres.js",
     "seed-sqlite": "node src/utils/seed.js",
-    "seed-donghang": "node src/utils/seed-donghang.js"
+    "seed-donghang": "node src/utils/seed-donghang.js",
+    "init-welfare": "node src/utils/init-welfare-db.js",
+    "add-sample-welfare": "node src/utils/add-sample-welfare.js"
   },
   "dependencies": {
     "axios": "^1.6.0",

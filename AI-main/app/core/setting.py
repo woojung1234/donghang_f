@@ -8,6 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
+# .env 파일 로드
 load_dotenv()
 
 class APIKeyValidationError(Exception):
@@ -24,7 +25,7 @@ class Settings(BaseSettings):
     
     # 모델 설정 (선택적)
     default_model: str = os.getenv("DEFAULT_MODEL", "gpt-3.5-turbo")
-    system_prompt: str = os.getenv("SYSTEM_PROMPT", "You are a helpful assistant.")
+    system_prompt: str = os.getenv("SYSTEM_PROMPT", "당신은 '똑똑'이라는 이름의 노인분들을 위한 친절한 AI 도우미입니다. 음성으로 소비내역을 말하면 자동으로 가계부에 기록해드리고, 간단명료하게 대답해주세요.")
     
     # 외부 서비스 (선택적)
     backend_api_url: str = os.getenv("BACKEND_API_URL", "http://localhost:9090/api/v1")
@@ -40,6 +41,17 @@ class Settings(BaseSettings):
         env_file_encoding='utf-8',
         extra="ignore"  # 추가 필드 허용
     )
+    
+    def is_valid_openai_key(self) -> bool:
+        """OpenAI API 키가 유효한지 확인"""
+        if not self.openai_api_key or self.openai_api_key == "dummy-key":
+            return False
+        
+        # OpenAI API 키 형식 확인 (sk-로 시작하는 51자 길이)
+        if self.openai_api_key.startswith("sk-") and len(self.openai_api_key) >= 48:
+            return True
+        
+        return False
 
 # 설정 로드 시도
 try:
@@ -48,17 +60,24 @@ try:
     # 로깅
     logger.info("✅ Settings loaded successfully.")
     logger.info(f"💻 Server: {settings.host}:{settings.port}")
-    logger.info(f"🔄 Offline mode: {'Enabled' if settings.offline_mode else 'Disabled'}")
     
-    # API 키 로깅 (보안상의 이유로 일부만 표시)
-    if not settings.offline_mode and settings.openai_api_key != "dummy-key":
-        masked_key = settings.openai_api_key[:4] + "*" * (len(settings.openai_api_key) - 8) + settings.openai_api_key[-4:]
+    # API 키 유효성 검사
+    api_key_valid = settings.is_valid_openai_key()
+    
+    # 오프라인 모드 결정
+    if settings.offline_mode:
+        logger.info("🔄 Offline mode: Enabled (forced)")
+        logger.info("🔑 API Key: Not required (offline mode)")
+    elif api_key_valid:
+        logger.info("🔄 Offline mode: Disabled")
+        masked_key = settings.openai_api_key[:7] + "*" * (len(settings.openai_api_key) - 11) + settings.openai_api_key[-4:]
         logger.info(f"🔑 API Key: {masked_key}")
     else:
-        if settings.offline_mode:
-            logger.info("🔑 API Key: Not required (offline mode)")
-        else:
-            logger.warning("⚠️ API Key: Not set or using dummy key")
+        logger.warning("⚠️ Invalid or missing OpenAI API key, enabling offline mode")
+        logger.info("🔄 Offline mode: Enabled (auto)")
+        logger.info("🔑 API Key: Invalid - using offline responses")
+        # 자동으로 오프라인 모드로 설정
+        settings.offline_mode = True
             
 except ValidationError as e:
     logger.error(f"❌ Error loading settings: {str(e)}")
