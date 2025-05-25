@@ -109,15 +109,12 @@ router.get('/', async (req, res) => {
     }
     
     // API 키가 있는 경우 실제 공공데이터 호출
-    const apiUrl = 'https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
+    // 직접 URL에 API 키를 포함시켜서 인코딩 문제를 방지
+    const apiUrl = `https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d?serviceKey=${PUBLIC_DATA_API_KEY}&page=${page}&perPage=${limit}&returnType=JSON`;
+    
+    console.log('API URL 구성:', apiUrl.substring(0, 100) + '...');
     
     const response = await axios.get(apiUrl, {
-      params: {
-        serviceKey: PUBLIC_DATA_API_KEY,
-        page: parseInt(page),
-        perPage: parseInt(limit),
-        returnType: 'JSON'
-      },
       timeout: 10000,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -252,8 +249,18 @@ router.get('/search', async (req, res) => {
       });
     }
     
-    // 실제 API 검색 로직...
-    // (위의 기존 코드와 동일)
+    // 실제 API 검색 로직...\
+    // 직접 URL에 API 키를 포함시켜서 인코딩 문제를 방지
+    const apiUrl = `https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d?serviceKey=${PUBLIC_DATA_API_KEY}&page=${page}&perPage=${limit}&returnType=JSON`;
+    
+    const response = await axios.get(apiUrl, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+
+    // 여기에 검색 로직 구현...
     
   } catch (error) {
     console.error('❌ 복지 서비스 검색 오류:', error.message);
@@ -282,16 +289,14 @@ router.get('/test-connection', async (req, res) => {
       });
     }
     
-    const apiUrl = 'https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d';
+    // 직접 URL에 API 키를 포함시켜서 인코딩 문제를 방지
+    const apiUrl = `https://api.odcloud.kr/api/15083323/v1/uddi:48d6c839-ce02-4546-901e-e9ad9bae8e0d?serviceKey=${PUBLIC_DATA_API_KEY}&page=1&perPage=5&returnType=JSON`;
     
     const response = await axios.get(apiUrl, {
-      params: {
-        serviceKey: PUBLIC_DATA_API_KEY,
-        page: 1,
-        perPage: 5,
-        returnType: 'JSON'
-      },
-      timeout: 10000
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
     });
     
     console.log('✅ API 연결 테스트 성공!');
