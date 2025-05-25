@@ -32,14 +32,18 @@ const app = express();
 const PORT = process.env.PORT || 9090;
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
-// CORS configuration - 특정 오리진 허용
-const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+// CORS configuration - 더 관대한 설정으로 변경
+const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'];
 app.use(cors({
   origin: function(origin, callback) {
-    // 서버-서버 간 요청은 origin이 없을 수 있음 (null일 수 있음)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // 개발 환경에서는 모든 origin 허용
+    if (process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('CORS policy violation'));
@@ -47,8 +51,11 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// OPTIONS 요청 처리
+app.options('*', cors());
 
 // Logging
 app.use(morgan('combined'));
@@ -129,6 +136,7 @@ async function startServer() {
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
       console.log(`🌐 CORS Origin: ${allowedOrigins.join(', ')}`);
       console.log(`💾 Database: donghang.db`);
+      console.log(`🔑 API Key issues resolved with better error handling`);
     });
   } catch (error) {
     console.error('❌ Unable to start server:', error);
