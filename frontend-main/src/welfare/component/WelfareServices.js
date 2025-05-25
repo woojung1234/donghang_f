@@ -24,11 +24,12 @@ function WelfareServices() {
         if (response && response.data) {
           console.log('복지 서비스 데이터 받음:', response.data);
           setServices(response.data);
+          setLoading(false);
         } else {
           console.log('데이터 없음 또는 형식 불일치:', response);
-          setServices([]);
+          setError('데이터 형식이 예상과 다릅니다.');
+          setLoading(false);
         }
-        setLoading(false);
       } catch (err) {
         console.error('복지 서비스 데이터를 가져오는 중 오류가 발생했습니다:', err);
         
@@ -48,43 +49,6 @@ function WelfareServices() {
         
         setError(`복지 서비스 데이터를 가져오는 중 오류가 발생했습니다: ${err.message}`);
         setLoading(false);
-        
-        // 임시 데이터로 테스트 (실제 API 연동 전 테스트용)
-        setServices([
-          {
-            서비스아이디: 'WF0001',
-            서비스명: '노인 돌봄 서비스',
-            서비스요약: '독거노인 및 노인부부가구를 위한 돌봄 서비스를 제공합니다.',
-            소관부처명: '보건복지부',
-            소관조직명: '노인정책과',
-            대표문의: '129',
-            지원대상: '65세 이상 노인',
-            신청방법: '주민센터 방문 신청',
-            서비스URL: 'https://www.bokjiro.go.kr'
-          },
-          {
-            서비스아이디: 'WF0002',
-            서비스명: '노인 건강 검진',
-            서비스요약: '노인을 위한 무료 건강 검진 서비스를 제공합니다.',
-            소관부처명: '보건복지부',
-            소관조직명: '건강정책과',
-            대표문의: '1577-1000',
-            지원대상: '65세 이상 노인',
-            신청방법: '건강보험공단 홈페이지 또는 방문 신청',
-            서비스URL: 'https://www.nhis.or.kr'
-          },
-          {
-            서비스아이디: 'WF0003',
-            서비스명: '기초연금',
-            서비스요약: '노인의 안정적인 생활을 위한 기초연금을 지급합니다.',
-            소관부처명: '보건복지부',
-            소관조직명: '국민연금공단',
-            대표문의: '1355',
-            지원대상: '만 65세 이상, 소득인정액 기준 하위 70%',
-            신청방법: '국민연금공단 또는 주민센터 방문 신청',
-            서비스URL: 'https://www.nps.or.kr'
-          }
-        ]);
       }
     };
 
@@ -97,6 +61,13 @@ function WelfareServices() {
     } else {
       alert('연결된 URL이 없습니다.');
     }
+  };
+
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    // 페이지를 다시 로드하여 API 호출 재시도
+    window.location.reload();
   };
 
   return (
@@ -112,35 +83,35 @@ function WelfareServices() {
         ) : error ? (
           <div className={styles.errorContainer}>
             <p>{error}</p>
-            <p className={styles.errorNote}>
-              * 현재 임시 데이터를 표시하고 있습니다. API 연동 문제가 해결되면 실제 데이터로 대체됩니다.
-            </p>
+            <button className={styles.retryButton} onClick={handleRetry}>다시 시도</button>
           </div>
         ) : services.length > 0 ? (
           <div className={styles.servicesContainer}>
             {services.map((service, index) => (
               <div 
-                key={service.서비스아이디 || index} 
+                key={service.serviceId || index} 
                 className={styles.serviceCard}
-                onClick={() => handleServiceClick(service.서비스URL)}
+                onClick={() => handleServiceClick(service.serviceUrl || service.website)}
               >
-                <h2 className={styles.serviceName}>{service.서비스명}</h2>
-                <p className={styles.serviceProvider}>{service.소관부처명} {service.소관조직명 ? `(${service.소관조직명})` : ''}</p>
-                <p className={styles.serviceDescription}>{service.서비스요약}</p>
+                <h2 className={styles.serviceName}>{service.serviceName}</h2>
+                <p className={styles.serviceProvider}>
+                  {service.ministryName} {service.organizationName ? `(${service.organizationName})` : ''}
+                </p>
+                <p className={styles.serviceDescription}>{service.serviceSummary}</p>
                 <div className={styles.serviceDetails}>
-                  {service.지원대상 && (
+                  {service.targetAudience && (
                     <p className={styles.serviceTarget}>
-                      <span className={styles.label}>지원대상:</span> {service.지원대상}
+                      <span className={styles.label}>지원대상:</span> {service.targetAudience}
                     </p>
                   )}
-                  {service.신청방법 && (
+                  {service.applicationMethod && (
                     <p className={styles.serviceApplication}>
-                      <span className={styles.label}>신청방법:</span> {service.신청방법}
+                      <span className={styles.label}>신청방법:</span> {service.applicationMethod}
                     </p>
                   )}
-                  {service.대표문의 && (
+                  {service.contactInfo && (
                     <p className={styles.serviceContact}>
-                      <span className={styles.label}>문의:</span> {service.대표문의}
+                      <span className={styles.label}>문의:</span> {service.contactInfo}
                     </p>
                   )}
                 </div>
@@ -151,6 +122,7 @@ function WelfareServices() {
         ) : (
           <div className={styles.noServicesContainer}>
             <p>이용 가능한 복지 서비스가 없습니다.</p>
+            <button className={styles.retryButton} onClick={handleRetry}>다시 시도</button>
           </div>
         )}
       </div>
