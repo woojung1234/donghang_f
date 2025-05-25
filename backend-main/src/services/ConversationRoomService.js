@@ -13,27 +13,27 @@ class ConversationRoomService {
           userNo,
           isActive: true
         },
-        order: [['updatedAt', 'DESC']],
+        order: [['updated_at', 'DESC']],
         include: [
           {
             model: ConversationLog,
             as: 'lastMessage',
             required: false,
             limit: 1,
-            order: [['createdAt', 'DESC']],
-            attributes: ['message', 'createdAt', 'sender']
+            order: [['created_at', 'DESC']],
+            attributes: ['message_content', 'created_at', 'message_type']
           }
         ]
       });
 
       return rooms.map(room => ({
         conversationRoomNo: room.roomNo,
-        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomTitle: room.roomName,
         conversationRoomCreatedAt: room.createdAt,
         conversationRoomUpdatedAt: room.updatedAt,
         lastMessage: room.lastMessage ? {
-          message: room.lastMessage.message,
-          sender: room.lastMessage.sender,
+          message: room.lastMessage.messageContent,
+          sender: room.lastMessage.messageType,
           createdAt: room.lastMessage.createdAt
         } : null
       }));
@@ -58,12 +58,9 @@ class ConversationRoomService {
         throw new Error('사용자를 찾을 수 없습니다.');
       }
 
-      // roomName 필드 사용
       const room = await ConversationRoom.create({
-        roomName, // 올바른 필드명 사용
+        roomName,
         userNo,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         isActive: true
       });
 
@@ -71,7 +68,7 @@ class ConversationRoomService {
 
       return {
         conversationRoomNo: room.roomNo,
-        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomTitle: room.roomName,
         conversationRoomCreatedAt: room.createdAt,
         conversationRoomUpdatedAt: room.updatedAt
       };
@@ -99,16 +96,13 @@ class ConversationRoomService {
         throw new Error('대화방을 찾을 수 없습니다.');
       }
 
-      await room.update({
-        ...updateData,
-        updatedAt: new Date()
-      });
+      await room.update(updateData);
 
       console.log(`🏠 Conversation room updated - UserNo: ${userNo}, RoomNo: ${roomNo}`);
 
       return {
         conversationRoomNo: room.roomNo,
-        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomTitle: room.roomName,
         conversationRoomCreatedAt: room.createdAt,
         conversationRoomUpdatedAt: room.updatedAt
       };
@@ -137,8 +131,7 @@ class ConversationRoomService {
       }
 
       await room.update({
-        isActive: false,
-        updatedAt: new Date()
+        isActive: false
       });
 
       console.log(`🗑️ Conversation room deleted - UserNo: ${userNo}, RoomNo: ${roomNo}`);
@@ -160,7 +153,7 @@ class ConversationRoomService {
         where: {
           isActive: true
         },
-        order: [['updatedAt', 'DESC']],
+        order: [['updated_at', 'DESC']],
         include: [
           {
             model: User,
@@ -172,7 +165,7 @@ class ConversationRoomService {
 
       return rooms.map(room => ({
         conversationRoomNo: room.roomNo,
-        conversationRoomTitle: room.roomName, // roomName 필드를 conversationRoomTitle로 변환
+        conversationRoomTitle: room.roomName,
         conversationRoomCreatedAt: room.createdAt,
         conversationRoomUpdatedAt: room.updatedAt,
         user: room.user ? {
@@ -194,29 +187,27 @@ class ConversationRoomService {
    */
   static async getLastConversationTime(userNo) {
     try {
-      const { Op } = require('sequelize');
+      const { sequelize } = require('../models');
       
-      const lastLog = await ConversationLog.findOne({
-        include: [
-          {
-            model: ConversationRoom,
-            as: 'conversationRoom',
-            where: { 
-              userNo,
-              isActive: true 
-            },
-            required: true
-          }
-        ],
-        order: [['createdAt', 'DESC']],
-        limit: 1
+      const results = await sequelize.query(`
+        SELECT cl.created_at
+        FROM conversation_logs cl
+        INNER JOIN conversation_rooms cr ON cl.conversation_room_no = cr.room_no
+        WHERE cr.user_no = ? AND cr.is_active = 1
+        ORDER BY cl.created_at DESC
+        LIMIT 1
+      `, {
+        replacements: [userNo],
+        type: sequelize.QueryTypes.SELECT
       });
 
-      return lastLog ? lastLog.createdAt : null;
+      // SQLite에서는 결과가 배열로 직접 반환됨
+      return results && results.length > 0 ? results[0].created_at : null;
 
     } catch (error) {
       console.error('❌ ConversationRoomService.getLastConversationTime Error:', error);
-      throw error;
+      // 오류가 발생해도 null 반환 (서비스 중단 방지)
+      return null;
     }
   }
 }

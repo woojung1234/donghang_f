@@ -206,6 +206,49 @@ class ConsumptionController {
     }
   }
 
+  // 음성 입력으로 소비 내역 생성 (간소화된 버전)
+  static async createVoiceConsumption(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: '입력 데이터가 올바르지 않습니다.',
+          errors: errors.array()
+        });
+      }
+
+      const userNo = req.user.userNo;
+      const {
+        merchantName = '일반가맹점',
+        amount,
+        category = '기타',
+        memo = '',
+        location = null
+      } = req.body;
+
+      const newConsumption = await Consumption.create({
+        userNo: userNo,
+        merchantName: merchantName,
+        amount: amount,
+        category: category,
+        paymentMethod: '현금', // 음성 입력은 기본적으로 현금으로 처리
+        transactionDate: new Date(),
+        location: location,
+        memo: memo,
+        riskLevel: 'LOW', // 음성 입력은 기본적으로 낮은 위험도
+        isAnomalous: false
+      });
+
+      res.status(201).json({
+        message: '음성으로 소비 내역이 등록되었습니다.',
+        consumption: newConsumption
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // 소비 리포트 조회
   static async getReport(req, res, next) {
     try {
@@ -374,6 +417,126 @@ class ConsumptionController {
           hourlyPattern: hourlyPattern,
           weeklyPattern: weeklyPattern,
           monthlyTrend: monthlyTrend
+        }
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // 노인분들을 위한 큰 그래프용 통계 데이터
+  static async getConsumptionStats(req, res, next) {
+    try {
+      const userNo = req.user.userNo;
+      const { period } = req.params; // 'daily', 'weekly', 'monthly'
+
+      let groupBy, dateFormat, days;
+      
+      switch (period) {
+        case 'daily':
+          groupBy = 'DATE';
+          dateFormat = 'YYYY-MM-DD';
+          days = 30; // 최근 30일
+          break;
+        case 'weekly':
+          groupBy = 'WEEK';
+          dateFormat = 'YYYY-"W"WW';
+          days = 84; // 최근 12주
+          break;
+        case 'monthly':
+          groupBy = 'MONTH';
+          dateFormat = 'YYYY-MM';
+          days = 365; // 최근 12개월
+          break;
+        default:
+          return res.status(400).json({
+            message: '올바르지 않은 기간입니다. daily, weekly, monthly 중 선택해주세요.'
+          });
+      }
+
+      const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+      // 기간별 소비 통계
+      const stats = await Consumption.findAll({
+        where: {
+          userNo: userNo,
+          transactionDate: {
+            [Op.gte]: startDate
+          }
+        },
+        attributes: [
+          [require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transactionDate')), 'period'],
+          [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
+          [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
+        ],
+        group: [require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transactionDate'))],
+        order: [[require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transactionDate')), 'ASC']]
+      });
+
+      // 카테고리별 통계 (같은 기간)
+      const categoryStats = await Consumption.findAll({
+        where: {
+          userNo: userNo,
+          transactionDate: {
+            [Op.gte]: startDate
+          }
+        },
+        attributes: [
+          'category',
+          [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
+          [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
+        ],
+        group: ['category'],
+        order: [[require('sequelize').fn('SUM', require('sequelize').col('amount')), 'DESC']]
+      });
+
+      // 총 통계
+      const totalStats = await Consumption.findOne({
+        where: {
+          userNo: userNo,
+          transactionDate: {
+            [Op.gte]: startDate
+          }
+        },
+        attributes: [
+          [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'totalCount'],
+          [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount'],
+          [require('sequelize').fn('MAX', require('sequelize').col('amount')), 'maxAmount'],
+          [require('sequelize').fn('MIN', require('sequelize').col('amount')), 'minAmount']
+        ]
+      });
+
+      res.status(200).json({
+        message: `${period} 소비 통계 조회 성공`,
+        period: period,
+        dateRange: {
+          start: startDate,
+          end: new Date()
+        },
+        stats: {
+          timeline: stats.map(item => ({
+            period: item.dataValues.period,
+            totalAmount: parseInt(item.dataValues.totalAmount) || 0,
+            count: parseInt(item.dataValues.count) || 0,
+            avgAmount: parseInt(item.dataValues.avgAmount) || 0
+          })),
+          categories: categoryStats.map(item => ({
+            category: item.dataValues.category,
+            totalAmount: parseInt(item.dataValues.totalAmount) || 0,
+            count: parseInt(item.dataValues.count) || 0,
+            avgAmount: parseInt(item.dataValues.avgAmount) || 0
+          })),
+          summary: {
+            totalAmount: parseInt(totalStats.dataValues.totalAmount) || 0,
+            totalCount: parseInt(totalStats.dataValues.totalCount) || 0,
+            avgAmount: parseInt(totalStats.dataValues.avgAmount) || 0,
+            maxAmount: parseInt(totalStats.dataValues.maxAmount) || 0,
+            minAmount: parseInt(totalStats.dataValues.minAmount) || 0
+          }
         }
       });
 

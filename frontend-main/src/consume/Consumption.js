@@ -1,5 +1,5 @@
 // 파일: src/consume/Consumption.js
-// 오류 수정: category, setCardDetail, cardDetail 변수 정의
+// 노인분들을 위한 가계부 기능 - AI챗봇 연동 및 큰 그래프
 
 import "consume/Consumption.css";
 import Header from 'header/Header';
@@ -9,12 +9,13 @@ import ConsumCard from "./component/ConsumCard";
 import ConsumDateModal from './component/ConsumDateModal';
 import ConsumDetailModal from './component/ConsumDetailModal';
 import ConsumList from './component/ConsumList';
-import { useLocation } from "react-router-dom";
+import ExpenseChart from './component/ExpenseChart';
+import { useLocation, useNavigate } from "react-router-dom";
 import info from "image/icon/info.png";
 
 function Consumption() {
     const location = useLocation();
-    // cardList 대신 사용자 정보로 변경하되 기존 구조 유지
+    const navigate = useNavigate();
     const userInfo = location.state?.value || {};
 
     const [isOpenDetail, setIsOpenDetail] = useState(false);
@@ -25,13 +26,13 @@ function Consumption() {
     const [isLoading, setIsLoading] = useState(true);
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [summaryData, setSummaryData] = useState(null);
-
-    // 음성 입력 관련 상태 추가
-    const [isRecording, setIsRecording] = useState(false);
-    const [recognition, setRecognition] = useState(null);
-
-    // 누락된 상태 변수들 추가
     const [cardDetail, setCardDetail] = useState({});
+    
+    // 새로운 상태 추가
+    const [chartData, setChartData] = useState(null);
+    const [chartPeriod, setChartPeriod] = useState('daily');
+    const [voiceRecognitionSupported, setVoiceRecognitionSupported] = useState(false);
+    const [error, setError] = useState(null);
 
     // 한국 시간으로 날짜를 반환하는 함수
     const getKSTDate = (date) => {
@@ -55,6 +56,7 @@ function Consumption() {
         setStartDate(start);
         setEndDate(end);
         fetchConsumptionHistory(start, end);
+        fetchChartData(chartPeriod);
     };
 
     const handleOpenDateModal = () => {
@@ -64,75 +66,59 @@ function Consumption() {
     const closeDetailModal = () => setIsOpenDetail(false);
     const closeDateModal = () => setIsOpenDate(false);
 
+    // 음성 채팅으로 이동하는 함수
+    const goToVoiceChat = () => {
+        navigate('/voicechat');
+    };
+
     useEffect(() => {
         document.body.classList.toggle("unscrollable", isOpenDetail || isOpenDate);
     }, [isOpenDetail, isOpenDate]);
 
-    // 기존 카드 내역 조회를 사용자 소비 내역 조회로 변경 (API 엔드포인트는 유지)
+    // 음성 인식 지원 확인
+    useEffect(() => {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            setVoiceRecognitionSupported(true);
+        }
+    }, []);
+
+    // 소비 내역 조회 - API 경로 수정
     const fetchConsumptionHistory = (start, end) => {
         setIsLoading(true);
+        setError(null);
         console.log("Fetching consumption history with dates:", start, end);
 
-        // 기존 API 엔드포인트 유지하되 파라미터에서 cardId 제거
-        call('/api/card-history', "GET", {
+        // 올바른 API 경로로 수정 (/api/v1/consumption)
+        call('/api/v1/consumption', "GET", {
             startDate: start,
-            endDate: end
+            endDate: end,
+            limit: 50
         })
         .then((response) => {
             console.log("Consumption history response:", response);
-            if (response.cardHistory) {
-                setConsumList(response.cardHistory);
-            } else {
-                setConsumList(response);
-            }
+            setConsumList(response.consumptions || []);
+            setSummaryData(response.summary);
             setIsLoading(false);
         })
         .catch((error) => {
             console.error("내역 조회 실패:", error);
+            setError("소비 내역을 불러오는데 실패했습니다. 나중에 다시 시도해주세요.");
             setIsLoading(false);
-        });
-
-        // 요약 정보도 동일하게 수정
-        call('/api/card-history/summary', "GET", {
-            startDate: start,
-            endDate: end
-        })
-        .then((response) => {
-            console.log("Consumption summary response:", response);
-            setSummaryData(response);
-        })
-        .catch((error) => {
-            console.error("내역 요약 조회 실패:", error);
         });
     };
 
-    // 음성 인식 초기화
-    useEffect(() => {
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognitionInstance = new SpeechRecognition();
-
-            recognitionInstance.lang = 'ko-KR';
-            recognitionInstance.continuous = false;
-            recognitionInstance.interimResults = false;
-
-            recognitionInstance.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                handleVoiceResult(transcript);
-            };
-
-            recognitionInstance.onend = () => {
-                setIsRecording(false);
-            };
-
-            recognitionInstance.onerror = (event) => {
-                console.error('음성 인식 오류:', event.error);
-                setIsRecording(false);
-            };
-
-            setRecognition(recognitionInstance);
-        }
-    }, []);
+    // 차트 데이터 조회 - API 경로 수정
+    const fetchChartData = (period) => {
+        // 올바른 API 경로로 수정 (/api/v1/consumption/stats)
+        call(`/api/v1/consumption/stats/${period}`, "GET")
+        .then((response) => {
+            console.log("Chart data response:", response);
+            setChartData(response.stats);
+        })
+        .catch((error) => {
+            console.error("차트 데이터 조회 실패:", error);
+        });
+    };
 
     useEffect(() => {
         const start = getStartOfMonth();
@@ -140,89 +126,14 @@ function Consumption() {
         setStartDate(start);
         setEndDate(end);
 
-        // 초기 로딩 시 사용자의 소비 내역 조회
         fetchConsumptionHistory(start, end);
+        fetchChartData(chartPeriod);
     }, []);
 
-    // 음성 입력 시작
-    const handleVoiceInput = () => {
-        if (recognition && !isRecording) {
-            setIsRecording(true);
-            recognition.start();
-        }
-    };
-
-    // 음성 인식 결과 처리
-    const handleVoiceResult = (transcript) => {
-        console.log('음성 인식 결과:', transcript);
-
-        // 음성 텍스트를 파싱하여 소비 데이터로 변환
-        const parsedData = parseVoiceToConsumption(transcript);
-
-        if (parsedData) {
-            // 파싱된 데이터를 서버에 저장 (기존 API 사용)
-            saveVoiceConsumption(parsedData);
-        }
-    };
-
-    // 음성 텍스트를 소비 데이터로 파싱
-    const parseVoiceToConsumption = (text) => {
-        // 간단한 파싱 로직 (나중에 AI로 고도화 가능)
-        const amountMatch = text.match(/(\d+(?:천|만)?원?|\d+)/);
-        const amount = amountMatch ? parseKoreanNumber(amountMatch[1]) : 0;
-
-        if (amount > 0) {
-            return {
-                description: text.replace(/\d+(?:천|만)?원?|\d+/g, '').trim() || '음성 입력 소비',
-                amount: amount,
-                date: new Date().toISOString().split('T')[0],
-                merchantCategory: inferCategory(text), // category 대신 merchantCategory 사용
-                merchant: inferMerchant(text)
-            };
-        }
-        return null;
-    };
-
-    // 한국어 숫자 파싱
-    const parseKoreanNumber = (str) => {
-        let num = str.replace(/원/g, '');
-        if (num.includes('천')) {
-            return parseInt(num.replace('천', '')) * 1000;
-        } else if (num.includes('만')) {
-            return parseInt(num.replace('만', '')) * 10000;
-        }
-        return parseInt(num) || 0;
-    };
-
-    // 카테고리 추론
-    const inferCategory = (text) => {
-        if (text.includes('커피') || text.includes('음식') || text.includes('식사')) return '식비';
-        if (text.includes('택시') || text.includes('버스') || text.includes('지하철')) return '교통비';
-        if (text.includes('병원') || text.includes('약국')) return '의료비';
-        if (text.includes('마트') || text.includes('쇼핑')) return '생활용품';
-        return '기타';
-    };
-
-    // 가맹점 추론
-    const inferMerchant = (text) => {
-        if (text.includes('스타벅스')) return '스타벅스';
-        if (text.includes('이마트')) return '이마트';
-        if (text.includes('CGV')) return 'CGV';
-        return '일반가맹점';
-    };
-
-    // 음성으로 입력된 소비 내역 저장
-    const saveVoiceConsumption = (data) => {
-        // 기존 API 엔드포인트 활용
-        call('/api/card-history', 'POST', data)
-        .then((response) => {
-            console.log('음성 소비 내역 저장 성공:', response);
-            // 저장 후 목록 새로고침
-            fetchConsumptionHistory(startDate, endDate);
-        })
-        .catch((error) => {
-            console.error('음성 소비 내역 저장 실패:', error);
-        });
+    // 차트 기간 변경
+    const handleChartPeriodChange = (period) => {
+        setChartPeriod(period);
+        fetchChartData(period);
     };
 
     // 카테고리별 필터링
@@ -230,20 +141,39 @@ function Consumption() {
         setCategoryFilter(category);
     };
 
-    // 필터링된 소비 내역 (수정: category를 categoryFilter와 비교)
+    // 필터링된 소비 내역
     const filteredConsumList = categoryFilter === 'all'
         ? consumList
-        : consumList.filter(item => item.merchantCategory === categoryFilter);
+        : consumList.filter(item => item.category === categoryFilter);
 
     // 총 이용금액 계산
     const calculateTotalAmount = () => {
         return filteredConsumList.reduce((total, item) => total + item.amount, 0);
     };
 
+    // 카테고리 목록 생성
+    const getCategories = () => {
+        const categories = [...new Set(consumList.map(item => item.category))];
+        return categories.filter(cat => cat && cat !== '');
+    };
+
     return (
         <div>
             <Header />
             <div className="consumption-container">
+                {/* 음성 안내 메시지 */}
+                {voiceRecognitionSupported && (
+                    <div className="voice-guide-container">
+                        <div className="voice-guide-message">
+                            💬 <strong>똑똑 챗봇에게 말해보세요!</strong><br/>
+                            "5000원 점심 먹었어", "3만원 마트에서 장봤어" 등
+                            <button className="go-to-chat-btn" onClick={goToVoiceChat}>
+                                🎤 음성 채팅으로 가기
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <ConsumCard
                     cardlist={userInfo}
                     handleOpenModal={handleOpenDateModal}
@@ -251,13 +181,55 @@ function Consumption() {
                     endDate={endDate}
                     totalAmount={calculateTotalAmount()}
                     summaryData={summaryData}
-                    isRecording={isRecording}
-                    onVoiceInput={handleVoiceInput}
                 />
+
+                {/* 차트 섹션 - 노인분들을 위한 큰 그래프 */}
+                <div className="chart-section">
+                    <div className="chart-header">
+                        <h2 className="chart-title">📊 소비 현황</h2>
+                        <div className="chart-period-buttons">
+                            <button 
+                                className={`period-btn ${chartPeriod === 'daily' ? 'active' : ''}`}
+                                onClick={() => handleChartPeriodChange('daily')}
+                            >
+                                일별
+                            </button>
+                            <button 
+                                className={`period-btn ${chartPeriod === 'weekly' ? 'active' : ''}`}
+                                onClick={() => handleChartPeriodChange('weekly')}
+                            >
+                                주별
+                            </button>
+                            <button 
+                                className={`period-btn ${chartPeriod === 'monthly' ? 'active' : ''}`}
+                                onClick={() => handleChartPeriodChange('monthly')}
+                            >
+                                월별
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {chartData && (
+                        <ExpenseChart 
+                            data={chartData} 
+                            period={chartPeriod}
+                        />
+                    )}
+                </div>
 
                 {isLoading ? (
                     <div className='loading-container'>
                         <p>소비 내역을 불러오는 중...</p>
+                    </div>
+                ) : error ? (
+                    <div className='error-container'>
+                        <p className='error-text'>{error}</p>
+                        <button 
+                            className="retry-button" 
+                            onClick={() => fetchConsumptionHistory(startDate, endDate)}
+                        >
+                            다시 시도
+                        </button>
                     </div>
                 ) : filteredConsumList.length !== 0 ? (
                     <>
@@ -267,12 +239,12 @@ function Consumption() {
                                 onClick={() => handleCategoryFilter('all')}>
                                 전체
                             </button>
-                            {summaryData?.categorySummary?.map((category, index) => (
+                            {getCategories().map((category, index) => (
                                 <button
                                     key={index}
-                                    className={`category-filter-button ${categoryFilter === category._id ? 'active' : ''}`}
-                                    onClick={() => handleCategoryFilter(category._id)}>
-                                    {category._id}
+                                    className={`category-filter-button ${categoryFilter === category ? 'active' : ''}`}
+                                    onClick={() => handleCategoryFilter(category)}>
+                                    {category}
                                 </button>
                             ))}
                         </div>
@@ -290,7 +262,14 @@ function Consumption() {
                             className="no-data-image"
                         />
                         <p className='no-data-text'>소비 내역이 없습니다.</p>
-                        <p className='no-data-text'>음성으로 소비 내역을 입력해보세요!</p>
+                        <p className='no-data-text'>
+                            {voiceRecognitionSupported 
+                                ? '똑똑 챗봇에게 "5000원 점심 먹었어"라고 말해보세요!' 
+                                : '소비 내역을 직접 등록해주세요.'}
+                        </p>
+                        <button className="go-to-chat-btn-large" onClick={goToVoiceChat}>
+                            🎤 음성 채팅으로 가기
+                        </button>
                     </div>
                 )}
 
