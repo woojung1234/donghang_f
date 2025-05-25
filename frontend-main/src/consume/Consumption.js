@@ -10,11 +10,12 @@ import ConsumDateModal from './component/ConsumDateModal';
 import ConsumDetailModal from './component/ConsumDetailModal';
 import ConsumList from './component/ConsumList';
 import ExpenseChart from './component/ExpenseChart';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import info from "image/icon/info.png";
 
 function Consumption() {
     const location = useLocation();
+    const navigate = useNavigate();
     const userInfo = location.state?.value || {};
 
     const [isOpenDetail, setIsOpenDetail] = useState(false);
@@ -31,6 +32,7 @@ function Consumption() {
     const [chartData, setChartData] = useState(null);
     const [chartPeriod, setChartPeriod] = useState('daily');
     const [voiceRecognitionSupported, setVoiceRecognitionSupported] = useState(false);
+    const [error, setError] = useState(null);
 
     // 한국 시간으로 날짜를 반환하는 함수
     const getKSTDate = (date) => {
@@ -64,6 +66,11 @@ function Consumption() {
     const closeDetailModal = () => setIsOpenDetail(false);
     const closeDateModal = () => setIsOpenDate(false);
 
+    // 음성 채팅으로 이동하는 함수
+    const goToVoiceChat = () => {
+        navigate('/voicechat');
+    };
+
     useEffect(() => {
         document.body.classList.toggle("unscrollable", isOpenDetail || isOpenDate);
     }, [isOpenDetail, isOpenDate]);
@@ -75,12 +82,14 @@ function Consumption() {
         }
     }, []);
 
-    // 소비 내역 조회
+    // 소비 내역 조회 - API 경로 수정
     const fetchConsumptionHistory = (start, end) => {
         setIsLoading(true);
+        setError(null);
         console.log("Fetching consumption history with dates:", start, end);
 
-        call('/api/consumption', "GET", {
+        // 올바른 API 경로로 수정 (/api/v1/consumption)
+        call('/api/v1/consumption', "GET", {
             startDate: start,
             endDate: end,
             limit: 50
@@ -93,13 +102,15 @@ function Consumption() {
         })
         .catch((error) => {
             console.error("내역 조회 실패:", error);
+            setError("소비 내역을 불러오는데 실패했습니다. 나중에 다시 시도해주세요.");
             setIsLoading(false);
         });
     };
 
-    // 차트 데이터 조회
+    // 차트 데이터 조회 - API 경로 수정
     const fetchChartData = (period) => {
-        call(`/api/consumption/stats/${period}`, "GET")
+        // 올바른 API 경로로 수정 (/api/v1/consumption/stats)
+        call(`/api/v1/consumption/stats/${period}`, "GET")
         .then((response) => {
             console.log("Chart data response:", response);
             setChartData(response.stats);
@@ -156,6 +167,9 @@ function Consumption() {
                         <div className="voice-guide-message">
                             💬 <strong>똑똑 챗봇에게 말해보세요!</strong><br/>
                             "5000원 점심 먹었어", "3만원 마트에서 장봤어" 등
+                            <button className="go-to-chat-btn" onClick={goToVoiceChat}>
+                                🎤 음성 채팅으로 가기
+                            </button>
                         </div>
                     </div>
                 )}
@@ -207,6 +221,16 @@ function Consumption() {
                     <div className='loading-container'>
                         <p>소비 내역을 불러오는 중...</p>
                     </div>
+                ) : error ? (
+                    <div className='error-container'>
+                        <p className='error-text'>{error}</p>
+                        <button 
+                            className="retry-button" 
+                            onClick={() => fetchConsumptionHistory(startDate, endDate)}
+                        >
+                            다시 시도
+                        </button>
+                    </div>
                 ) : filteredConsumList.length !== 0 ? (
                     <>
                         <div className="category-filter-container">
@@ -243,6 +267,9 @@ function Consumption() {
                                 ? '똑똑 챗봇에게 "5000원 점심 먹었어"라고 말해보세요!' 
                                 : '소비 내역을 직접 등록해주세요.'}
                         </p>
+                        <button className="go-to-chat-btn-large" onClick={goToVoiceChat}>
+                            🎤 음성 채팅으로 가기
+                        </button>
                     </div>
                 )}
 

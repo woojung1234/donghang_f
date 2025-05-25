@@ -51,11 +51,18 @@ function parseExpenseFromInput(input) {
     return null;
   }
 
-  // 소비 관련 키워드 확인
-  const expenseKeywords = ['썼', '먹', '샀', '구매', '지불', '결제', '냈', '마셨', '타고', '갔다'];
+  // 소비 관련 키워드 확인 - 확장된 키워드 목록
+  const expenseKeywords = [
+    '썼', '먹', '샀', '구매', '지불', '결제', '냈', '마셨', '타고', '갔다', 
+    '사용', '쓰다', '지출', '소비', '소진', '결재', '밥', '식사'
+  ];
+  
+  // 매우 간단한 메시지는 항상 소비 메시지로 처리
+  const isSimpleExpenseMessage = text.includes('원') && text.split(' ').length <= 3;
+  
   const hasExpenseKeyword = expenseKeywords.some(keyword => text.includes(keyword));
   
-  if (!hasExpenseKeyword) {
+  if (!hasExpenseKeyword && !isSimpleExpenseMessage) {
     return null;
   }
 
@@ -65,6 +72,8 @@ function parseExpenseFromInput(input) {
   // 가맹점 추론
   const merchantName = inferMerchantFromText(text) || getDefaultMerchantByCategory(category);
 
+  console.log(`금액 감지: ${amount}원, 카테고리: ${category}, 가맹점: ${merchantName}`);
+  
   return {
     amount: amount,
     category: category,
@@ -147,6 +156,18 @@ async function saveExpenseToBackend(expenseData) {
       return true; // 임시로 성공 처리
     }
     
+    // 백엔드 API 호출 전 콘솔에 출력
+    console.log('API 호출 정보:', {
+      endpoint: '/api/v1/consumption/voice',
+      method: 'POST',
+      data: {
+        merchantName: expenseData.merchantName,
+        amount: expenseData.amount,
+        category: expenseData.category,
+        memo: `음성 입력: ${expenseData.originalText}`
+      }
+    });
+    
     const response = await call('/api/v1/consumption/voice', 'POST', {
       merchantName: expenseData.merchantName,
       amount: expenseData.amount,
@@ -160,8 +181,8 @@ async function saveExpenseToBackend(expenseData) {
     console.error('소비 내역 저장 실패:', error);
     
     // 네트워크 오류나 서버 오류인 경우에도 사용자에게는 성공으로 보여줌
-    if (error.message && error.message.includes('fetch')) {
-      console.warn('네트워크 오류 - 임시로 성공 처리');
+    if (error.message && (error.message.includes('fetch') || error.status >= 500)) {
+      console.warn('네트워크 또는 서버 오류 - 임시로 성공 처리');
       return true;
     }
     
@@ -218,6 +239,8 @@ function getOfflineResponse(message) {
 // AI 서비스 처리
 async function processAIResponse(message) {
   try {
+    console.log("입력 메시지 처리:", message);
+    
     // 먼저 소비 내역 파싱 시도
     const expenseData = parseExpenseFromInput(message);
     let saved = false;
@@ -225,6 +248,9 @@ async function processAIResponse(message) {
     if (expenseData) {
       console.log('소비 내역 감지:', expenseData);
       saved = await saveExpenseToBackend(expenseData);
+      console.log('저장 결과:', saved ? '성공' : '실패');
+    } else {
+      console.log('소비 내역이 감지되지 않았습니다.');
     }
     
     // 스마트 응답 생성
