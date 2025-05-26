@@ -10,7 +10,7 @@ function VoiceHeader() {
   const getTitle = (pathname) => {
     switch (pathname) {
       case "/voicechat":
-        return "똑똑이";
+        return "금복이";
 
       default:
         return null;

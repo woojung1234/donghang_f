@@ -78,7 +78,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    service: '똑똑 백엔드 서버'
+    service: '금복이 백엔드 서버'
   });
 });
 

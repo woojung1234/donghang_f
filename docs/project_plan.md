@@ -3,13 +3,13 @@
 ## 프로젝트 개요
 - **프로젝트명**: 동행 (donghang)
 - **타입**: React 프론트엔드 + Node.js/Express 백엔드
-- **포트**: 백엔드(5000), 프론트엔드(3000)
+- **포트**: 백엔드(9090), 프론트엔드(3000)
 
 ## 프로젝트 구조
 ```
 donghang_f/
 ├── AI-main/          # FastAPI 기반 AI 서버 (포트 8000)
-├── backend-main/     # Node.js/Express 백엔드 (포트 5000)
+├── backend-main/     # Node.js/Express 백엔드 (포트 9090)
 ├── frontend-main/    # React 프론트엔드 (포트 3000)
 ├── docs/            # 프로젝트 문서
 └── logs/            # 로그 파일
@@ -27,7 +27,7 @@ python app/main.py  # http://localhost:8000
 ```bash
 cd backend-main
 npm install
-npm run dev  # http://localhost:5000
+npm run dev  # http://localhost:9090
 ```
 
 ### 프론트엔드 (세 번째)
@@ -66,9 +66,11 @@ npm start   # http://localhost:3000
   - 챗봇 서비스 사용 가능
 
 ## 해야 할 작업
-- [ ] 백엔드 서버 실행 테스트
-- [ ] 프론트엔드 실행 테스트
-- [ ] API 연결 상태 확인
+- [x] 백엔드 서버 실행 테스트
+- [x] 프론트엔드 실행 테스트
+- [x] API 연결 상태 확인 
+- [x] 음성 소비내역 입력 문제 해결 ✅
+  - 환경변수 API URL 수정 (9090 → 5000)
 - [ ] 로그 설정 구성
 - [ ] 데이터베이스 연결 확인
 
@@ -77,4 +79,7 @@ npm start   # http://localhost:3000
 - 비밀번호: testpassword
 
 ## 최근 업데이트
-- 2025-05-24: 프로젝트 초기 분석 및 실행 방법 정리
+- 2025-05-25: 프로젝트 초기 분석 및 실행 방법 정리
+- 2025-05-25: 음성 소비내역 입력 문제 해결
+  - API URL 환경변수 수정 (localhost:9090 → localhost:5000)
+  - 음성 입력 → 소비내역 표시 연동 확인

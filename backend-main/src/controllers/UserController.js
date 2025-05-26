@@ -66,7 +66,7 @@ class UserController {
           const response = await this.messageService.sendMessage({
             to: phone,
             from: process.env.COOLSMS_SENDER_NUMBER,
-            text: `[똑똑] 인증번호는 ${validationNum}입니다.`
+            text: `[금복이] 인증번호는 ${validationNum}입니다.`
           });
         } else {
           // 개발 환경에서 CoolSMS 설정이 없는 경우 콘솔에 출력

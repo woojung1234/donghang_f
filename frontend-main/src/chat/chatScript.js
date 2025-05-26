@@ -223,7 +223,7 @@ function getOfflineResponse(message) {
     if (lowercaseMessage.includes("안녕") || lowercaseMessage.includes("반가")) {
       return "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시면 가계부에 자동으로 기록해드려요! 💰";
     } else if (lowercaseMessage.includes("이름") || lowercaseMessage.includes("누구")) {
-      return "저는 똑똑이라고 합니다. 가계부 관리를 도와드릴 수 있어요!";
+      return "저는 금복이라고 합니다. 가계부 관리를 도와드릴 수 있어요!";
     } else if (lowercaseMessage.includes("도움") || lowercaseMessage.includes("도와줘")) {
       return "네, 어떤 도움이 필요하신가요? 예를 들어 '5000원 점심 먹었어'라고 말씀해주시면 가계부에 자동으로 기록해드려요!";
     }

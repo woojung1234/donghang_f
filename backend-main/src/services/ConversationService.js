@@ -325,7 +325,7 @@ class ConversationService {
     const lowerInput = input.toLowerCase();
     
     if (lowerInput.includes('안녕') || lowerInput.includes('hello')) {
-      return '안녕하세요! 똑똑 서비스입니다. 무엇을 도와드릴까요?';
+      return '안녕하세요! 금복이 서비스입니다. 무엇을 도와드릴까요?';
     }
     
     if (lowerInput.includes('복지') || lowerInput.includes('서비스')) {

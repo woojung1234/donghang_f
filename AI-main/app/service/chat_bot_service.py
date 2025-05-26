@@ -41,7 +41,7 @@ def get_offline_response(contents: str) -> str:
             return "안녕하세요! 무엇을 도와드릴까요?"
         
         if "이름" in contents_lower or "누구" in contents_lower:
-            return "저는 동행 서비스의 AI 도우미 '똑똑'입니다. 무엇을 도와드릴까요?"
+            return "저는 동행 서비스의 AI 도우미 '금복이'입니다. 무엇을 도와드릴까요?"
             
         if "도움" in contents_lower or "도와" in contents_lower:
             return "네, 어떤 도움이 필요하신가요? 더 자세히 말씀해주세요."

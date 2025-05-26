@@ -143,7 +143,7 @@ async function seedDatabase() {
       {
         userNo: testUser.userNo,
         title: '서비스 이용 안내',
-        content: '똑똑 서비스에 오신 것을 환영합니다! 다양한 기능을 활용해보세요.',
+        content: '금복이 서비스에 오신 것을 환영합니다! 다양한 기능을 활용해보세요.',
         notificationType: 'SYSTEM',
         priority: 'NORMAL'
       },

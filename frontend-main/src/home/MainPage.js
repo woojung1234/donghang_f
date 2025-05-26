@@ -124,12 +124,12 @@ function MainPage() {
         {isSpeaking && <SpeakLoading />}
         {isLoading && <Loading />}
         <img src={chatbot} alt="챗봇" className="chatbot" />
-        {isListening && <p className="listening-text">똑똑이가 듣고 있어요</p>}
+        {isListening && <p className="listening-text">금복이가 듣고 있어요</p>}
         <button className="hiddenBtn" onClick={toggleModal}>
           {visible ? "닫기" : "답변보이기"}
         </button>
         <button className="chat-startBtn" onClick={handleStartChat}>
-          {isStart ? "중지" : "똑똑!"}
+          {isStart ? "중지" : "금복이!"}
         </button>
 
         {/* Modal 컴포넌트 */}

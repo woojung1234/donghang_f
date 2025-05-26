@@ -81,7 +81,7 @@ function WelfareCheckSpec() {
             userDisease: userInfo.protegeDisease,
           }));
         } else if (welfareNo && welfareBookStartDate && welfareBookUseTime) {
-          // 내가 일반사용자인데, 똑똑이로 예약할 때
+          // 내가 일반사용자인데, 금복이로 예약할 때
           if(userInfo.protegeGender === 0){
             //정보 없을 때
             setIsKnockInfo(false);

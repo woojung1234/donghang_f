@@ -7,7 +7,7 @@ function ChatSection({handleVoiceChatClick}) {
       <div className="chat-button" onClick={handleVoiceChatClick}>
         <img src={chatbot} alt="챗봇" className="icon" />
         <div className="main-text">
-          <p className="chat-head-text">똑똑이와 대화해보세요</p>
+          <p className="chat-head-text">금복이와 대화해보세요</p>
           <p className="chat-info-text">💰 "5000원 점심 먹었어" ⟶ 가계부 자동 기록!</p>
         </div>
       </div>

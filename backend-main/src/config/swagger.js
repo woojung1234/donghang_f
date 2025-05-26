@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: '똑똑 백엔드 API',
+      title: '금복이 백엔드 API',
       version: '1.0.0',
-      description: '똑똑 애플리케이션 Node.js 백엔드 API 문서',
+      description: '금복이 애플리케이션 Node.js 백엔드 API 문서',
       contact: {
         name: 'Development Team',
         email: 'dev@knockknock.com'

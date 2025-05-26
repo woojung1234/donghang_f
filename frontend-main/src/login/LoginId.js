@@ -94,7 +94,7 @@ function LoginId(props) {
                     
                 </div>
                 <div className='agreement-text'>
-                    <p>'똑똑'은 신한DS 금융SW 아카데미 프로젝트를 위해 </p>
+                    <p>'금복이'는 JBNU SW 경진대회를 위해 </p>
                     <p>제작된 애플리케이션입니다. 프로젝트 외의 용도로 </p>
                     <p>사용자의 개인정보를 수집하거나 이용하지 않습니다.</p>
                 </div>

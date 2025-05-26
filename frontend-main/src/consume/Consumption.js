@@ -165,7 +165,7 @@ function Consumption() {
                 {voiceRecognitionSupported && (
                     <div className="voice-guide-container">
                         <div className="voice-guide-message">
-                            💬 <strong>똑똑 챗봇에게 말해보세요!</strong><br/>
+                            💬 <strong>금복이 챗봇에게 말해보세요!</strong><br/>
                             "5000원 점심 먹었어", "3만원 마트에서 장봤어" 등
                             <button className="go-to-chat-btn" onClick={goToVoiceChat}>
                                 🎤 음성 채팅으로 가기
@@ -264,7 +264,7 @@ function Consumption() {
                         <p className='no-data-text'>소비 내역이 없습니다.</p>
                         <p className='no-data-text'>
                             {voiceRecognitionSupported 
-                                ? '똑똑 챗봇에게 "5000원 점심 먹었어"라고 말해보세요!' 
+                                ? '금복이 챗봇에게 "5000원 점심 먹었어"라고 말해보세요!' 
                                 : '소비 내역을 직접 등록해주세요.'}
                         </p>
                         <button className="go-to-chat-btn-large" onClick={goToVoiceChat}>

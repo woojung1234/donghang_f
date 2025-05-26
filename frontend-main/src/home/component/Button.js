@@ -72,7 +72,7 @@ function Button({isProtege}) {
         <div className="chat-section-button">
           {isProtege ? <img src={chatbot} alt="챗봇" className="icon-chat" />:<img src={alarm} alt="이상징후" className="icon-alarm" />}
           <div className="chat-section-text">
-            <p className="head-text">{isProtege?"똑똑이와 대화해보세요": `${protegeName}님의 소비이상징후`}</p>
+            <p className="head-text">{isProtege?"금복이와 대화해보세요": `${protegeName}님의 소비이상징후`}</p>
             <p className="info-text">{isProtege?"마지막 대화시간 : ":"읽지 않은 알람 : "}<span>{isProtege? talkTime : `${alarmNum}건`}</span></p>
           </div>
         </div>

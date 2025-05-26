@@ -52,7 +52,7 @@ function WelfareMain() {
           <span className={styles.for}> 님을 위한</span>
         </p>
         <p className={styles.infomation}>복지 서비스를</p>
-        <p className={styles.infomation}>똑똑에서 예약해보세요</p>
+        <p className={styles.infomation}>금복이에서 예약해보세요</p>
         <img src={welfare} alt="복지" className={styles["img-welfare"]} />
         <div className={`${styles["main-section"]} ${styles["detailed-reserve"]}`} onClick={goDetailReserved}>
           <p className={`${styles["main-text"]} ${styles["detailed-reserve-text"]}`}>예약 내역 보기</p>

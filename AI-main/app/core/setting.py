@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     
     # 모델 설정 (선택적)
     default_model: str = os.getenv("DEFAULT_MODEL", "gpt-3.5-turbo")
-    system_prompt: str = os.getenv("SYSTEM_PROMPT", "당신은 '똑똑'이라는 이름의 노인분들을 위한 친절한 AI 도우미입니다. 음성으로 소비내역을 말하면 자동으로 가계부에 기록해드리고, 간단명료하게 대답해주세요.")
+    system_prompt: str = os.getenv("SYSTEM_PROMPT", "당신은 '금복이'이라는 이름의 노인분들을 위한 친절한 AI 도우미입니다. 음성으로 소비내역을 말하면 자동으로 가계부에 기록해드리고, 간단명료하게 대답해주세요.")
     
     # 외부 서비스 (선택적)
     backend_api_url: str = os.getenv("BACKEND_API_URL", "http://localhost:9090/api/v1")
