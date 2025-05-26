@@ -11,6 +11,15 @@ function ConsumDetailModal({isOpen,closeModal,cardDetail}) {
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${year}. ${month}. ${day} ${hours}:${minutes}`;
     }
+
+    // 금액 포맷팅 함수 - .00 제거
+    function formatAmount(amount) {
+        if (!amount) return '0';
+        
+        // 숫자로 변환하여 소수점 제거
+        const numAmount = Math.floor(parseFloat(amount));
+        return numAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
     
     const customStyles = {
         overlay: {
@@ -50,7 +59,7 @@ function ConsumDetailModal({isOpen,closeModal,cardDetail}) {
                     </div>
                     <div className='csModal-content csModal-line'>
                         <p>이용금액</p>
-                        <p className={`csModal-price ${cardDetail.cardHistoryIsCansle?"line-through cancel-text":""}`}><span className={!cardDetail.cardHistoryIsCansle?'csModal-Num':""}>{cardDetail.cardHistoryAmount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</span>원</p>
+                        <p className={`csModal-price ${cardDetail.cardHistoryIsCansle?"line-through cancel-text":""}`}><span className={!cardDetail.cardHistoryIsCansle?'csModal-Num':""}>{formatAmount(cardDetail.cardHistoryAmount)}</span>원</p>
                     </div>
                     <button className='csModalBtn' onClick={closeModal}>닫기</button>
                 </div>

@@ -64,7 +64,7 @@ def register_routers():
     """라우터들을 안전하게 등록"""
     routers_to_register = [
         ("app.api.v1.chatbot_router", "챗봇"),
-        ("app.api.v1.tts_router", "TTS"),
+        # ("app.api.v1.tts_router", "TTS"),  # TTS 모델 파일 없어서 임시 비활성화
         ("app.api.v1.etc_router", "기타")
     ]
     

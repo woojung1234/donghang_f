@@ -142,12 +142,15 @@
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* 노인 친화적 총 소비금액 스타일 */
 .filter-totalPrice {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -156,16 +159,17 @@
 
 .filter-price {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 500;
     color: #2d3748;
 }
 
 .filter-num {
     margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    color: #1a202c;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* 반응형 디자인 */
@@ -186,15 +190,40 @@
     }
 
     .filter-totalPrice {
-        padding: 15px;
+        padding: 12px;
     }
 
     .filter-num {
-        font-size: 24px;
+        font-size: 18px;
     }
+}
 
-    .filter-price {
-        font-size: 16px;
+
+/* 노인 친화적 스타일 개선 */
+.filter-totalPrice {
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+}
+
+.filter-price {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #2d3748 !important;
+}
+
+.filter-num {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #1a202c !important;
+    text-shadow: none !important;
+}
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+    .consumCard-container {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
     }
 }
 

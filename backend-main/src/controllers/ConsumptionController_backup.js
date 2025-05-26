@@ -24,28 +24,16 @@ class ConsumptionController {
       const whereConditions = { userNo: userNo };
 
       if (startDate && endDate) {
-        // endDate는 해당 날짜의 끝 시간까지 포함하도록 수정
-        const endDateTime = new Date(endDate);
-        endDateTime.setHours(23, 59, 59, 999);
-        
         whereConditions.transactionDate = {
-          [Op.between]: [new Date(startDate), endDateTime]
+          [Op.between]: [new Date(startDate), new Date(endDate)]
         };
-        
-        console.log('📅 날짜 필터 적용:', {
-          startDate: new Date(startDate),
-          endDate: endDateTime,
-          userNo: userNo
-        });
       } else if (startDate) {
         whereConditions.transactionDate = {
           [Op.gte]: new Date(startDate)
         };
       } else if (endDate) {
-        const endDateTime = new Date(endDate);
-        endDateTime.setHours(23, 59, 59, 999);
         whereConditions.transactionDate = {
-          [Op.lte]: endDateTime
+          [Op.lte]: new Date(endDate)
         };
       }
 
@@ -71,23 +59,11 @@ class ConsumptionController {
         whereConditions.riskLevel = riskLevel;
       }
 
-      console.log('🔍 소비내역 조회 조건:', whereConditions);
-
       const consumptions = await Consumption.findAndCountAll({
         where: whereConditions,
         order: [['transactionDate', 'DESC']],
         limit: parseInt(limit),
         offset: offset
-      });
-
-      console.log('📊 조회 결과:', {
-        count: consumptions.count,
-        rows: consumptions.rows.length,
-        firstItem: consumptions.rows[0] ? {
-          id: consumptions.rows[0].consumptionNo,
-          amount: consumptions.rows[0].amount,
-          date: consumptions.rows[0].transactionDate
-        } : null
       });
 
       // 총합 계산
@@ -314,7 +290,7 @@ class ConsumptionController {
         attributes: [
           'category',
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count']
         ],
         group: ['category'],
         order: [[require('sequelize').fn('SUM', require('sequelize').col('amount')), 'DESC']]
@@ -331,7 +307,7 @@ class ConsumptionController {
         attributes: [
           [require('sequelize').fn('DATE', require('sequelize').col('transactionDate')), 'date'],
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count']
         ],
         group: [require('sequelize').fn('DATE', require('sequelize').col('transactionDate'))],
         order: [[require('sequelize').fn('DATE', require('sequelize').col('transactionDate')), 'ASC']]
@@ -359,10 +335,10 @@ class ConsumptionController {
         attributes: [
           'merchantName',
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count']
         ],
         group: ['merchantName'],
-        order: [[require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'DESC']],
+        order: [[require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'DESC']],
         limit: 5
       });
 
@@ -399,7 +375,7 @@ class ConsumptionController {
         where: { userNo: userNo },
         attributes: [
           [require('sequelize').fn('EXTRACT', require('sequelize').literal('HOUR FROM "transactionDate"')), 'hour'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
           [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
         ],
         group: [require('sequelize').fn('EXTRACT', require('sequelize').literal('HOUR FROM "transactionDate"'))],
@@ -411,7 +387,7 @@ class ConsumptionController {
         where: { userNo: userNo },
         attributes: [
           [require('sequelize').fn('EXTRACT', require('sequelize').literal('DOW FROM "transactionDate"')), 'dayOfWeek'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
           [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
         ],
         group: [require('sequelize').fn('EXTRACT', require('sequelize').literal('DOW FROM "transactionDate"'))],
@@ -429,7 +405,7 @@ class ConsumptionController {
         attributes: [
           [require('sequelize').fn('DATE_TRUNC', 'month', require('sequelize').col('transactionDate')), 'month'],
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count']
         ],
         group: [require('sequelize').fn('DATE_TRUNC', 'month', require('sequelize').col('transactionDate'))],
         order: [[require('sequelize').fn('DATE_TRUNC', 'month', require('sequelize').col('transactionDate')), 'ASC']]
@@ -459,17 +435,17 @@ class ConsumptionController {
       
       switch (period) {
         case 'daily':
-          groupBy = 'day';
+          groupBy = 'DATE';
           dateFormat = 'YYYY-MM-DD';
           days = 30; // 최근 30일
           break;
         case 'weekly':
-          groupBy = 'week';
+          groupBy = 'WEEK';
           dateFormat = 'YYYY-"W"WW';
           days = 84; // 최근 12주
           break;
         case 'monthly':
-          groupBy = 'month';
+          groupBy = 'MONTH';
           dateFormat = 'YYYY-MM';
           days = 365; // 최근 12개월
           break;
@@ -490,13 +466,13 @@ class ConsumptionController {
           }
         },
         attributes: [
-          [require('sequelize').fn('DATE_TRUNC', groupBy, require('sequelize').col('transaction_date')), 'period'],
+          [require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transaction_date')), 'period'],
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
           [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
         ],
-        group: [require('sequelize').fn('DATE_TRUNC', groupBy, require('sequelize').col('transaction_date'))],
-        order: [[require('sequelize').fn('DATE_TRUNC', groupBy, require('sequelize').col('transaction_date')), 'ASC']]
+        group: [require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transaction_date'))],
+        order: [[require('sequelize').fn('DATE_TRUNC', groupBy.toLowerCase(), require('sequelize').col('transaction_date')), 'ASC']]
       });
 
       // 카테고리별 통계 (같은 기간)
@@ -510,7 +486,7 @@ class ConsumptionController {
         attributes: [
           'category',
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'count'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'count'],
           [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount']
         ],
         group: ['category'],
@@ -527,7 +503,7 @@ class ConsumptionController {
         },
         attributes: [
           [require('sequelize').fn('SUM', require('sequelize').col('amount')), 'totalAmount'],
-          [require('sequelize').fn('COUNT', require('sequelize').col('consumption_no')), 'totalCount'],
+          [require('sequelize').fn('COUNT', require('sequelize').col('consumptionNo')), 'totalCount'],
           [require('sequelize').fn('AVG', require('sequelize').col('amount')), 'avgAmount'],
           [require('sequelize').fn('MAX', require('sequelize').col('amount')), 'maxAmount'],
           [require('sequelize').fn('MIN', require('sequelize').col('amount')), 'minAmount']

@@ -32,7 +32,11 @@ function VoiceChat(props) {
   const [welfareBookStartDate, setWelfareBookStartDate] = useState("");
   const [welfareBookUseTime, setWelfareBookUseTime] = useState("");
 
+  // 텍스트 입력 관련 상태 추가
+  const [textInput, setTextInput] = useState("");
+
   const navi = useNavigate();
+  
   useEffect(() => {
     async function initializeChat() {
       // await handleChatRoom(userInfo);
@@ -81,10 +85,25 @@ function VoiceChat(props) {
     }
   };
 
+  // 텍스트 입력 처리 함수
+  const handleTextSubmit = () => {
+    if (textInput.trim()) {
+      console.log("텍스트 입력:", textInput);
+      sendMessage(textInput);
+      setTextInput("");
+    }
+  };
+
+  // 엔터키 처리
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleTextSubmit();
+    }
+  };
+
   const customStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.5)",
-
       zIndex: 100,
     },
     content: {
@@ -126,11 +145,27 @@ function VoiceChat(props) {
       {isLoading && <Loading />}
       <img src={chatbot} alt="챗봇" className="chatbot" />
       {isListening && <p className="listening-text">금복이가 듣고 있어요</p>}
+      
+      {/* 텍스트 입력창 추가 */}
+      <div className="text-input-container">
+        <input
+          type="text"
+          className="text-input"
+          placeholder="예: 5000원 점심 먹었어"
+          value={textInput}
+          onChange={(e) => setTextInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
+        <button className="text-submit-btn" onClick={handleTextSubmit}>
+          전송
+        </button>
+      </div>
+
       <button className="hiddenBtn" onClick={toggleModal}>
         {visible ? "닫기" : "답변보이기"}
       </button>
       <button className="chat-startBtn" onClick={handleStartChat}>
-        {isStart ? "중지" : "금복이!"}
+        {isStart ? "중지" : "음성입력"}
       </button>
 
       {/* 소비내역 보기 버튼 */}

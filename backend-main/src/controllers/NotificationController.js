@@ -290,7 +290,7 @@ class NotificationController {
         where: { userNo: userNo },
         attributes: [
           'priority',
-          [require('sequelize').fn('COUNT', require('sequelize').col('notificationNo')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('notification_no')), 'count']
         ],
         group: ['priority']
       });
@@ -300,7 +300,7 @@ class NotificationController {
         where: { userNo: userNo },
         attributes: [
           'notificationType',
-          [require('sequelize').fn('COUNT', require('sequelize').col('notificationNo')), 'count']
+          [require('sequelize').fn('COUNT', require('sequelize').col('notification_no')), 'count']
         ],
         group: ['notificationType']
       });

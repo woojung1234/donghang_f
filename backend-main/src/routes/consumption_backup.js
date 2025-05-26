@@ -12,17 +12,11 @@ const router = express.Router();
  *   description: 소비 관리 API
  */
 
-// 소비 리포트 조회 (우선순위 높음)
-router.get('/report', authMiddleware, ConsumptionController.getReport);
-
-// 소비 패턴 분석 (우선순위 높음)
-router.get('/analysis', authMiddleware, ConsumptionController.getAnalysis);
-
-// 월별/일별 소비 통계 (노인분들을 위한 큰 그래프용) (우선순위 높음)
-router.get('/stats/:period', authMiddleware, ConsumptionController.getConsumptionStats);
-
 // 소비 내역 조회
 router.get('/', authMiddleware, ConsumptionController.getConsumptions);
+
+// 소비 내역 상세 조회
+router.get('/:consumptionId', authMiddleware, ConsumptionController.getConsumption);
 
 // 소비 내역 생성
 router.post('/', authMiddleware, [
@@ -40,7 +34,13 @@ router.post('/voice', authMiddleware, [
   body('memo').optional()
 ], ConsumptionController.createVoiceConsumption);
 
-// 소비 내역 상세 조회 (파라미터 라우트는 마지막에)
-router.get('/:consumptionId', authMiddleware, ConsumptionController.getConsumption);
+// 소비 리포트 조회
+router.get('/report', authMiddleware, ConsumptionController.getReport);
+
+// 소비 패턴 분석
+router.get('/analysis', authMiddleware, ConsumptionController.getAnalysis);
+
+// 월별/일별 소비 통계 (노인분들을 위한 큰 그래프용)
+router.get('/stats/:period', authMiddleware, ConsumptionController.getConsumptionStats);
 
 module.exports = router;

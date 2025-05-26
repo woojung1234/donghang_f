@@ -37,15 +37,84 @@
   padding: 20px;
   font-size: 20px;
   border: none;
-  border-radius: 10px;
+  border-radius:10px;
   background-color: #FF961B;
   color: #fff;
   position: fixed;
   font-weight: bold;
-  width: 350px;
-  bottom: 20px;
+  width: 300px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* 텍스트 입력창 컨테이너 */
+.text-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: fixed;
+  bottom: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  z-index: 100;
+}
+
+/* 텍스트 입력창 */
+.text-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 2px solid #FF961B;
+  border-radius: 25px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  font-family: 'Pretendard', sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: #4ECDC4;
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+}
+
+.text-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* 전송 버튼 */
+.text-submit-btn {
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  background-color: #FF961B;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 150, 27, 0.3);
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  white-space: nowrap;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-submit-btn:hover {
+  background-color: #e8851a;
+  box-shadow: 0 4px 12px rgba(255, 150, 27, 0.4);
+  transform: translateY(-1px);
+}
+
+.text-submit-btn:active {
+  transform: translateY(0);
 }
 
 /* 소비내역 보기 버튼 스타일 */

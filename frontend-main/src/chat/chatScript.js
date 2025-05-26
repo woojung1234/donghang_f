@@ -16,14 +16,15 @@ const fallbackResponses = [
 // 소비 내역 파싱 함수
 function parseExpenseFromInput(input) {
   const text = input.toLowerCase().replace(/\s+/g, ' ').trim();
+  console.log('🔍 파싱 시도 - 입력 텍스트:', text);
   
   // 금액 패턴 매칭 (다양한 형태의 금액 표현 지원)
   const amountPatterns = [
-    /(\d{1,3}(?:,\d{3})*)\s*원/g,  // 1,000원, 5,000원
-    /(\d+)\s*천\s*원?/g,           // 5천원, 3천
-    /(\d+)\s*만\s*원?/g,           // 1만원, 2만
-    /(\d+)\s*원/g,                 // 5000원
-    /(\d+)\s*(?=.*(?:썼|먹|샀|지불|결제|냈))/g  // 숫자 + 소비 동사
+    /(\d+)\s*원(?:[으로로]+)?/g,                 // 8000원, 8000원으로, 1,000원
+    /(\d+)\s*천\s*원?(?:[으로로]+)?/g,           // 5천원, 3천원으로
+    /(\d+)\s*만\s*원?(?:[으로로]+)?/g,           // 1만원, 2만원으로
+    /(\d+)\s*원(?:[으로로]+)?/g,                 // 5000원, 8000원으로
+    /(\d+)(?=.*(?:썼|먹|샀|지불|결제|냈))/g      // 숫자 + 소비 동사
   ];
 
   let amount = 0;
@@ -31,6 +32,7 @@ function parseExpenseFromInput(input) {
 
   for (const pattern of amountPatterns) {
     const matches = [...text.matchAll(pattern)];
+    console.log('🔍 패턴 테스트:', pattern, '매치 결과:', matches.length > 0 ? matches[0] : '매치 없음');
     if (matches.length > 0) {
       const match = matches[0];
       amountMatch = match[0];
@@ -46,6 +48,7 @@ function parseExpenseFromInput(input) {
     }
   }
 
+  console.log('💰 추출된 금액:', amount);
   // 금액이 없으면 소비 내역이 아님
   if (amount === 0) {
     return null;
@@ -61,6 +64,10 @@ function parseExpenseFromInput(input) {
   const isSimpleExpenseMessage = text.includes('원') && text.split(' ').length <= 3;
   
   const hasExpenseKeyword = expenseKeywords.some(keyword => text.includes(keyword));
+  
+  console.log('🔑 간단한 메시지인가:', isSimpleExpenseMessage);
+  console.log('🔑 소비 키워드 포함:', hasExpenseKeyword);
+  console.log('🔑 감지된 키워드:', expenseKeywords.filter(keyword => text.includes(keyword)));
   
   if (!hasExpenseKeyword && !isSimpleExpenseMessage) {
     return null;
@@ -142,6 +149,386 @@ function getDefaultMerchantByCategory(category) {
   };
 
   return defaultMerchants[category] || '일반가맹점';
+}
+
+
+// 기간별 날짜 범위 계산 함수
+function getDateRangeByPeriod(period) {
+  const today = new Date();
+  let startDate, endDate;
+  
+  switch (period) {
+    case 'today':
+      startDate = new Date(today);
+      endDate = new Date(today);
+      break;
+      
+    case 'yesterday':
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      startDate = new Date(yesterday);
+      endDate = new Date(yesterday);
+      break;
+      
+    case 'this_week':
+      // 이번 주 월요일부터 오늘까지
+      const thisWeekStart = new Date(today);
+      thisWeekStart.setDate(today.getDate() - today.getDay() + 1); // 월요일
+      startDate = new Date(thisWeekStart);
+      endDate = new Date(today);
+      break;
+      
+    case 'last_week':
+      // 지난 주 월요일부터 일요일까지
+      const lastWeekEnd = new Date(today);
+      lastWeekEnd.setDate(today.getDate() - today.getDay()); // 지난 주 일요일
+      const lastWeekStart = new Date(lastWeekEnd);
+      lastWeekStart.setDate(lastWeekEnd.getDate() - 6); // 지난 주 월요일
+      startDate = new Date(lastWeekStart);
+      endDate = new Date(lastWeekEnd);
+      break;
+      
+    case 'this_month':
+      // 이번 달 1일부터 오늘까지
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      endDate = new Date(today);
+      break;
+      
+    case 'last_month':
+      // 지난 달 1일부터 마지막 날까지
+      const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+      startDate = new Date(lastMonth);
+      endDate = new Date(lastMonthEnd);
+      break;
+      
+    default: // 'recent'
+      // 최근 30일
+      startDate = new Date(today);
+      startDate.setDate(today.getDate() - 30);
+      endDate = new Date(today);
+      break;
+  }
+  
+  return {
+    startDate: startDate.toISOString().split('T')[0],
+    endDate: endDate.toISOString().split('T')[0]
+  };
+}
+
+// 소비내역 조회 함수
+// 소비내역 조회 함수
+async function getExpenseHistory(period = 'recent') {
+  try {
+    console.log('소비내역 조회 시도 - 기간:', period);
+    
+    // 로그인 토큰 확인
+    const token = localStorage.getItem('ACCESS_TOKEN');
+    if (!token) {
+      console.warn('로그인 토큰이 없습니다.');
+      return null;
+    }
+    
+    // 기간별 날짜 범위 계산
+    const dateRange = getDateRangeByPeriod(period);
+    console.log('날짜 범위:', dateRange);
+    
+    const response = await call('/api/v1/consumption', 'GET', {
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+      limit: 50 // 충분한 데이터 가져오기
+    });
+    
+    console.log('소비내역 조회 성공:', response);
+    return response;
+  } catch (error) {
+    console.error('소비내역 조회 실패:', error);
+    return null;
+  }
+}
+
+// 소비내역 조회 질문 감지 및 기간 분석 함수
+function analyzeExpenseInquiry(message) {
+  const lowercaseMessage = message.toLowerCase();
+  
+  // 소비내역 관련 키워드 확인
+  const inquiryPatterns = [
+    '소비내역', '지출내역', '가계부', '소비현황', '지출현황',
+    '얼마 썼', '얼마나 썼', '돈 얼마', '지출 얼마',
+    '내역 알려', '내역 보여', '내역 확인',
+    '소비 확인', '지출 확인', '가계부 확인',
+    '소비 리포트', '지출 리포트', '소비 분석'
+  ];
+  
+  const isExpenseInquiry = inquiryPatterns.some(pattern => lowercaseMessage.includes(pattern));
+  
+  if (!isExpenseInquiry) {
+    return null; // 소비내역 조회가 아님
+  }
+  
+  // 기간 분석
+  let period = 'recent'; // 기본값: 최근
+  let periodText = '최근';
+  
+  if (lowercaseMessage.includes('오늘')) {
+    period = 'today';
+    periodText = '오늘';
+  } else if (lowercaseMessage.includes('어제')) {
+    period = 'yesterday';
+    periodText = '어제';
+  } else if (lowercaseMessage.includes('이번주') || lowercaseMessage.includes('이번 주')) {
+    period = 'this_week';
+    periodText = '이번 주';
+  } else if (lowercaseMessage.includes('지난주') || lowercaseMessage.includes('지난 주')) {
+    period = 'last_week';
+    periodText = '지난주';
+  } else if (lowercaseMessage.includes('이번달') || lowercaseMessage.includes('이번 달')) {
+    period = 'this_month';
+    periodText = '이번 달';
+  } else if (lowercaseMessage.includes('지난달') || lowercaseMessage.includes('지난 달')) {
+    period = 'last_month';
+    periodText = '지난 달';
+  }
+  
+  // 리포트 요청인지 확인
+  const isReport = lowercaseMessage.includes('리포트') || lowercaseMessage.includes('분석');
+  
+  return {
+    isExpenseInquiry: true,
+    period: period,
+    periodText: periodText,
+    isReport: isReport
+  };
+}
+
+// 소비내역을 자연스러운 문장으로 변환 (기간별 대응)
+function formatExpenseHistory(data, period, periodText, isReport = false) {
+  if (!data || !data.consumptions || data.consumptions.length === 0) {
+    return `${periodText} 등록된 소비내역이 없어요. "5천원 점심 먹었어" 이런 식으로 말씀해주시면 자동으로 기록해드릴게요!`;
+  }
+  
+  const consumptions = data.consumptions;
+  const totalAmount = data.summary?.totalAmount || 0;
+  
+  // 리포트 형식으로 요청된 경우
+  if (isReport) {
+    return formatExpenseReport(data, period, periodText);
+  }
+  
+  // 기간별 구체적인 날짜 범위 표시
+  let dateRangeText = '';
+  if (period !== 'today' && period !== 'yesterday' && consumptions.length > 0) {
+    const dates = consumptions.map(c => new Date(c.transactionDate)).sort();
+    const startDate = dates[0];
+    const endDate = dates[dates.length - 1];
+    
+    if (startDate.toDateString() === endDate.toDateString()) {
+      dateRangeText = `${startDate.getMonth() + 1}월 ${startDate.getDate()}일`;
+    } else {
+      dateRangeText = `${startDate.getMonth() + 1}월 ${startDate.getDate()}일부터 ${endDate.getMonth() + 1}월 ${endDate.getDate()}일까지`;
+    }
+  }
+  
+  let result = '';
+  
+  // 기간별 인사말
+  if (period === 'today') {
+    result = `오늘의 소비 내역을 알려드릴게요! `;
+  } else if (period === 'yesterday') {  
+    result = `어제의 소비 내역을 알려드릴게요! `;
+  } else if (period === 'this_week') {
+    result = `알겠습니다. ${dateRangeText}의 소비 내역입니다. `;
+  } else if (period === 'this_month') {
+    result = `이번 달 소비 내역을 알려드릴게요. `;
+  } else {
+    result = `${periodText} 소비내역을 알려드릴게요! `;
+  }
+  
+  // 총액 정보
+  if (totalAmount > 0) {
+    const totalFormatted = formatAmountForSpeech(totalAmount);
+    if (period === 'this_week' || period === 'last_week') {
+      result += `총 소비 금액은 ${totalFormatted}원입니다. `;
+    } else {
+      result += `총 지출은 ${totalFormatted}원입니다. `;
+    }
+  }
+  
+  // 개별 내역 (날짜별로 그룹핑)
+  const groupedByDate = groupConsumptionsByDate(consumptions);
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+  
+  // 최대 5일치 또는 10개 항목만 표시
+  let itemCount = 0;
+  for (const dateStr of sortedDates.slice(0, 5)) {
+    const dateConsumptions = groupedByDate[dateStr];
+    const dateFormatted = formatDateForSpeech(dateStr);
+    
+    for (const item of dateConsumptions.slice(0, 3)) { // 날짜당 최대 3개
+      if (itemCount >= 10) break; // 전체 최대 10개
+      
+      const amountFormatted = formatAmountForSpeech(item.amount);
+      const category = item.category || '기타';
+      const merchant = item.merchantName || '일반가맹점';
+      
+      result += `${dateFormatted} ${merchant}에서 ${amountFormatted}원, `;
+      itemCount++;
+    }
+    
+    if (itemCount >= 10) break;
+  }
+  
+  // 마지막 쉼표 제거하고 마무리
+  result = result.replace(/,\s*$/, '. ');
+  result += "더 자세한 내용은 소비현황 페이지에서 확인하실 수 있어요!";
+  
+  return result;
+}
+
+// 소비내역 리포트 포맷팅 함수
+function formatExpenseReport(data, period, periodText) {
+  const consumptions = data.consumptions || [];
+  const totalAmount = data.summary?.totalAmount || 0;
+  
+  if (totalAmount === 0) {
+    return `${periodText} 소비 내역이 없어요.`;
+  }
+  
+  // 카테고리별 집계
+  const categoryStats = {};
+  consumptions.forEach(item => {
+    const category = item.category || '기타';
+    const amount = parseFloat(item.amount) || 0;
+    
+    if (!categoryStats[category]) {
+      categoryStats[category] = 0;
+    }
+    categoryStats[category] += amount;
+  });
+  
+  // 카테고리별 정렬 (금액 순)
+  const sortedCategories = Object.entries(categoryStats)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 5); // 상위 5개만
+  
+  let result = '';
+  
+  // 기간별 리포트 시작 문구
+  if (period === 'this_month') {
+    const currentMonth = new Date().getMonth() + 1;
+    result = `네, ${currentMonth}월의 소비 리포트를 알려드릴게요. `;
+  } else if (period === 'last_month') {
+    const lastMonth = new Date().getMonth() === 0 ? 12 : new Date().getMonth();
+    result = `네, ${lastMonth}월의 소비 리포트를 알려드릴게요. `;
+  } else {
+    result = `네, ${periodText}의 소비 리포트를 알려드릴게요. `;
+  }
+  
+  // 총액
+  const totalFormatted = formatAmountForSpeech(totalAmount);
+  if (period.includes('month')) {
+    result += `한 달 동안 총 소비금액은 ${totalFormatted}원이었습니다. `;
+  } else if (period.includes('week')) {
+    result += `일주일 동안 총 소비금액은 ${totalFormatted}원이었습니다. `;
+  } else {
+    result += `총 소비금액은 ${totalFormatted}원이었습니다. `;
+  }
+  
+  // 카테고리별 분석
+  if (sortedCategories.length > 0) {
+    result += `각 항목별로 나누면 `;
+    
+    sortedCategories.forEach(([category, amount], index) => {
+      const amountFormatted = formatAmountForSpeech(amount);
+      const percentage = ((amount / totalAmount) * 100).toFixed(2);
+      
+      if (index === sortedCategories.length - 1) {
+        result += `${category} ${amountFormatted}원으로 ${percentage}%입니다. `;
+      } else {
+        result += `${category} ${amountFormatted}원으로 ${percentage}%, `;
+      }
+    });
+  }
+  
+  result += "다른 궁금한 점이나 도움이 필요한 부분 있으신가요?";
+  
+  return result;
+}
+
+// 날짜별로 소비내역 그룹핑
+function groupConsumptionsByDate(consumptions) {
+  const grouped = {};
+  
+  consumptions.forEach(item => {
+    const date = item.transactionDate.split('T')[0]; // YYYY-MM-DD 형식
+    
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(item);
+  });
+  
+  return grouped;
+}
+
+// 금액을 음성 합성에 친화적으로 포맷팅
+function formatAmountForSpeech(amount) {
+  if (!amount) return '0';
+  
+  const num = parseInt(amount);
+  
+  if (num >= 100000000) { // 1억 이상
+    const eok = Math.floor(num / 100000000);
+    const remainder = num % 100000000;
+    if (remainder === 0) {
+      return `${eok}억`;
+    } else {
+      const man = Math.floor(remainder / 10000);
+      return `${eok}억 ${man}만`;
+    }
+  } else if (num >= 10000) { // 1만 이상
+    const man = Math.floor(num / 10000);
+    const remainder = num % 10000;
+    if (remainder === 0) {
+      return `${man}만`;
+    } else {
+      return `${man}만 ${remainder}`;
+    }
+  } else if (num >= 1000) { // 1천 이상
+    const cheon = Math.floor(num / 1000);
+    const remainder = num % 1000;
+    if (remainder === 0) {
+      return `${cheon}천`;
+    } else {
+      return `${cheon}천 ${remainder}`;
+    }
+  } else {
+    return num.toString();
+  }
+}
+
+// 날짜를 음성 합성에 친화적으로 포맷팅
+function formatDateForSpeech(dateString) {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  
+  // 오늘인지 확인
+  if (date.toDateString() === today.toDateString()) {
+    return '오늘';
+  }
+  
+  // 어제인지 확인  
+  if (date.toDateString() === yesterday.toDateString()) {
+    return '어제';
+  }
+  
+  // 그 외의 경우
+  return `${month}월 ${day}일`;
 }
 
 // 소비내역을 백엔드에 저장하는 함수 (오류 처리 강화)
@@ -241,7 +628,16 @@ async function processAIResponse(message) {
   try {
     console.log("입력 메시지 처리:", message);
     
-    // 먼저 소비 내역 파싱 시도
+    // 소비내역 조회 질문인지 먼저 확인
+    if (isExpenseInquiry(message)) {
+      console.log('소비내역 조회 요청 감지');
+      const expenseHistory = await getExpenseHistory();
+      const response = formatExpenseHistory(expenseHistory);
+      console.log('소비내역 조회 응답:', response);
+      return response;
+    }
+    
+    // 소비 내역 파싱 시도
     const expenseData = parseExpenseFromInput(message);
     let saved = false;
     

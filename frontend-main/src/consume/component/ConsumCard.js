@@ -35,7 +35,7 @@ function ConsumCard({ cardlist, startDate, endDate, handleOpenModal, totalAmount
                 <div className="filter-totalPrice">
                     <p className='filter-price'>총 소비금액</p>
                     <p className='filter-num'>
-                        {totalAmount.toLocaleString()} 원
+                        {Math.floor(parseFloat(totalAmount) || 0).toLocaleString()} 원
                     </p>
                 </div>
             </div> 

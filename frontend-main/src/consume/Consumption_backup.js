@@ -63,8 +63,8 @@ function Consumption() {
         setIsOpenDate(true);
     };
 
-    const closeDateModal = () => setIsOpenDate(false);
     const closeDetailModal = () => setIsOpenDetail(false);
+    const closeDateModal = () => setIsOpenDate(false);
 
     // 음성 채팅으로 이동하는 함수
     const goToVoiceChat = () => {
@@ -179,7 +179,6 @@ function Consumption() {
                     </div>
                 )}
 
-                {/* 요약 정보 */}
                 <ConsumCard
                     cardlist={userInfo}
                     handleOpenModal={handleOpenDateModal}
@@ -189,10 +188,10 @@ function Consumption() {
                     summaryData={summaryData}
                 />
 
-                {/* 차트 섹션 - 소비 추이, 카테고리별 소비 비율, 요약 정보 */}
+                {/* 차트 섹션 - 노인분들을 위한 큰 그래프 */}
                 <div className="chart-section">
                     <div className="chart-header">
-                        <h2 className="chart-title">📊 소비 분석</h2>
+                        <h2 className="chart-title">📊 소비 현황</h2>
                         <div className="chart-period-buttons">
                             <button 
                                 className={`period-btn ${chartPeriod === 'daily' ? 'active' : ''}`}
@@ -215,40 +214,14 @@ function Consumption() {
                         </div>
                     </div>
                     
-                    {isLoading ? (
-                        <div className='loading-container'>
-                            <p>소비 데이터를 불러오는 중...</p>
-                        </div>
-                    ) : error ? (
-                        <div className='error-container'>
-                            <p className='error-text'>{error}</p>
-                            <button 
-                                className="retry-button" 
-                                onClick={() => fetchConsumptionHistory(startDate, endDate)}
-                            >
-                                다시 시도
-                            </button>
-                        </div>
-                    ) : chartData ? (
+                    {chartData && (
                         <ExpenseChart 
                             data={chartData} 
                             period={chartPeriod}
                         />
-                    ) : (
-                        <div className='no-data-container'>
-                            <p className='no-data-text'>
-                                {voiceRecognitionSupported 
-                                    ? '금복이 챗봇에게 "5000원 점심 먹었어"라고 말해보세요!' 
-                                    : '소비 내역을 직접 등록해주세요.'}
-                            </p>
-                            <button className="go-to-chat-btn-large" onClick={goToVoiceChat}>
-                                🎤 음성 채팅으로 가기
-                            </button>
-                        </div>
                     )}
                 </div>
 
-                {/* 카테고리 필터와 소비 내역 리스트 */}
                 {isLoading ? (
                     <div className='loading-container'>
                         <p>소비 내역을 불러오는 중...</p>

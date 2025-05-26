@@ -60,21 +60,18 @@ const ExpenseChart = ({ data, period }) => {
 
   // 금액 포맷팅 함수
   const formatAmount = (amount) => {
-    // 숫자로 변환하고 소수점 제거
-    const numAmount = Math.floor(parseFloat(amount) || 0);
-    
-    if (numAmount >= 10000) {
-      return `${Math.floor(numAmount / 10000)}만원`;
-    } else if (numAmount >= 1000) {
-      return `${Math.floor(numAmount / 1000)}천원`;
+    if (amount >= 10000) {
+      return `${Math.round(amount / 10000)}만원`;
+    } else if (amount >= 1000) {
+      return `${Math.round(amount / 1000)}천원`;
     }
-    return `${numAmount}원`;
+    return `${amount}원`;
   };
 
   const timelineData = formatTimelineData(data.timeline);
   const categoryData = formatCategoryData(data.categories);
 
-  // 라인 차트 옵션 (소비 추이)
+  // 라인 차트 옵션
   const lineChartOptions = {
     chart: {
       type: 'line',
@@ -126,11 +123,58 @@ const ExpenseChart = ({ data, period }) => {
     }
   };
 
-  // 도넛 차트 옵션 (카테고리별 소비 비율) - 파이차트에서 도넛차트로 개선
-  const donutChartOptions = {
+  // 막대 차트 옵션
+  const barChartOptions = {
     chart: {
-      type: 'donut',
-      height: 450
+      type: 'bar',
+      height: 400,
+      toolbar: { show: false }
+    },
+    colors: ['#4ECDC4'],
+    xaxis: {
+      categories: categoryData.labels,
+      labels: {
+        style: {
+          fontSize: '14px',
+          fontWeight: 600,
+          colors: '#333'
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => formatAmount(value),
+        style: {
+          fontSize: '14px',
+          fontWeight: 600,
+          colors: '#333'
+        }
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: (value) => formatAmount(value)
+      },
+      style: {
+        fontSize: '14px'
+      }
+    },
+    grid: {
+      borderColor: '#e0e0e0'
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        columnWidth: '60%'
+      }
+    }
+  };
+
+  // 파이 차트 옵션
+  const pieChartOptions = {
+    chart: {
+      type: 'pie',
+      height: 400
     },
     colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'],
     labels: categoryData.labels,
@@ -143,75 +187,32 @@ const ExpenseChart = ({ data, period }) => {
       }
     },
     legend: {
-      fontSize: '16px',
+      fontSize: '14px',
       fontWeight: 600,
-      position: 'bottom',
-      offsetY: 10
+      position: 'bottom'
     },
     plotOptions: {
       pie: {
-        donut: {
-          size: '60%',
-          labels: {
-            show: true,
-            name: {
-              show: true,
-              fontSize: '18px',
-              fontWeight: 600,
-              color: '#333'
-            },
-            value: {
-              show: true,
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#FF6B6B',
-              formatter: (val) => formatAmount(val)
-            },
-            total: {
-              show: true,
-              showAlways: true,
-              label: '총 소비',
-              fontSize: '16px',
-              fontWeight: 600,
-              color: '#666',
-              formatter: (w) => {
-                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                return formatAmount(total);
-              }
-            }
-          }
+        dataLabels: {
+          offset: -20
         }
       }
     },
     dataLabels: {
-      enabled: true,
       style: {
         fontSize: '14px',
         fontWeight: 'bold'
       },
       formatter: (val, opts) => {
-        return val > 5 ? `${val.toFixed(0)}%` : '';
-      },
-      dropShadow: {
-        enabled: false
+        const name = opts.w.globals.labels[opts.seriesIndex];
+        return `${name}\n${val.toFixed(0)}%`;
       }
-    },
-    responsive: [{
-      breakpoint: 768,
-      options: {
-        chart: {
-          height: 350
-        },
-        legend: {
-          fontSize: '14px'
-        }
-      }
-    }]
+    }
   };
 
   return (
     <div className="chart-container">
-      {/* 소비 추이 차트 */}
+      {/* 타임라인 차트 */}
       {timelineData.series.length > 0 && timelineData.series[0].data.length > 0 && (
         <div className="chart-section">
           <h3 className="chart-section-title">
@@ -228,18 +229,35 @@ const ExpenseChart = ({ data, period }) => {
         </div>
       )}
 
-      {/* 카테고리별 도넛 차트 (소비 비율) */}
+      {/* 카테고리별 막대 차트 */}
       {categoryData.series.length > 0 && (
         <div className="chart-section">
           <h3 className="chart-section-title">
-            🍩 카테고리별 소비 비율
+            📊 카테고리별 소비 현황
           </h3>
           <div className="chart-wrapper">
             <Chart
-              options={donutChartOptions}
+              options={barChartOptions}
+              series={[{ name: '소비금액', data: categoryData.series }]}
+              type="bar"
+              height={400}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 카테고리별 파이 차트 */}
+      {categoryData.series.length > 0 && (
+        <div className="chart-section">
+          <h3 className="chart-section-title">
+            🥧 카테고리별 소비 비율
+          </h3>
+          <div className="chart-wrapper">
+            <Chart
+              options={pieChartOptions}
               series={categoryData.series}
-              type="donut"
-              height={450}
+              type="pie"
+              height={400}
             />
           </div>
         </div>

@@ -12,13 +12,13 @@ class ConsumptionService {
       // 날짜 범위 조건 추가
       if (startDate || endDate) {
         const { Op } = require('sequelize');
-        whereCondition.transactionDate = {};
+        whereCondition.consumptionDate = {};
         
         if (startDate) {
-          whereCondition.transactionDate[Op.gte] = startDate;
+          whereCondition.consumptionDate[Op.gte] = startDate;
         }
         if (endDate) {
-          whereCondition.transactionDate[Op.lte] = endDate;
+          whereCondition.consumptionDate[Op.lte] = endDate;
         }
       }
 
@@ -31,21 +31,16 @@ class ConsumptionService {
             attributes: ['userNo', 'userId', 'userName']
           }
         ],
-        order: [['transactionDate', 'DESC']]
+        order: [['consumptionDate', 'DESC']]
       });
 
       return consumptions.map(consumption => ({
         consumptionNo: consumption.consumptionNo,
-        merchantName: consumption.merchantName,
-        amount: consumption.amount,
-        category: consumption.category,
-        paymentMethod: consumption.paymentMethod,
-        transactionDate: consumption.transactionDate,
-        location: consumption.location,
-        memo: consumption.memo,
-        riskLevel: consumption.riskLevel,
-        isAnomalous: consumption.isAnomalous,
-        createdAt: consumption.createdAt,
+        consumptionAmount: consumption.consumptionAmount,
+        consumptionCategory: consumption.consumptionCategory,
+        consumptionDescription: consumption.consumptionDescription,
+        consumptionDate: consumption.consumptionDate,
+        consumptionCreatedAt: consumption.consumptionCreatedAt,
         user: consumption.user ? {
           userNo: consumption.user.userNo,
           userId: consumption.user.userId,
@@ -62,16 +57,7 @@ class ConsumptionService {
   /**
    * 소비 내역 생성
    */
-  static async createConsumption({ 
-    userNo, 
-    merchantName, 
-    amount, 
-    category, 
-    paymentMethod, 
-    transactionDate, 
-    location, 
-    memo 
-  }) {
+  static async createConsumption({ userNo, consumptionAmount, consumptionCategory, consumptionDescription, consumptionDate }) {
     try {
       // 사용자 존재 확인
       const user = await User.findOne({
@@ -84,18 +70,14 @@ class ConsumptionService {
 
       const consumption = await Consumption.create({
         userNo,
-        merchantName: merchantName || '일반가맹점',
-        amount,
-        category: category || '기타',
-        paymentMethod: paymentMethod || '현금',
-        transactionDate: transactionDate || new Date(),
-        location,
-        memo,
-        riskLevel: 'LOW',
-        isAnomalous: false
+        consumptionAmount,
+        consumptionCategory,
+        consumptionDescription,
+        consumptionDate: consumptionDate || new Date(),
+        consumptionCreatedAt: new Date()
       });
 
-      console.log(`💰 Consumption created - No: ${consumption.consumptionNo}, UserNo: ${userNo}, Amount: ${amount}`);
+      console.log(`💰 Consumption created - No: ${consumption.consumptionNo}, UserNo: ${userNo}, Amount: ${consumptionAmount}`);
 
       return consumption.consumptionNo;
 
@@ -172,17 +154,17 @@ class ConsumptionService {
       const whereCondition = { userNo };
 
       if (startDate || endDate) {
-        whereCondition.transactionDate = {};
+        whereCondition.consumptionDate = {};
         if (startDate) {
-          whereCondition.transactionDate[Op.gte] = startDate;
+          whereCondition.consumptionDate[Op.gte] = startDate;
         }
         if (endDate) {
-          whereCondition.transactionDate[Op.lte] = endDate;
+          whereCondition.consumptionDate[Op.lte] = endDate;
         }
       }
 
       // 총 소비 금액
-      const totalAmount = await Consumption.sum('amount', {
+      const totalAmount = await Consumption.sum('consumptionAmount', {
         where: whereCondition
       }) || 0;
 
@@ -195,12 +177,12 @@ class ConsumptionService {
       const categoryStats = await Consumption.findAll({
         where: whereCondition,
         attributes: [
-          'category',
-          [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount'],
-          [sequelize.fn('COUNT', sequelize.col('consumption_no')), 'count']
+          'consumptionCategory',
+          [sequelize.fn('SUM', sequelize.col('consumptionAmount')), 'totalAmount'],
+          [sequelize.fn('COUNT', sequelize.col('consumptionNo')), 'count']
         ],
-        group: ['category'],
-        order: [[sequelize.fn('SUM', sequelize.col('amount')), 'DESC']]
+        group: ['consumptionCategory'],
+        order: [[sequelize.fn('SUM', sequelize.col('consumptionAmount')), 'DESC']]
       });
 
       return {
@@ -208,7 +190,7 @@ class ConsumptionService {
         totalCount,
         averageAmount: totalCount > 0 ? Math.round(totalAmount / totalCount) : 0,
         categoryStats: categoryStats.map(stat => ({
-          category: stat.category,
+          category: stat.consumptionCategory,
           totalAmount: parseInt(stat.dataValues.totalAmount),
           count: parseInt(stat.dataValues.count),
           percentage: totalAmount > 0 ? Math.round((parseInt(stat.dataValues.totalAmount) / totalAmount) * 100) : 0
@@ -243,28 +225,6 @@ class ConsumptionService {
 
     } catch (error) {
       console.error('❌ ConsumptionService.getMonthlyReport Error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * 음성 입력용 간소화된 소비 내역 생성
-   */
-  static async createVoiceConsumption({ userNo, merchantName, amount, category, memo }) {
-    try {
-      return await this.createConsumption({
-        userNo,
-        merchantName: merchantName || '음성입력',
-        amount,
-        category: category || '기타',
-        paymentMethod: '현금',
-        transactionDate: new Date(),
-        location: null,
-        memo: memo || ''
-      });
-
-    } catch (error) {
-      console.error('❌ ConsumptionService.createVoiceConsumption Error:', error);
       throw error;
     }
   }
