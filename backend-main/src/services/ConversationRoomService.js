@@ -193,7 +193,7 @@ class ConversationRoomService {
         SELECT cl.created_at
         FROM conversation_logs cl
         INNER JOIN conversation_rooms cr ON cl.conversation_room_no = cr.room_no
-        WHERE cr.user_no = ? AND cr.is_active = 1
+        WHERE cr.user_no = ? AND cr.is_active = true
         ORDER BY cl.created_at DESC
         LIMIT 1
       `, {

@@ -248,6 +248,163 @@ class ConsumptionService {
   }
 
   /**
+   * 기간별 날짜 범위 계산 함수
+   */
+  static getDateRangeByPeriod(period, customMonth = null) {
+    const today = new Date();
+    let startDate, endDate;
+    
+    switch (period) {
+      case 'today':
+        startDate = new Date(today);
+        endDate = new Date(today);
+        break;
+        
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        startDate = new Date(yesterday);
+        endDate = new Date(yesterday);
+        break;
+        
+      case 'this_week':
+        // 이번 주 월요일부터 일요일까지
+        const thisWeekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        thisWeekStart.setDate(today.getDate() + mondayOffset);
+        
+        const thisWeekEnd = new Date(thisWeekStart);
+        thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+        
+        startDate = new Date(thisWeekStart);
+        endDate = new Date(thisWeekEnd);
+        break;
+        
+      case 'last_week':
+        // 지난 주 월요일부터 일요일까지
+        const lastWeekEnd = new Date(today);
+        const currentDayOfWeek = today.getDay();
+        const lastSundayOffset = currentDayOfWeek === 0 ? -7 : -currentDayOfWeek;
+        lastWeekEnd.setDate(today.getDate() + lastSundayOffset);
+        
+        const lastWeekStart = new Date(lastWeekEnd);
+        lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+        
+        startDate = new Date(lastWeekStart);
+        endDate = new Date(lastWeekEnd);
+        break;
+        
+      case 'this_month':
+        // 이번 달 1일부터 오늘까지
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        endDate = new Date(today);
+        break;
+        
+      case 'last_month':
+        // 지난 달 1일부터 마지막 날까지
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+        startDate = new Date(lastMonth);
+        endDate = new Date(lastMonthEnd);
+        break;
+        
+      case 'custom_month':
+        // 구체적인 월 지정
+        if (customMonth) {
+          const currentMonth = today.getMonth() + 1;
+          let targetYear = today.getFullYear();
+          
+          // 현재 월보다 큰 월이면 작년
+          if (customMonth > currentMonth) {
+            targetYear -= 1;
+          }
+          
+          startDate = new Date(targetYear, customMonth - 1, 1);
+          endDate = new Date(targetYear, customMonth, 0);
+        } else {
+          // fallback
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - 30);
+          endDate = new Date(today);
+        }
+        break;
+        
+      default: // 'recent'
+        // 최근 30일
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 30);
+        endDate = new Date(today);
+        break;
+    }
+    
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    };
+  }
+
+  /**
+   * AI 서비스용 소비내역 조회 함수
+   */
+  static async getExpenseHistory(userNo, period = 'recent', customMonth = null) {
+    try {
+      console.log('소비내역 조회 시도 - 기간:', period, customMonth ? `(${customMonth}월)` : '');
+      
+      // 기간별 날짜 범위 계산
+      const dateRange = this.getDateRangeByPeriod(period, customMonth);
+      console.log('날짜 범위:', dateRange);
+      
+      const consumptions = await this.getAllConsumptionsByUser(
+        userNo,
+        dateRange.startDate,
+        dateRange.endDate
+      );
+      
+      const summary = await this.getConsumptionStats(
+        userNo,
+        dateRange.startDate,
+        dateRange.endDate
+      );
+      
+      console.log('소비내역 조회 성공:', { 
+        consumptionCount: consumptions.length,
+        totalAmount: summary.totalAmount 
+      });
+      
+      return {
+        consumptions,
+        summary,
+        period,
+        dateRange
+      };
+      
+    } catch (error) {
+      console.error('소비내역 조회 실패:', error);
+      return null;
+    }
+  }
+
+  /**
+   * AI 서비스용 소비 내역 생성
+   */
+  static async createConsumptionForAI(userNo, data) {
+    try {
+      return await this.createVoiceConsumption({
+        userNo,
+        merchantName: data.merchantName,
+        amount: data.amount,
+        category: data.category,
+        transactionDate: data.transactionDate,
+        memo: data.memo
+      });
+    } catch (error) {
+      console.error('❌ ConsumptionService.createConsumptionForAI Error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 음성 입력용 간소화된 소비 내역 생성
    */
   static async createVoiceConsumption({ userNo, merchantName, amount, category, transactionDate, memo }) {
