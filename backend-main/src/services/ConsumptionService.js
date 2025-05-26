@@ -250,7 +250,7 @@ class ConsumptionService {
   /**
    * 음성 입력용 간소화된 소비 내역 생성
    */
-  static async createVoiceConsumption({ userNo, merchantName, amount, category, memo }) {
+  static async createVoiceConsumption({ userNo, merchantName, amount, category, transactionDate, memo }) {
     try {
       return await this.createConsumption({
         userNo,
@@ -258,7 +258,7 @@ class ConsumptionService {
         amount,
         category: category || '기타',
         paymentMethod: '현금',
-        transactionDate: new Date(),
+        transactionDate: transactionDate || new Date(),
         location: null,
         memo: memo || ''
       });

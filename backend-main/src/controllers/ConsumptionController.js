@@ -246,6 +246,7 @@ class ConsumptionController {
         merchantName = '일반가맹점',
         amount,
         category = '기타',
+        transactionDate,
         memo = '',
         location = null
       } = req.body;
@@ -256,7 +257,7 @@ class ConsumptionController {
         amount: amount,
         category: category,
         paymentMethod: '현금', // 음성 입력은 기본적으로 현금으로 처리
-        transactionDate: new Date(),
+        transactionDate: transactionDate ? new Date(transactionDate) : new Date(),
         location: location,
         memo: memo,
         riskLevel: 'LOW', // 음성 입력은 기본적으로 낮은 위험도
