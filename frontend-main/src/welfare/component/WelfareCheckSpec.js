@@ -31,82 +31,52 @@ function WelfareCheckSpec() {
   
   useEffect(() => {
     const fetchData = async () => {
-      const userInfo = await getUserInfo(); // 유저 정보를 가져온 후에 다음 작업 진행
-      if (!userInfo) return; // 유저 정보를 가져오지 못한 경우, 이후 로직 중단
+      const userInfo = await getUserInfo();
+      if (!userInfo) return;
   
-      if (localStorage.getItem("loginUser") === "PROTECTOR") {
-        // 보호자 기능 제거로 일반 사용자와 동일하게 처리
-        if (isExtraInfo) {
+      if (isExtraInfo) {
+        setUserSpec((prevSpec) => ({
+          ...prevSpec,
+          userNo: userInfo.userNo,
+          userName: userInfo.userName,
+          userBirth: userInfo.userBirth,
+          userAddress: userInfo.userAddress,
+          userAddressDetail: userInfo.userAddressDetail,
+          userGender: userInfo.userGender,
+          userHeight: userInfo.userHeight,
+          userWeight: userInfo.userWeight,
+          userDisease: userInfo.userDisease,
+        }));
+      } else if (welfareNo && welfareBookStartDate && welfareBookUseTime) {
+        if(userInfo.userGender === 0){
+          setIsKnockInfo(false);
+        } else{
+          console.log("사용자 정보 설정 중...");
           setUserSpec((prevSpec) => ({
             ...prevSpec,
+            welfareNo: welfareNo,
+            welfareBookStartDate: welfareBookStartDate,
+            welfareBookUseTime: welfareBookUseTime,
             userNo: userInfo.userNo,
             userName: userInfo.userName,
-            userBirth: userInfo.protegeBirth,
-            protegeAddress: userInfo.protegeAddress,
-            protegeAddressDetail: userInfo.protegeAddressDetail,
-            userGender: userInfo.protegeGender,
-            userHeight: userInfo.protegeHeight,
-            userWeight: userInfo.protegeWeight,
-            userDisease: userInfo.protegeDisease,
-          }));
-        } else {
-          setUserSpec((prevSpec) => ({
-            ...prevSpec,
-            userNo: userInfo.userNo,
-            userName: userInfo.userName,
+            userBirth: userInfo.userBirth,
+            userAddress: userInfo.userAddress,
+            userAddressDetail: userInfo.userAddressDetail,
+            userGender: userInfo.userGender,
+            userHeight: userInfo.userHeight,
+            userWeight: userInfo.userWeight,
+            userDisease: userInfo.userDisease,
+            welfareBookTotalPrice: calculatePrice(welfareBookUseTime)
           }));
         }
+        console.log(userSpec);
+        
       } else {
-        // 내가 일반사용자인데, 이미 정보가 있을 때
-        if (isExtraInfo) {
-          setUserSpec((prevSpec) => ({
-            ...prevSpec,
-            userNo: userInfo.userNo,
-            userName: userInfo.userName,
-            userBirth: userInfo.protegeBirth,
-            protegeAddress: userInfo.protegeAddress,
-            protegeAddressDetail: userInfo.protegeAddressDetail,
-            userGender: userInfo.protegeGender,
-            userHeight: userInfo.protegeHeight,
-            userWeight: userInfo.protegeWeight,
-            userDisease: userInfo.protegeDisease,
-          }));
-        } else if (welfareNo && welfareBookStartDate && welfareBookUseTime) {
-          // 내가 일반사용자인데, 금복이로 예약할 때
-          if(userInfo.protegeGender === 0){
-            //정보 없을 때
-            setIsKnockInfo(false);
-          } else{
-            //정보 있을 때
-            console.log("==============");
-            setUserSpec((prevSpec) => ({
-              ...prevSpec,
-              welfareNo: welfareNo,
-              welfareBookStartDate: welfareBookStartDate,
-              welfareBookUseTime: welfareBookUseTime,
-              userNo: userInfo.userNo,
-              userName: userInfo.userName,
-              protegeUserName: userInfo.userName,
-              userBirth: userInfo.protegeBirth,
-              protegeAddress: userInfo.protegeAddress,
-              protegeAddressDetail: userInfo.protegeAddressDetail,
-              userGender: userInfo.protegeGender,
-              userHeight: userInfo.protegeHeight,
-              userWeight: userInfo.protegeWeight,
-              userDisease: userInfo.protegeDisease,
-              welfareBookTotalPrice: calculatePrice(welfareBookUseTime)
-            }));
-          }
-          console.log(userSpec);
-          
-        } else {
-           // 내가 일반사용자인데, 정보가 없어서 이전 페이지에서 정보를 받았을 때
-          setUserSpec((prevSpec) => ({
-            ...prevSpec,
-            userNo: userInfo.userNo,
-            userName: userInfo.userName,
-          }));
-        }
+        setUserSpec((prevSpec) => ({
+          ...prevSpec,
+          userNo: userInfo.userNo,
+          userName: userInfo.userName,
+        }));
       }
     };
   
@@ -235,8 +205,8 @@ const welfareTime = () => {
             type="text"
             placeholder="등록된 주소가 없습니다."
             value={
-              userSpec.protegeAddress && userSpec.protegeAddress !== "null" 
-                ? `${userSpec.protegeAddress} ${userSpec.protegeAddressDetail !== "null" ? userSpec.protegeAddressDetail : ""}` 
+              userSpec.userAddress && userSpec.userAddress !== "null" 
+                ? `${userSpec.userAddress} ${userSpec.userAddressDetail !== "null" ? userSpec.userAddressDetail : ""}` 
                 : ""
             }
             disabled

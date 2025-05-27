@@ -11,21 +11,9 @@ function ConsumCard({ cardlist, startDate, endDate, handleOpenModal, totalAmount
     return (
         <div className='consumCard-container'>
             {/* 카드 이미지 대신 음성 입력 섹션 */}
-            <div className="voice-input-section">
-                <button 
-                    className={`voice-record-btn ${isRecording ? 'recording' : ''}`}
-                    onClick={onVoiceInput}
-                    disabled={isRecording}
-                >
-                    🎤 {isRecording ? '녹음 중...' : '소비 내역 말하기'}
-                </button>
-                <p className="voice-guide">
-                    예: "커피 5천원 샀어", "마트에서 장보기 3만원"
-                </p>
-            </div>
+            
 
             {/* 기존 카드 정보 표시 부분 제거 */}
-            {/* <p>신한 Silver Care ({cardlist.cardNo.slice(-4)})</p> */}
             
             <div className='filter-content'>
                 <div className="filter-date">

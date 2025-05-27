@@ -15,7 +15,6 @@ function LoginBio(props) {
     const [check, setCheck] = useState(false);  // 인증 결과를 저장하는 상태 변수
     const [isBioChecked, setIsBioChecked] = useState(false);
     const handleMatchCheck = () => {
-        // 보호자 기능 사용 안함으로 직접 홈으로 이동
         navigate('/home');
     };
 

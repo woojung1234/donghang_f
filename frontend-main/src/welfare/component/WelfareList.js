@@ -53,7 +53,6 @@ function WelfareList() {
     }
 
     useEffect(() => {
-        // 보호자 기능 제거로 모든 사용자를 동일하게 처리
         const userNo = localStorage.getItem("userNo");
         if (userNo) {
           call('/api/v1/users', 'GET', userNo)
@@ -73,7 +72,7 @@ function WelfareList() {
 
             <div className={styles["main-container"]}>
                 <div className={`${styles["foryou-section"]} ${styles["detailed-reserve"]}`}>
-                  <p className={`${styles["main-text"]} ${styles["welfare-protegeName"]}`}>{loginUser.userName || ''} 님을 위한</p>
+                  <p className={`${styles["main-text"]} ${styles["welfare-username"]}`}>{loginUser.userName || ''} 님을 위한</p>
                   <Swiper
                     spaceBetween={30}
                     centeredSlides={true}
