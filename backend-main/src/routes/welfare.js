@@ -47,7 +47,7 @@ router.get('/:id', WelfareSyncController.getWelfareServiceDetail);
  * @description 새 복지서비스 생성
  * @access Private (Admin)
  */
-router.post('/', authMiddleware, WelfareController.createWelfare);
+router.post('/', authMiddleware, WelfareController.create);
 
 /**
  * @route PUT /api/welfare/:id
@@ -55,7 +55,7 @@ router.post('/', authMiddleware, WelfareController.createWelfare);
  * @param {number} id - 복지서비스 ID
  * @access Private (Admin)
  */
-router.put('/:id', authMiddleware, WelfareController.updateWelfare);
+router.put('/:id', authMiddleware, WelfareController.update);
 
 /**
  * @route DELETE /api/welfare/:id
@@ -63,6 +63,6 @@ router.put('/:id', authMiddleware, WelfareController.updateWelfare);
  * @param {number} id - 복지서비스 ID
  * @access Private (Admin)
  */
-router.delete('/:id', authMiddleware, WelfareController.deleteWelfare);
+router.delete('/:id', authMiddleware, WelfareController.delete);
 
 module.exports = router;
