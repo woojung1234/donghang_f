@@ -9,7 +9,6 @@
     "test": "jest",
     "lint": "eslint src/",
     "seed": "node src/utils/seed-postgres.js",
-
     "seed-donghang": "node src/utils/seed-donghang.js",
     "init-welfare": "node src/utils/init-welfare-db.js",
     "add-sample-welfare": "node src/utils/add-sample-welfare.js"
@@ -30,9 +29,9 @@
     "node-cron": "^3.0.3",
     "pg": "^8.11.3",
     "sequelize": "^6.35.0",
-
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "eslint": "^8.55.0",
