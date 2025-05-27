@@ -33,11 +33,9 @@ function DisconnectionModal({matchNo}) {
         },
     };
     const handleSubmit = ()=>{
-        call(`/api/v1/match/${matchNo}`,"DELETE",null).then((response)=>{
-            navi('/mypage');
-        }).catch((error)=>{
-            console.log(error);
-        });
+        // 매칭 기능 제거로 단순히 마이페이지로 이동
+        console.log("매칭 기능이 제거되어 단순히 마이페이지로 이동합니다.");
+        navi('/mypage');
     };
     return (
         <div>

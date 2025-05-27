@@ -11,16 +11,10 @@ function WelfareMain() {
 
   useEffect(() => {
     const loginUserStored = localStorage.getItem("loginUser");
-    if (loginUserStored === "PROTECTOR") {
-      call("/api/v1/match", "GET", null)
-        .then((response) => {
-          setLoginUser({ protegeUserName: response.protegeUserName });
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
-    } else {
-      const userNo = localStorage.getItem("userNo");
+    const userNo = localStorage.getItem("userNo");
+    
+    // 사용자 정보 조회 (통합)
+    if (userNo) {
       call('/api/v1/users', 'GET', userNo)
         .then((response) => {
           setLoginUser({ userName: response.userName });
@@ -48,7 +42,7 @@ function WelfareMain() {
 
       <div className={styles["main-container"]}>
         <p className={styles["info-container"]}>
-          <span className={styles["user-name"]}>{loginUser.protegeUserName ? `${loginUser.protegeUserName}` : `${loginUser.userName || ''}`}</span>
+          <span className={styles["user-name"]}>{loginUser.userName || ''}</span>
           <span className={styles.for}> 님을 위한</span>
         </p>
         <p className={styles.infomation}>복지 서비스를</p>

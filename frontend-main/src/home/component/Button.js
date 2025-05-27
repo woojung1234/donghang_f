@@ -59,13 +59,19 @@ function Button({isProtege}) {
       }
       
     },[isProtege]);
+    
     useEffect(()=>{
-      call('/api/v1/match',"GET",null).then((response)=>{
-        setProteName(response.protegeUserName);
-      }).catch((error)=>{
-        console.log(error);
-      });
-    });
+      // 사용자 정보 조회로 통합
+      const userNo = localStorage.getItem("userNo");
+      if (userNo) {
+        call('/api/v1/users',"GET", userNo).then((response)=>{
+          setProteName(response.userName || '사용자');
+        }).catch((error)=>{
+          console.log("사용자 정보 조회 실패:", error);
+          setProteName('사용자');
+        });
+      }
+    }, []);
 
     return (
       <div className={`chat-section-container ${!isProtege ? 'blue-main' : ''}`} onClick={handleButtonClick}>

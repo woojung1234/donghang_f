@@ -31,21 +31,25 @@ function WelfareHanwoolModal({ closeModal, loginUser, isExtraInfo }) {
 
 
   useEffect(() => {
-    call("/api/v1/match", "GET", null)
-      .then((response) => {
-        setUserSpec(prevSpec => ({
-          ...prevSpec,
-          protegeUserName: response.protegeUserName,
-          welfareNo: 3 // welfareNo 설정
-        }));
-      })
-      .catch((error) => {
-        console.log(error.message);
-        setUserSpec(prevSpec => ({
-          ...prevSpec,
-          welfareNo: 3 // welfareNo 설정
-        }));
-      });
+    // 사용자 정보 조회로 변경
+    const userNo = localStorage.getItem("userNo");
+    if (userNo) {
+      call('/api/v1/users', "GET", userNo)
+        .then((response) => {
+          setUserSpec(prevSpec => ({
+            ...prevSpec,
+            protegeUserName: response.userName,
+            welfareNo: 3 // welfareNo 설정
+          }));
+        })
+        .catch((error) => {
+          console.log("사용자 정보 조회 실패:", error);
+          setUserSpec(prevSpec => ({
+            ...prevSpec,
+            welfareNo: 3 // welfareNo 설정
+          }));
+        });
+    }
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 10);

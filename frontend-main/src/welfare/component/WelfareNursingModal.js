@@ -24,27 +24,31 @@ function WelfareNursingModal({ closeModal, loginUser, isExtraInfo }) {
 
 
 useEffect(() => {
-  call("/api/v1/match", "GET", null)
-    .then((response) => {
-      const data = {
-        protegeUserName: response.protegeUserName,
-      };
+  // 사용자 정보 조회로 변경
+  const userNo = localStorage.getItem("userNo");
+  if (userNo) {
+    call('/api/v1/users', "GET", userNo)
+      .then((response) => {
+        const data = {
+          protegeUserName: response.userName,
+        };
 
-      setMatchData(data);
+        setMatchData(data);
 
-      setUserSpec({
-        ...userSpec,
-        protegeUserName: response.protegeUserName,
-        welfareNo: 2
+        setUserSpec({
+          ...userSpec,
+          protegeUserName: response.userName,
+          welfareNo: 2
+        });
+      })
+      .catch((error) => {
+        console.log("사용자 정보 조회 실패:", error);
+        setUserSpec({
+          ...userSpec,
+          welfareNo: 2
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error.message);
-      setUserSpec({
-        ...userSpec,
-        welfareNo: 2
-      });
-    });
+  }
 
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 10);

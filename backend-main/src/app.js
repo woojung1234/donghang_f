@@ -98,16 +98,6 @@ app.use('/api/v1/ai-chat', aiChatRoutes);
 // 공공 API 라우트 추가
 app.use('/api/welfare', welfareServicesRoutes);
 
-// 사용하지 않는 API 경로 명시적 차단
-app.all('/api/v1/match*', (req, res) => {
-  console.log(`⚠️ Deprecated API access attempt: ${req.method} ${req.originalUrl}`);
-  res.status(410).json({
-    message: '이 API 경로는 더 이상 사용되지 않습니다.',
-    error: 'DEPRECATED_API',
-    suggestion: '최신 API 문서를 확인해주세요.'
-  });
-});
-
 // Page Routes (정적 파일 리디렉션)
 app.use('/', pageRoutes);
 

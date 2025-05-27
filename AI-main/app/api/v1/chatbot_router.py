@@ -64,17 +64,6 @@ async def create_conversation_room(data: RoomCreate = Body(default_factory=RoomC
         "conversationRoomNo": 1
     }
 
-# 일치 정보 API
-@router.get("/api/v1/match")
-async def match_endpoint():
-    """
-    프론트엔드가 요청하는 match 엔드포인트
-    """
-    return {
-        "status": "success", 
-        "message": "Match API is working"
-    }
-
 # 대화 처리 API
 @router.post("/api/v1/conversation")
 async def process_conversation(data: ConversationInput, request: Request):

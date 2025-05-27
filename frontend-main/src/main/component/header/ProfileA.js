@@ -7,14 +7,18 @@ function Profile(props) {
   const [protegeName, setProtegeName] = useState('');
   
   useEffect(()=>{
-    call('/api/v1/match','GET',null).then((response)=>{
-      if(response.matchStatus !== null)
-      setProtectorName(response.matchProtectorName);
-      setProtegeName(response.matchProtegeName);
-    }).catch((error)=>{
-
-    });
-  });
+    // 사용자 정보 조회로 변경
+    const userNo = localStorage.getItem("userNo");
+    if (userNo) {
+      call('/api/v1/users','GET', userNo).then((response)=>{
+        setProtegeName(response.userName || '사용자');
+        setProtectorName(''); // 보호자 기능 제거
+      }).catch((error)=>{
+        console.log("사용자 정보 조회 실패:", error);
+        setProtegeName('사용자');
+      });
+    }
+  }, []);
   return (
     <div className="main-header">
       <div className="profile-info">

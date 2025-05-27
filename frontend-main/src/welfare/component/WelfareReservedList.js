@@ -20,25 +20,12 @@ function WelfareReservedList() {
 
 
   useEffect(() => {
+    // 보호자 기능 제거로 모든 사용자를 동일하게 처리
     const userType = localStorage.getItem("loginUser");
-    if (userType === "PROTECTOR") {
-      call("/api/v1/match", "GET", null)
-        .then((response) => {
-          console.log(response);
-          const protegeNo = response.protegeUserNo;
-          setUserNo(protegeNo);  // PROTECTOR일 경우 protegeUserNo를 상태로 저장
-          setIsProtege(true);
-          console.log("Protege user number:", protegeNo);
-          fetchReservations();
-        })
-        .catch((error) => {
-          console.log("Error fetching match:", error.message);
-          setIsProtege(false);
-          fetchReservations();
-        });
-    } else if (userType === "PROTEGE") {
-      const protegeUserNo = localStorage.getItem("userNo");
-      setUserNo(protegeUserNo);  // PROTEGE일 경우 localStorage에서 userNo 값을 상태로 저장
+    const userNo = localStorage.getItem("userNo");
+    
+    if (userNo) {
+      setUserNo(userNo);
       setIsProtege(false);
       fetchReservations();
     } else {

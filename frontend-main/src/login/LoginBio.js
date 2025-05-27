@@ -15,22 +15,8 @@ function LoginBio(props) {
     const [check, setCheck] = useState(false);  // 인증 결과를 저장하는 상태 변수
     const [isBioChecked, setIsBioChecked] = useState(false);
     const handleMatchCheck = () => {
-        call("/api/v1/match", "GET", null)
-            .then((response) => {
-                if (response.matchStatus === "ACCEPT") {
-                    navigate('/home');
-                } else {
-                    navigate('/match');
-                }
-            })
-            .catch((error) => {
-                if (error.matchStatus === null) {
-                    navigate('/match');
-                } else {
-                    console.log(error);
-                    alert("실패");
-                }
-            });
+        // 보호자 기능 사용 안함으로 직접 홈으로 이동
+        navigate('/home');
     };
 
     useEffect(() => {
@@ -83,11 +69,8 @@ function LoginBio(props) {
     
             call("/api/v1/auth/login/bio", "POST", { userNo: userNo, userBioPassword: userBioPassword }).then((response)=>{
                 localStorage.setItem("ACCESS_TOKEN", response.accessToken);
-                if (response.userType === "PROTECTOR") {
-                    handleMatchCheck();
-                  } else {
-                    navigate('/home');
-                  }
+                // 매칭 기능 제거로 모든 사용자 홈으로 이동
+                navigate('/home');
             }).catch(
                 (error)=>{
                 console.log("못 받았어요" + error);

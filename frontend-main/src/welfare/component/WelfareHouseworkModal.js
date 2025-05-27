@@ -31,25 +31,29 @@ function WelfareHouseworkModal({ closeModal, loginUser, isExtraInfo }) {
   };
 
   useEffect(() => {
-      call("/api/v1/match", "GET", null)
+    // 사용자 정보 조회로 변경
+    const userNo = localStorage.getItem("userNo");
+    if (userNo) {
+      call('/api/v1/users', "GET", userNo)
         .then((response) => {
           const data = {
-            protegeUserName: response.protegeUserName,
+            protegeUserName: response.userName,
           };
           setMatchData(data); // 로컬 상태 업데이트
           setUserSpec({
             ...userSpec,
-            protegeUserName: response.protegeUserName,
+            protegeUserName: response.userName,
             welfareNo: 1 // welfareNo 초기값 설정
           });
         })
         .catch((error) => {
-          console.log(error.message);
+          console.log("사용자 정보 조회 실패:", error);
           setUserSpec({
             ...userSpec,
             welfareNo: 1 // welfareNo 초기값 설정
           });
         });
+    }
 
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 10);
