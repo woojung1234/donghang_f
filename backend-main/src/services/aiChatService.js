@@ -24,7 +24,7 @@ class AIChatService {
       '추천해줘', '추천해주세요', '뭐 좋은거 있나', '뭐 좋은거 있을까',
       '오늘 프로그램', '오늘 서비스', '이용할 수 있는', '할 수 있는',
       '복지서비스', '복지 서비스', '서비스 추천', '프로그램 추천',
-      '건강', '운동', '문화', '교육', '봉사', '취미', '여가'
+      '건강', '운동', '문화', '교육', '봉사', '취미', '여가', '일자리', '취업'
     ];
   }
 
@@ -66,12 +66,12 @@ class AIChatService {
     // 구체적인 카테고리 요청 확인
     let specificCategory = null;
     const categoryKeywords = {
-      '건강': ['건강', '운동', '체조', '걷기', '산책', '스포츠', '헬스'],
-      '문화': ['문화', '음악', '미술', '독서', '영화', '공연', '예술'],
-      '교육': ['교육', '배우기', '공부', '강의', '수업', '학습', '스마트폰'],
-      '사회참여': ['봉사', '모임', '커뮤니티', '만남', '사회', '참여'],
-      '돌봄': ['돌봄', '지원', '도움', '케어', '관리', '상담'],
-      '취업': ['일자리', '취업', '일', '직업', '근무']
+      '건강': ['건강', '운동', '체조', '걷기', '산책', '스포츠', '헬스', '의료'],
+      '문화': ['문화', '음악', '미술', '독서', '영화', '공연', '예술', '취미'],
+      '교육': ['교육', '배우기', '공부', '강의', '수업', '학습', '스마트폰', '컴퓨터'],
+      '사회': ['봉사', '모임', '커뮤니티', '만남', '사회', '참여', '활동'],
+      '돌봄': ['돌봄', '지원', '도움', '케어', '관리', '상담', '치료'],
+      '취업': ['일자리', '취업', '일', '직업', '근무', '고용', '구직']
     };
 
     for (const [category, keywords] of Object.entries(categoryKeywords)) {
@@ -88,7 +88,7 @@ class AIChatService {
     };
   }
 
-  // 복지서비스 추천 생성 (개선된 버전)
+  // 복지서비스 추천 생성 (기존 공공 API 데이터 활용)
   async generateWelfareRecommendation(specificCategory = null, userId = null) {
     try {
       logger.info('복지서비스 추천 생성 시작:', { specificCategory, userId });
@@ -105,22 +105,8 @@ class AIChatService {
       );
 
       if (!recommendedServices || recommendedServices.length === 0) {
-        // 샘플 데이터가 없으면 생성
-        logger.info('복지서비스 데이터가 없어 샘플 데이터 생성 시도');
-        await WelfareService.createSampleWelfareData();
-        
-        // 다시 시도
-        const retryServices = await WelfareService.getRecommendedWelfareForAI(
-          userAge, 
-          interests, 
-          3
-        );
-        
-        if (retryServices && retryServices.length > 0) {
-          return this.formatWelfareRecommendationResponse(retryServices, specificCategory);
-        } else {
-          return this.getDefaultActivityRecommendation();
-        }
+        logger.info('추천할 복지서비스가 없습니다.');
+        return this.getDefaultActivityRecommendation();
       }
 
       logger.info('추천할 복지서비스 수:', recommendedServices.length);
@@ -132,7 +118,7 @@ class AIChatService {
     }
   }
 
-  // 복지서비스 추천 응답 포맷팅 (개선된 버전)
+  // 복지서비스 추천 응답 포맷팅 (공공 API 데이터 구조에 맞게 수정)
   formatWelfareRecommendationResponse(services, specificCategory = null) {
     if (!services || services.length === 0) {
       return this.getDefaultActivityRecommendation();
@@ -156,27 +142,27 @@ class AIChatService {
 
     // 서비스별 소개
     services.forEach((service, index) => {
-      const emoji = this.getServiceEmoji(service.welfareCategory);
-      response += `${emoji} **${service.welfareName}**\n`;
+      const emoji = this.getServiceEmoji(service.category);
+      response += `${emoji} **${service.serviceName}**\n`;
       
-      if (service.welfareCategory) {
-        response += `   분류: ${service.welfareCategory}\n`;
+      if (service.category) {
+        response += `   분류: ${service.category}\n`;
       }
       
-      if (service.welfarePrice && service.welfarePrice > 0) {
-        response += `   이용료: ${service.welfarePrice.toLocaleString()}원\n`;
-      } else {
-        response += `   이용료: 무료 💝\n`;
-      }
-      
-      if (service.welfareDescription) {
-        response += `   ${service.welfareDescription}\n`;
-      } else {
-        response += `   ${this.getServiceDescription(service.welfareName, service.welfareCategory)}\n`;
+      if (service.serviceSummary) {
+        // 요약이 너무 길면 줄여서 표시
+        const summary = service.serviceSummary.length > 100 
+          ? service.serviceSummary.substring(0, 100) + '...'
+          : service.serviceSummary;
+        response += `   ${summary}\n`;
       }
 
-      if (service.targetAge) {
-        response += `   대상: ${service.targetAge}\n`;
+      if (service.targetAudience) {
+        response += `   대상: ${service.targetAudience}\n`;
+      }
+
+      if (service.organizationName) {
+        response += `   담당: ${service.organizationName}\n`;
       }
 
       if (service.contactInfo) {
@@ -207,34 +193,18 @@ class AIChatService {
     
     const categoryLower = category.toLowerCase();
     
-    if (categoryLower.includes('건강') || categoryLower.includes('운동')) return '🏃‍♂️';
-    if (categoryLower.includes('문화') || categoryLower.includes('음악') || categoryLower.includes('미술')) return '🎨';
-    if (categoryLower.includes('교육') || categoryLower.includes('학습')) return '📚';
-    if (categoryLower.includes('사회') || categoryLower.includes('봉사') || categoryLower.includes('참여')) return '🤝';
-    if (categoryLower.includes('돌봄') || categoryLower.includes('지원')) return '💜';
-    if (categoryLower.includes('생활')) return '🏠';
-    if (categoryLower.includes('의료') || categoryLower.includes('치료')) return '🏥';
-    if (categoryLower.includes('상담')) return '💬';
-    if (categoryLower.includes('여가') || categoryLower.includes('오락')) return '🎯';
-    if (categoryLower.includes('요리') || categoryLower.includes('식사')) return '🍳';
-    if (categoryLower.includes('취업') || categoryLower.includes('일자리')) return '💼';
+    if (categoryLower.includes('건강') || categoryLower.includes('의료') || categoryLower.includes('보건')) return '🏥';
+    if (categoryLower.includes('문화') || categoryLower.includes('예술') || categoryLower.includes('체육')) return '🎨';
+    if (categoryLower.includes('교육') || categoryLower.includes('평생학습')) return '📚';
+    if (categoryLower.includes('사회') || categoryLower.includes('참여') || categoryLower.includes('봉사')) return '🤝';
+    if (categoryLower.includes('돌봄') || categoryLower.includes('지원') || categoryLower.includes('복지')) return '💜';
+    if (categoryLower.includes('취업') || categoryLower.includes('일자리') || categoryLower.includes('고용')) return '💼';
+    if (categoryLower.includes('주거') || categoryLower.includes('생활')) return '🏠';
+    if (categoryLower.includes('법률') || categoryLower.includes('상담')) return '💬';
+    if (categoryLower.includes('안전') || categoryLower.includes('보안')) return '🛡️';
+    if (categoryLower.includes('환경')) return '🌱';
     
     return '📝';
-  }
-
-  // 서비스별 설명 생성
-  getServiceDescription(serviceName, category) {
-    const descriptions = [
-      '어르신들의 건강하고 즐거운 생활을 위한 서비스입니다.',
-      '많은 분들이 만족하고 계신 인기 프로그램이에요.',
-      '전문가가 함께하는 안전하고 유익한 활동입니다.',
-      '새로운 경험과 즐거움을 선사하는 프로그램이에요.',
-      '건강과 행복을 동시에 챙길 수 있는 서비스입니다.',
-      '또래 친구들과 함께 참여할 수 있어 더욱 즐거워요.',
-      '전문적이고 체계적인 프로그램으로 준비되어 있습니다.'
-    ];
-
-    return descriptions[Math.floor(Math.random() * descriptions.length)];
   }
 
   // 기본 활동 추천 (복지서비스 데이터가 없을 때)
