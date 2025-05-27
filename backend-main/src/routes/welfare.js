@@ -1,4 +1,4 @@
-// backend-main/src/routes/welfare.js 업데이트
+// backend-main/src/routes/welfare.js
 const express = require('express');
 const router = express.Router();
 const WelfareController = require('../controllers/WelfareController');
@@ -24,11 +24,14 @@ router.get('/', WelfareSyncController.getWelfareServices);
 router.get('/stats', WelfareSyncController.getWelfareStats);
 
 /**
- * @route GET /api/welfare/api-status
- * @description 공공 API 연결 상태 확인
+ * @route GET /api/welfare/search
+ * @description 복지서비스 검색
+ * @query {string} keyword - 검색 키워드
+ * @query {number} page - 페이지 번호 (기본값: 1)
+ * @query {number} limit - 페이지당 항목 수 (기본값: 20)
  * @access Public
  */
-router.get('/api-status', WelfareSyncController.checkApiStatus);
+router.get('/search', WelfareSyncController.searchWelfareServices);
 
 /**
  * @route GET /api/welfare/:id
@@ -37,21 +40,6 @@ router.get('/api-status', WelfareSyncController.checkApiStatus);
  * @access Public
  */
 router.get('/:id', WelfareSyncController.getWelfareServiceDetail);
-
-// 관리자 전용 라우트 (인증 필요)
-/**
- * @route POST /api/welfare/sync
- * @description 공공 API에서 복지서비스 데이터 동기화
- * @access Private (Admin)
- */
-router.post('/sync', authMiddleware, WelfareSyncController.syncWelfareServices);
-
-/**
- * @route POST /api/welfare/sample-data
- * @description 샘플 복지서비스 데이터 생성
- * @access Private (Admin)
- */
-router.post('/sample-data', authMiddleware, WelfareSyncController.createSampleData);
 
 // 기존 CRUD 라우트 (관리자 전용)
 /**
