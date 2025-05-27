@@ -1,174 +1,219 @@
-# 동행행 Node.js 백엔드 서버
+# 동행 백엔드 서버
 
-Java Spring Boot에서 Node.js Express로 변환된 백엔드 서버입니다.
+동행 서비스의 Node.js 백엔드 API 서버입니다.
 
-## 🚀 시작하기
+## 🚀 주요 기능
 
-### 1. 환경 설정
+- **사용자 인증 및 관리**: JWT 기반 인증 시스템
+- **소비 내역 관리**: 가계부 기능
+- **복지서비스 관리**: 공공 API 연동 복지서비스 정보 제공
+- **AI 챗봇 (금복이)**: 가계부 기록 및 복지서비스 추천
+- **알림 시스템**: SMS 및 푸시 알림
+- **대화방 관리**: 실시간 대화 기능
 
+## 📦 설치 및 실행
+
+### 1. 의존성 설치
 ```bash
-# 의존성 설치
 npm install
+```
 
-# 환경변수 설정
+### 2. 환경 변수 설정
+`.env.example`을 참고하여 `.env` 파일을 생성하고 필요한 환경 변수를 설정하세요.
+
+```bash
 cp .env.example .env
-# .env 파일을 열어 실제 값들로 수정하세요
 ```
 
-### 2. 데이터베이스 설정
-
-PostgreSQL이 실행 중이어야 합니다:
+### 3. 데이터베이스 설정
+PostgreSQL 데이터베이스를 설정하고 시드 데이터를 생성합니다.
 
 ```bash
-# PostgreSQL 데이터베이스 생성
-createdb donghang
+# 데이터베이스 시드 실행
+npm run seed
+
+# 복지서비스 데이터베이스 초기화
+npm run init-welfare
+
+# 샘플 복지서비스 데이터 추가
+npm run add-sample-welfare
 ```
 
-### 3. 서버 실행
-
+### 4. 서버 실행
 ```bash
-# 개발 모드 (nodemon 사용)
-npm run dev
-
 # 프로덕션 모드
 npm start
-```
 
-## 📋 API 문서
-
-서버 실행 후 다음 URL에서 Swagger UI를 확인할 수 있습니다:
-- http://localhost:9090/api-docs
-
-## 🔧 주요 기능
-
-### 인증 시스템
-- JWT 기반 인증
-- 일반 로그인 (아이디/비밀번호)
-- 간편 비밀번호 로그인
-- 생체 인증 로그인
-
-### 사용자 관리
-- 회원가입/탈퇴
-- 아이디 중복 확인
-- SMS 인증
-- 프로필 관리
-- 간편 결제 비밀번호
-
-### API 엔드포인트
-
-#### 인증
-- `POST /api/v1/auth/login/normal` - 일반 로그인
-- `POST /api/v1/auth/login/simple` - 간편 로그인
-- `POST /api/v1/auth/login/bio` - 생체 로그인
-- `POST /api/v1/auth/logout` - 로그아웃
-
-#### 사용자
-- `GET /api/v1/users/validation/:userId` - 아이디 중복 확인
-- `POST /api/v1/users/validation/phone` - SMS 전송
-- `POST /api/v1/users/validation/number` - SMS 인증
-- `POST /api/v1/users/signup` - 회원가입
-- `GET /api/v1/users` - 회원 정보 조회
-- `PUT /api/v1/users` - 회원 정보 수정
-- `PUT /api/v1/users/withdraw` - 회원 탈퇴
-
-#### 기타
-- `GET /api/v1/conversations` - 대화 관리
-- `GET /api/v1/consumption` - 소비 관리
-- `GET /api/v1/welfare` - 복지 서비스
-- `GET /api/v1/notifications` - 알림 관리
-
-## 🛠️ 기술 스택
-
-- **Node.js** - 런타임 환경
-- **Express.js** - 웹 프레임워크
-- **Sequelize** - ORM (PostgreSQL)
-- **JWT** - 인증
-- **bcryptjs** - 비밀번호 해시
-- **CoolSMS** - SMS 서비스
-- **Swagger** - API 문서화
-
-## 🔐 보안
-
-- Helmet.js를 사용한 HTTP 헤더 보안
-- CORS 설정
-- JWT 토큰 기반 인증
-- 비밀번호 해시화 (bcrypt)
-- 입력 데이터 검증
-
-## 🐛 개발 도구
-
-```bash
-# 테스트 실행
-npm test
-
-# 코드 린팅
-npm run lint
-
-# 서버 재시작 (개발모드)
+# 개발 모드 (nodemon)
 npm run dev
 ```
 
-## 📝 환경변수
+## 🤖 금복이 AI 챗봇 기능
 
-| 변수명 | 설명 | 기본값         |
-|--------|------|-------------|
-| PORT | 서버 포트 | 9090        |
-| NODE_ENV | 실행 환경 | development |
-| DB_HOST | 데이터베이스 호스트 | localhost   |
-| DB_NAME | 데이터베이스 이름 | donghang    |
-| JWT_SECRET | JWT 시크릿 키 | -           |
-| COOLSMS_API_KEY | CoolSMS API 키 | -           |
+### 복지서비스 추천
+금복이가 사용자의 요청에 따라 적절한 복지서비스를 추천합니다.
 
-## 🏗️ 프로젝트 구조
+**추천 요청 예시:**
+- "오늘 뭐할까?"
+- "건강 프로그램 추천해줘"
+- "문화 활동 있나요?"
+- "교육 서비스 알려주세요"
+- "심심해, 뭐 좋은거 있나?"
 
-```
-src/
-├── config/          # 설정 파일들
-│   ├── database.js  # 데이터베이스 설정
-│   ├── jwt.js       # JWT 설정
-│   └── swagger.js   # API 문서 설정
-├── controllers/     # 컨트롤러
-│   ├── AuthController.js
-│   └── UserController.js
-├── middleware/      # 미들웨어
-│   ├── auth.js      # 인증 미들웨어
-│   ├── errorHandler.js
-│   └── notFound.js
-├── models/          # 데이터 모델
-│   └── User.js
-├── routes/          # 라우터
-│   ├── auth.js
-│   ├── users.js
-│   └── ...
-└── app.js           # 메인 애플리케이션
-```
+### 가계부 자동 기록
+음성이나 텍스트로 소비 내역을 말하면 자동으로 가계부에 기록됩니다.
 
-## 🔄 마이그레이션
+**가계부 기록 예시:**
+- "5000원 점심 먹었어"
+- "커피 4000원 샀어"
+- "버스비 1500원 썼어"
+- "마트에서 30000원 장봤어"
 
-Java Spring Boot → Node.js Express 변환 완료:
+## 🏥 복지서비스 관리
 
-✅ **완료된 기능:**
-- 인증 시스템 (JWT)
-- 사용자 관리 (CRUD)
-- SMS 인증
-- 간편 결제 비밀번호
-- API 문서화 (Swagger)
-- 에러 핸들링
-- 보안 설정
+### 새로운 기능
+- **공공 API 연동**: 실제 공공 데이터 포털에서 복지서비스 정보 수집
+- **샘플 데이터 생성**: 테스트용 복지서비스 데이터 자동 생성
+- **지능형 추천**: 사용자의 나이, 관심사에 따른 맞춤형 복지서비스 추천
+- **카테고리별 분류**: 건강, 문화, 교육, 취업, 돌봄, 사회참여 등
 
-⏳ **구현 예정:**
-- 대화 관리 세부 기능
-- 소비 내역 관리
-- 복지 서비스 관리
-- 알림 시스템
-
-## 🚀 배포
+### 복지서비스 API 엔드포인트
 
 ```bash
-# 프로덕션 빌드
-NODE_ENV=production npm start
+# 복지서비스 동기화 (공공 API에서 데이터 수집)
+POST /api/welfare/sync
 
-# PM2 사용 (권장)
-npm install -g pm2
-pm2 start src/app.js --name "donghang-backend"
+# 샘플 데이터 생성
+POST /api/welfare/sample
+
+# 복지서비스 목록 조회
+GET /api/welfare/services
+
+# 복지서비스 통계
+GET /api/welfare/stats
+
+# API 연결 상태 확인
+GET /api/welfare/api-status
 ```
+
+### 샘플 데이터 생성 방법
+
+서버가 실행된 상태에서 다음 방법 중 하나를 사용하세요:
+
+#### 방법 1: 스크립트 실행
+```bash
+node create-sample-welfare-data.js
+```
+
+#### 방법 2: API 호출
+```bash
+curl -X POST http://localhost:3000/api/welfare/sample
+```
+
+#### 방법 3: npm 스크립트 (package.json에 있는 경우)
+```bash
+npm run add-sample-welfare
+```
+
+## 🔧 개발 환경
+
+### 주요 의존성
+- **Express.js**: 웹 프레임워크
+- **Sequelize**: ORM
+- **PostgreSQL**: 데이터베이스
+- **JWT**: 인증
+- **Axios**: HTTP 클라이언트 (공공 API 연동)
+- **Helmet**: 보안
+- **CORS**: CORS 처리
+
+### 개발 도구
+- **Nodemon**: 개발 서버 자동 재시작
+- **ESLint**: 코드 품질 검사
+- **Jest**: 테스트 프레임워크
+- **Swagger**: API 문서화
+
+## 📁 프로젝트 구조
+
+```
+backend-main/
+├── src/
+│   ├── controllers/     # 컨트롤러
+│   │   ├── WelfareSyncController.js  # 복지서비스 동기화
+│   │   └── aiChatController.js       # AI 챗봇
+│   ├── services/        # 서비스 로직
+│   │   ├── WelfareService.js         # 복지서비스 (공공API 연동)
+│   │   └── aiChatService.js          # AI 챗봇 서비스
+│   ├── models/          # 데이터 모델
+│   ├── routes/          # 라우터
+│   ├── middleware/      # 미들웨어
+│   ├── config/          # 설정
+│   └── utils/           # 유틸리티
+├── create-sample-welfare-data.js    # 샘플 데이터 생성 스크립트
+├── package.json
+└── README.md
+```
+
+## 🌟 금복이 AI 챗봇 특징
+
+### 1. 복지서비스 추천
+- **지능형 키워드 인식**: 사용자의 요청을 분석하여 적절한 복지서비스 추천
+- **카테고리별 필터링**: 건강, 문화, 교육 등 구체적인 요청에 맞는 서비스 제공
+- **무료 서비스 우선**: 무료 복지서비스를 우선적으로 추천
+- **상세 정보 제공**: 서비스명, 분류, 이용료, 설명, 대상, 연락처 등 종합 정보 제공
+
+### 2. 자연스러운 대화
+- **다양한 인사말**: 매번 다른 인사말로 친근한 대화 시작
+- **이모지 활용**: 카테고리별 적절한 이모지로 시각적 효과
+- **개인화된 응답**: 사용자의 상황과 요청에 맞는 맞춤형 응답
+
+### 3. 가계부 자동화
+- **자연어 처리**: "5000원 점심 먹었어" 같은 자연스러운 표현 인식
+- **카테고리 자동 분류**: 식비, 교통비, 쇼핑 등 자동 분류
+- **날짜 추출**: "오늘", "어제", "3일 전" 등 자연스러운 날짜 표현 이해
+
+## 🔄 최근 업데이트 (2025.05.27)
+
+### 수정된 오류
+- ❌ **`PublicWelfareApiService` 모듈 찾을 수 없음 오류 해결**
+- ✅ 기존 `WelfareService.js`에 공공 API 기능 통합
+- ✅ `WelfareSyncController.js` 수정하여 올바른 서비스 참조
+
+### 새로운 기능
+- 🆕 **공공 API 연동**: 실제 보건복지부 API에서 복지서비스 데이터 수집
+- 🆕 **샘플 데이터 자동 생성**: 10개의 다양한 복지서비스 샘플 데이터
+- 🆕 **AI 추천 시스템 개선**: 사용자 나이와 관심사 기반 추천
+- 🆕 **상세 정보 확장**: 서비스 설명, 대상 연령, 서비스 지역, 연락처 정보 추가
+
+### 사용 방법
+1. **서버 실행**: `npm start`
+2. **샘플 데이터 생성**: `node create-sample-welfare-data.js`
+3. **금복이와 대화**: "오늘 뭐할까?", "건강 프로그램 추천해줘" 등
+4. **가계부 기록**: "5000원 점심 먹었어" 등
+
+## 🎯 테스트 문구 예시
+
+### 복지서비스 추천 요청
+```
+✅ "오늘 뭐할까?"
+✅ "심심해, 뭐 좋은거 있나?"
+✅ "건강 프로그램 추천해줘"
+✅ "문화 활동 있나요?"
+✅ "교육 서비스 알려주세요"
+✅ "취업 관련 서비스 있어?"
+✅ "봉사활동 하고 싶어"
+```
+
+### 가계부 기록
+```
+✅ "5000원 점심 먹었어"
+✅ "커피 4000원 샀어"
+✅ "버스비 1500원 썼어"
+✅ "마트에서 3만원 장봤어"
+✅ "어제 영화 12000원 봤어"
+```
+
+이제 금복이가 다양한 복지서비스 정보를 제공할 수 있습니다! 🎉
+
+## 📞 지원
+
+문제가 발생하거나 질문이 있으시면 개발팀에 문의해 주세요.
