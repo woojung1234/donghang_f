@@ -3,7 +3,8 @@
     background-color: #FFF8F3;
     margin: 0px;
     display: flex;
-    align-items:end;
+    align-items: end;
+    justify-content: space-between; /* 로고와 오른쪽 요소들 간격 조정 */
     box-sizing: border-box;
 }
 .home-blue{
@@ -17,6 +18,64 @@
     width: 36px;
     margin-right: 10px;
 }
+
+/* 헤더 오른쪽 영역 */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 알림 버튼 스타일 */
+.alarm-container {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.alarm-container:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.alarm-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(0.2); /* 아이콘을 약간 어둡게 */
+}
+
+.alarm-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: #ff4757;
+    color: white;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border: 2px solid #FFF8F3;
+}
+
+/* 사용자 정보 스타일 */
+.user-info {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.user-info:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .home-name{
     font-size: 20px;
     font-weight: bold;
@@ -26,4 +85,26 @@
 .home-arrow{
     margin: 0px 5px;
     height: 20px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .header-right {
+        gap: 10px;
+    }
+    
+    .home-name {
+        font-size: 18px;
+    }
+    
+    .alarm-icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .alarm-badge {
+        font-size: 9px;
+        min-width: 14px;
+        height: 14px;
+    }
 }

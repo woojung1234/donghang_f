@@ -21,7 +21,7 @@ function AlarmList(props) {
     const getAlarmList = () => {
         setIsLoading(true);
         console.log("Fetching alarm list");
-        call('/api/notification', "GET", null)
+        call('/api/v1/notifications', "GET", null)
         .then(response => {
             console.log("Alarm response:", response);
             if (response.notifications) {
@@ -40,7 +40,7 @@ function AlarmList(props) {
      // 알림 수를 가져오는 함수
      const fetchAlarmCount = () => {
         console.log("Fetching alarm count");
-        call('/api/notification', 'GET', { isRead: false })
+        call('/api/v1/notifications', 'GET', { isRead: false })
             .then(response => {
                 console.log("Alarm count response:", response);
                 if (response.total) {

@@ -6,7 +6,7 @@ import Header from 'header/Header';
 import { call } from "login/service/ApiService";
 import { useEffect, useState } from 'react';
 import ConsumCard from "./component/ConsumCard";
-import ConsumDateModal from './component/ConsumDateModal';
+import InlineDatePicker from './component/InlineDatePicker';
 import ConsumDetailModal from './component/ConsumDetailModal';
 import ConsumList from './component/ConsumList';
 import ExpenseChart from './component/ExpenseChart';
@@ -19,7 +19,7 @@ function Consumption() {
     const userInfo = location.state?.value || {};
 
     const [isOpenDetail, setIsOpenDetail] = useState(false);
-    const [isOpenDate, setIsOpenDate] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false); // 인라인 날짜 선택기 상태 추가
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [consumList, setConsumList] = useState([]);
@@ -60,10 +60,9 @@ function Consumption() {
     };
 
     const handleOpenDateModal = () => {
-        setIsOpenDate(true);
+        setShowDatePicker(!showDatePicker); // 모달 대신 인라인 달력 토글
     };
 
-    const closeDateModal = () => setIsOpenDate(false);
     const closeDetailModal = () => setIsOpenDetail(false);
 
     // 음성 채팅으로 이동하는 함수
@@ -72,8 +71,8 @@ function Consumption() {
     };
 
     useEffect(() => {
-        document.body.classList.toggle("unscrollable", isOpenDetail || isOpenDate);
-    }, [isOpenDetail, isOpenDate]);
+        document.body.classList.toggle("unscrollable", isOpenDetail);
+    }, [isOpenDetail]);
 
     // 음성 인식 지원 확인
     useEffect(() => {
@@ -188,6 +187,18 @@ function Consumption() {
                     totalAmount={calculateTotalAmount()}
                     summaryData={summaryData}
                 />
+
+                {/* 인라인 날짜 선택기 */}
+                {showDatePicker && (
+                    <InlineDatePicker
+                        setConsumList={setConsumList}
+                        updateDates={updateDates}
+                        startDate={startDate}
+                        endDate={endDate}
+                        setSummaryData={setSummaryData}
+                        onClose={() => setShowDatePicker(false)}
+                    />
+                )}
 
                 {/* 차트 섹션 - 소비 추이, 카테고리별 소비 비율, 요약 정보 */}
                 <div className="chart-section">
@@ -308,15 +319,6 @@ function Consumption() {
                     isOpen={isOpenDetail}
                     closeModal={closeDetailModal}
                     cardDetail={cardDetail}
-                />
-                <ConsumDateModal
-                    setConsumList={setConsumList}
-                    isOpen={isOpenDate}
-                    closeModal={closeDateModal}
-                    updateDates={updateDates}
-                    startDate={startDate}
-                    endDate={endDate}
-                    setSummaryData={setSummaryData}
                 />
             </div>
         </div>

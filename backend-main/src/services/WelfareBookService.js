@@ -1,6 +1,7 @@
 const WelfareBook = require('../models/WelfareBook');
 const Welfare = require('../models/Welfare');
 const User = require('../models/User');
+const NotificationService = require('./NotificationService');
 
 class WelfareBookService {
   /**
@@ -149,6 +150,21 @@ class WelfareBookService {
 
       console.log(`✅ Welfare booking created - BookNo: ${welfareBook.welfareBookNo}, UserNo: ${userNo}, WelfareNo: ${welfareNo}, Price: ${welfareBookTotalPrice}`);
 
+      // 예약 완료 알림 생성
+      try {
+        await NotificationService.createWelfareBookingNotification({
+          userNo,
+          welfareBookNo: welfareBook.welfareBookNo,
+          welfareName: welfare.welfareName,
+          startDate: welfareBookStartDate,
+          endDate: welfareBookEndDate,
+          totalPrice: welfareBookTotalPrice
+        });
+      } catch (notificationError) {
+        console.error('⚠️ Failed to create welfare booking notification:', notificationError);
+        // 알림 생성 실패해도 예약은 정상 진행
+      }
+
       return welfareBook.welfareBookNo;
 
     } catch (error) {
@@ -166,7 +182,14 @@ class WelfareBookService {
         where: { 
           welfareBookNo,
           userNo // 소유권 확인
-        }
+        },
+        include: [
+          {
+            model: Welfare,
+            as: 'welfare',
+            attributes: ['welfareName']
+          }
+        ]
       });
 
       if (!welfareBook) {
@@ -189,6 +212,20 @@ class WelfareBookService {
       });
 
       console.log(`🗑️ Welfare booking cancelled - BookNo: ${welfareBookNo}, UserNo: ${userNo}`);
+
+      // 예약 취소 알림 생성
+      try {
+        await NotificationService.createWelfareBookingCancelNotification({
+          userNo,
+          welfareBookNo,
+          welfareName: welfareBook.welfare ? welfareBook.welfare.welfareName : '복지서비스',
+          startDate: welfareBook.welfareBookStartDate,
+          endDate: welfareBook.welfareBookEndDate
+        });
+      } catch (notificationError) {
+        console.error('⚠️ Failed to create welfare booking cancel notification:', notificationError);
+        // 알림 생성 실패해도 취소는 정상 진행
+      }
 
       return true;
 

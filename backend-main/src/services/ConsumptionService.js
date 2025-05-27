@@ -1,5 +1,6 @@
 const Consumption = require('../models/Consumption');
 const User = require('../models/User');
+const NotificationService = require('./NotificationService');
 
 class ConsumptionService {
   /**
@@ -96,6 +97,47 @@ class ConsumptionService {
       });
 
       console.log(`💰 Consumption created - No: ${consumption.consumptionNo}, UserNo: ${userNo}, Amount: ${amount}`);
+
+      // 소비내역 등록 알림 생성
+      try {
+        const formattedAmount = Math.floor(amount).toLocaleString();
+        const notificationTitle = '💰 소비내역이 등록되었습니다';
+        const notificationContent = `${merchantName}에서 ${formattedAmount}원 ${category} 지출이 기록되었습니다.`;
+        
+        await NotificationService.createNotification({
+          userNo,
+          title: notificationTitle,
+          content: notificationContent,
+          notificationType: 'PAYMENT',
+          priority: 'NORMAL',
+          relatedId: consumption.consumptionNo,
+          relatedType: 'consumption'
+        });
+        
+        console.log(`🔔 Consumption notification created for UserNo: ${userNo}`);
+        
+        // 큰 금액 소비 시 이상 징후 알림 생성 (10만원 이상)
+        if (amount >= 100000) {
+          const anomalyTitle = '⚠️ 큰 금액 소비 감지';
+          const anomalyContent = `${formattedAmount}원의 큰 금액이 ${merchantName}에서 사용되었습니다. 본인이 사용한 것이 맞는지 확인해주세요.`;
+          
+          await NotificationService.createNotification({
+            userNo,
+            title: anomalyTitle,
+            content: anomalyContent,
+            notificationType: 'ANOMALY',
+            priority: 'HIGH',
+            relatedId: consumption.consumptionNo,
+            relatedType: 'consumption'
+          });
+          
+          console.log(`⚠️ Anomaly notification created for large amount: ${formattedAmount}원`);
+        }
+        
+      } catch (notificationError) {
+        console.error('알림 생성 실패 (소비내역 등록은 성공):', notificationError);
+        // 알림 생성 실패해도 소비내역 등록은 성공으로 처리
+      }
 
       return consumption.consumptionNo;
 

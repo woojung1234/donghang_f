@@ -7,7 +7,7 @@ function AlarmMark({getAlarmList, fetchAlarmCount, alarmNum}) {
    
 
     const handleAlarmAllCheck=()=>{
-        call('/api/v1/notification/allcheck',"PUT",null).then((response)=>{
+        call('/api/v1/notifications/read-all',"PUT",null).then((response)=>{
             fetchAlarmCount();
             getAlarmList();
         }).catch((error)=>{

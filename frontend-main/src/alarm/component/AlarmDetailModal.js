@@ -7,8 +7,8 @@ function AlarmDetailModal({isOpen,closeModal,notificationNo,getAlarmList,fetchAl
     const [notification, setNotification] =useState([]);
    
     useEffect(()=>{
-        call(`/api/v1/notification/read/${notificationNo}`,"GET",null).then((response)=>{
-            setNotification(response);
+        call(`/api/v1/notifications/${notificationNo}`,"GET",null).then((response)=>{
+            setNotification(response.notification || response);
             getAlarmList();
             fetchAlarmCount();
         }).catch((error)=>{
