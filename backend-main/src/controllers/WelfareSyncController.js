@@ -1,5 +1,4 @@
 // backend-main/src/controllers/WelfareSyncController.js
-const PublicWelfareApiService = require('../services/PublicWelfareApiService');
 const WelfareService = require('../services/WelfareService');
 const logger = require('../utils/logger');
 
@@ -11,12 +10,12 @@ class WelfareSyncController {
     try {
       logger.info('복지서비스 동기화 요청 시작');
 
-      // API 키 유효성 검증
-      const isValidKey = await PublicWelfareApiService.validateApiKey();
+      // WelfareService에서 공공 API 동기화 기능 사용
+      const isValidKey = await WelfareService.validatePublicApiKey();
       
       if (!isValidKey) {
         logger.warn('공공 API 키가 유효하지 않음. 샘플 데이터로 대체');
-        const sampleResult = await PublicWelfareApiService.createSampleWelfareData();
+        const sampleResult = await WelfareService.createSampleWelfareData();
         
         return res.json({
           success: true,
@@ -27,7 +26,7 @@ class WelfareSyncController {
       }
 
       // 공공 API에서 데이터 동기화
-      const syncResult = await PublicWelfareApiService.syncAllWelfareServices();
+      const syncResult = await WelfareService.syncFromPublicApi();
 
       res.json({
         success: true,
@@ -41,7 +40,7 @@ class WelfareSyncController {
       
       // 오류 발생시 샘플 데이터라도 생성
       try {
-        const sampleResult = await PublicWelfareApiService.createSampleWelfareData();
+        const sampleResult = await WelfareService.createSampleWelfareData();
         
         res.status(200).json({
           success: true,
@@ -160,7 +159,7 @@ class WelfareSyncController {
    */
   static async checkApiStatus(req, res) {
     try {
-      const isValidKey = await PublicWelfareApiService.validateApiKey();
+      const isValidKey = await WelfareService.validatePublicApiKey();
       
       res.json({
         success: true,
@@ -190,7 +189,7 @@ class WelfareSyncController {
    */
   static async createSampleData(req, res) {
     try {
-      const result = await PublicWelfareApiService.createSampleWelfareData();
+      const result = await WelfareService.createSampleWelfareData();
       
       res.json({
         success: true,
