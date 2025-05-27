@@ -107,7 +107,8 @@ export function handleAutoSub(
   setServiceUrl,
   setWelfareNo,
   setWelfareBookStartDate,
-  setWelfareBookUseTime
+  setWelfareBookUseTime,
+  setShowConfirmModal
 ) {
   setIsLoading(true);
   setIsSpeaking(false);
@@ -124,6 +125,35 @@ export function handleAutoSub(
     setIsLoading(false);
     setIsSpeaking(true);
     
+    
+    // 복지로 사이트 이동 요청인 경우 확인 팝업 표시
+    if (result.type === 'welfare_portal_request' && result.needsConfirmation) {
+      console.log("🌐 복지로 사이트 이동 요청 감지");
+      
+      // 음성으로 응답 읽기
+      if ('speechSynthesis' in window && result.needsVoice) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          // 음성 응답 후 팝업 표시
+          setTimeout(() => {
+            showWelfarePortalConfirm(result.actionUrl, setShowConfirmModal);
+          }, 500);
+        };
+        speechSynthesis.speak(utterance);
+      } else {
+        setIsSpeaking(false);
+        // 음성 없이 바로 팝업 표시
+        setTimeout(() => {
+          showWelfarePortalConfirm(result.actionUrl, setShowConfirmModal);
+        }, 1000);
+      }
+      return;
+    }
+    
+    // 일반 응답 처리
     // 음성으로 응답 읽기
     if ('speechSynthesis' in window && result.needsVoice) {
       const utterance = new SpeechSynthesisUtterance(response);
@@ -216,5 +246,36 @@ export async function getChatSessionStatus(sessionId = 'default') {
   } catch (error) {
     console.error("채팅 세션 상태 조회 오류:", error);
     return null;
+  }
+}
+
+// 복지로 사이트 이동 확인 팝업 표시
+function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
+  console.log("🌐 복지로 사이트 이동 확인 팝업 표시");
+  
+  if (setShowConfirmModal) {
+    setShowConfirmModal({
+      show: true,
+      title: '이동',
+      message: '복지로 사이트로 이동하시겠습니까?',
+      actionUrl: actionUrl,
+      onConfirm: () => {
+        console.log("✅ 복지로 사이트 이동 확인");
+        window.open(actionUrl, '_blank');
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      },
+      onCancel: () => {
+        console.log("❌ 복지로 사이트 이동 취소");
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      }
+    });
   }
 }

@@ -128,7 +128,9 @@ router.post('/signup', [
   body('userId').isLength({ min: 4, max: 20 }).withMessage('아이디는 4-20자 사이여야 합니다.'),
   body('userPassword').isLength({ min: 8 }).withMessage('비밀번호는 최소 8자 이상이어야 합니다.'),
   body('userName').notEmpty().withMessage('이름은 필수입니다.'),
-  body('userPhone').isMobilePhone('ko-KR').withMessage('올바른 전화번호를 입력해주세요.')
+  body('userPhone').isMobilePhone('ko-KR').withMessage('올바른 전화번호를 입력해주세요.'),
+  body('userBirth').isDate().withMessage('올바른 생년월일을 입력해주세요.'),
+  body('userGender').isIn(['남성', '여성']).withMessage('성별을 선택해주세요.')
 ], UserController.createUser);
 
 /**

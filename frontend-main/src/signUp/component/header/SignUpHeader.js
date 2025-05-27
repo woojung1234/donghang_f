@@ -18,8 +18,15 @@ function SignUpHeader(props) {
             case '/signup/infoinput':
                 return (
                     <>
-                        <p>이름과 전화번호를</p>
+                        <p>이름과 전화번호, 생년월일과 성별을</p>
                         <p>입력해 주세요</p>
+                    </>
+                );
+            case '/signup/diseaseselect':
+                return (
+                    <>
+                        <p>지병이 있으시다면</p>
+                        <p>선택해 주세요</p>
                     </>
                 );
             case '/signup/verifycode':
@@ -27,12 +34,6 @@ function SignUpHeader(props) {
                     <>
                         <p>문자로 전송된</p>
                         <p>인증번호 6자리를 입력해주세요</p> 
-                    </>
-                );
-            case '/signup/rolecheck':
-                return (
-                    <>
-                        <p>보호자인가요?</p>
                     </>
                 );
             case '/signup/quickloginsetup':

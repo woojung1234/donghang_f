@@ -165,3 +165,60 @@
   font-weight: bold;
   margin-top: 100px;
 }
+
+
+/* 확인 팝업 모달 스타일 */
+.confirm-modal {
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.confirm-message {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.confirm-cancel-btn,
+.confirm-confirm-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.confirm-cancel-btn {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.confirm-cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.confirm-confirm-btn {
+  background-color: #FF961B;
+  color: white;
+}
+
+.confirm-confirm-btn:hover {
+  background-color: #e8851a;
+}

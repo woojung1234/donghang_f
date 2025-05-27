@@ -35,6 +35,9 @@ function VoiceChat(props) {
   // 텍스트 입력 관련 상태 추가
   const [textInput, setTextInput] = useState("");
 
+  // 확인 팝업 모달 상태 추가
+  const [showConfirmModal, setShowConfirmModal] = useState({ show: false });
+
   const navi = useNavigate();
   
   useEffect(() => {
@@ -68,7 +71,8 @@ function VoiceChat(props) {
       setServiceUrl,
       setWelfareNo,
       setWelfareBookStartDate,
-      setWelfareBookUseTime
+      setWelfareBookUseTime,
+      setShowConfirmModal
     );
   }
 
@@ -186,6 +190,52 @@ function VoiceChat(props) {
           welfareBookStartDate={welfareBookStartDate}
           welfareBookUseTime={welfareBookUseTime}
         />
+      )}
+
+      {/* 복지로 사이트 이동 확인 팝업 */}
+      {showConfirmModal.show && (
+        <Modal 
+          isOpen={showConfirmModal.show} 
+          onRequestClose={() => setShowConfirmModal({ show: false })}
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1000,
+            },
+            content: {
+              top: '50%',
+              left: '50%',
+              right: 'auto',
+              bottom: 'auto',
+              marginRight: '-50%',
+              transform: 'translate(-50%, -50%)',
+              borderRadius: '15px',
+              padding: '20px',
+              maxWidth: '300px',
+              width: '90%',
+              textAlign: 'center'
+            }
+          }}
+        >
+          <div className="confirm-modal">
+            <h3 className="confirm-title">{showConfirmModal.title}</h3>
+            <p className="confirm-message">{showConfirmModal.message}</p>
+            <div className="confirm-buttons">
+              <button 
+                className="confirm-cancel-btn"
+                onClick={showConfirmModal.onCancel}
+              >
+                취소
+              </button>
+              <button 
+                className="confirm-confirm-btn"
+                onClick={showConfirmModal.onConfirm}
+              >
+                예
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

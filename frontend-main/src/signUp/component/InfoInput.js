@@ -12,8 +12,8 @@ function InfoInput(props) {
     const [isUserPhoneError, setIsUserPhoneError] = useState(false);
 
     useEffect(() => {
-        const { userName, userPhone} = userInfo;
-        const isValid = userName && userPhone;
+        const { userName, userPhone, userBirth, userGender} = userInfo;
+        const isValid = userName && userPhone && userBirth && userGender;
         setIsNextEnabled(isValid);
     }, [userInfo]);
 
@@ -50,7 +50,7 @@ function InfoInput(props) {
                     {phone:userInfo.userPhone}
                 ).then((response)=>{
                     console.log(response);
-                    navi("/signup/verifycode");
+                    navi("/signup/diseaseselect");
                 }).catch((error)=>{
                     console.error("전화번호 인증에 실패했습니다.", error);
                     setErrorMessage("전화번호 인증에 실패했습니다.");
@@ -68,8 +68,19 @@ function InfoInput(props) {
             <div className="signup-container">
                 <input onChange={handlechange} className="signup-input" type="text" name='userName' value={userInfo.userName||""} placeholder="이름"/>
                 <div className='check-input check-username'></div>
+                
                 <input onChange={handlePhoneChange} className={`signup-input ${isUserPhoneError?'signup-input-error':''}`} type="tel" name='userPhone' value={formatPhoneNumber(userInfo.userPhone || "")} placeholder="전화번호" maxLength={13}/>
-                <div className='check-input check-userphone'>{errorMessage}</div> 
+                <div className='check-input check-userphone'>{errorMessage}</div>
+                
+                <input onChange={handlechange} className="signup-input" type="date" name='userBirth' value={userInfo.userBirth||""} placeholder="생년월일"/>
+                <div className='check-input check-userbirth'></div>
+                
+                <select onChange={handlechange} className="signup-input" name='userGender' value={userInfo.userGender||""}>
+                    <option value="">성별 선택</option>
+                    <option value="남성">남성</option>
+                    <option value="여성">여성</option>
+                </select>
+                <div className='check-input check-usergender'></div>
             </div>
             <div className="signUpBtn">
                 <Link to="../register" className="signup-backBtn">이전</Link>
