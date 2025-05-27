@@ -328,6 +328,367 @@ class AIChatService {
     
     return responses[Math.floor(Math.random() * responses.length)];
   }
+
+  // 소비내역 조회 요청 감지 (개선됨)
+  isExpenseInquiry(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
+    
+    const expenseInquiryKeywords = [
+      '소비내역', '소비 내역', '가계부', '지출내역', '지출 내역', '내역',
+      '얼마', '썼', '소비', '지출', '돈', '현황', '리포트', '보고서',
+      '알려줘', '알려주세요', '보여줘', '보여주세요', '확인', '체크',
+      '카테고리', '분류', '항목', '많이', '적게', '가장', '제일',
+      '통계', '분석', '비교', '랭킹', '순위'
+    ];
+    
+    const periodKeywords = [
+      '오늘', '어제', '이번주', '지난주', '이번달', '지난달', '한달', '월간',
+      '주간', '일간', '최근', '전체', '올해', '작년', '5월', '4월', '3월'
+    ];
+    
+    // 소비내역 관련 키워드가 포함되어 있는지 확인
+    const hasExpenseKeyword = expenseInquiryKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    );
+    
+    // 기간 키워드나 조회 관련 키워드가 포함되어 있는지 확인
+    const hasPeriodOrInquiry = periodKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    ) || lowercaseMessage.includes('알려') || lowercaseMessage.includes('보여');
+    
+    return hasExpenseKeyword || (hasPeriodOrInquiry && (
+      lowercaseMessage.includes('내역') || 
+      lowercaseMessage.includes('소비') || 
+      lowercaseMessage.includes('지출') ||
+      lowercaseMessage.includes('가계부')
+    ));
+  }
+
+  // 질문 의도 분석 (새로 추가)
+  analyzeExpenseQuestion(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
+    
+    // 카테고리 관련 질문
+    if (lowercaseMessage.includes('카테고리') || lowercaseMessage.includes('분류') || 
+        lowercaseMessage.includes('항목')) {
+      
+      if (lowercaseMessage.includes('가장') && (lowercaseMessage.includes('많이') || 
+          lowercaseMessage.includes('높은') || lowercaseMessage.includes('큰'))) {
+        return { type: 'category_most', intent: 'highest_category' };
+      }
+      
+      if (lowercaseMessage.includes('가장') && (lowercaseMessage.includes('적게') || 
+          lowercaseMessage.includes('낮은') || lowercaseMessage.includes('작은') || 
+          lowercaseMessage.includes('적은'))) {
+        return { type: 'category_least', intent: 'lowest_category' };
+      }
+      
+      if (lowercaseMessage.includes('순위') || lowercaseMessage.includes('랭킹') || 
+          lowercaseMessage.includes('비교')) {
+        return { type: 'category_ranking', intent: 'category_comparison' };
+      }
+      
+      return { type: 'category_general', intent: 'category_breakdown' };
+    }
+    
+    // 총액/요약 질문
+    if (lowercaseMessage.includes('총') || lowercaseMessage.includes('전체') || 
+        lowercaseMessage.includes('얼마나')) {
+      return { type: 'total_amount', intent: 'expense_summary' };
+    }
+    
+    // 특정 상점/장소 질문
+    if (lowercaseMessage.includes('어디서') || lowercaseMessage.includes('어떤 곳') || 
+        lowercaseMessage.includes('가게') || lowercaseMessage.includes('상점')) {
+      return { type: 'merchant_inquiry', intent: 'merchant_analysis' };
+    }
+    
+    // 기간별 비교 질문
+    if (lowercaseMessage.includes('비교') || lowercaseMessage.includes('차이') || 
+        lowercaseMessage.includes('변화')) {
+      return { type: 'period_comparison', intent: 'trend_analysis' };
+    }
+    
+    // 일반적인 내역 조회
+    return { type: 'general_inquiry', intent: 'expense_overview' };
+  }
+
+  // 소비내역 조회
+  async getExpenseHistory(message, userId) {
+    try {
+      // 기간 분석
+      const periodInfo = this.analyzePeriodFromMessage(message);
+      
+      // ConsumptionService를 통해 데이터 조회
+      const result = await consumptionService.getExpenseHistory(userId, periodInfo.type);
+      
+      return result;
+    } catch (error) {
+      logger.error('소비내역 조회 오류:', error);
+      throw error;
+    }
+  }
+
+  // 메시지에서 기간 분석
+  analyzePeriodFromMessage(message) {
+    const lowercaseMessage = message.toLowerCase();
+    
+    if (lowercaseMessage.includes('오늘')) {
+      return { type: 'today' };
+    }
+    
+    if (lowercaseMessage.includes('어제')) {
+      return { type: 'yesterday' };
+    }
+    
+    if (lowercaseMessage.includes('이번주')) {
+      return { type: 'this_week' };
+    }
+    
+    if (lowercaseMessage.includes('지난주')) {
+      return { type: 'last_week' };
+    }
+    
+    if (lowercaseMessage.includes('이번달') || lowercaseMessage.includes('한달')) {
+      return { type: 'this_month' };
+    }
+    
+    if (lowercaseMessage.includes('지난달')) {
+      return { type: 'last_month' };
+    }
+    
+    // 기본값: 최근
+    return { type: 'recent' };
+  }
+
+  // 소비내역 응답 포맷팅 (개선됨)
+  formatExpenseHistory(expenseData, originalMessage, questionAnalysis = null) {
+    if (!expenseData || !expenseData.consumptions || expenseData.consumptions.length === 0) {
+      return "조회하신 기간에는 소비내역이 없습니다.";
+    }
+    
+    const { consumptions, summary } = expenseData;
+    
+    // 질문 의도에 따른 맞춤형 응답
+    if (questionAnalysis) {
+      switch (questionAnalysis.intent) {
+        case 'highest_category':
+          return this.formatHighestCategoryResponse(summary, originalMessage);
+        case 'lowest_category':
+          return this.formatLowestCategoryResponse(summary, originalMessage);
+        case 'category_comparison':
+          return this.formatCategoryComparisonResponse(summary, originalMessage);
+        case 'category_breakdown':
+          return this.formatCategoryBreakdownResponse(summary, originalMessage);
+        case 'merchant_analysis':
+          return this.formatMerchantAnalysisResponse(consumptions, originalMessage);
+        case 'expense_summary':
+          return this.formatExpenseSummaryResponse(summary, originalMessage);
+      }
+    }
+    
+    // 기본 응답 포맷 (기존 로직 유지하되 더 자연스럽게)
+    let response = "";
+    
+    // 기간별 제목
+    const period = this.getPeriodFromMessage(originalMessage);
+    response += `${period} 소비내역을 확인해드릴게요. `;
+    
+    // 총 금액 및 기본 정보 (소수점 제거)
+    const totalAmount = Math.floor(summary.totalAmount);
+    response += `총 ${totalAmount.toLocaleString()}원을 ${summary.totalCount}건의 거래로 사용하셨네요. `;
+    
+    // 카테고리별 통계 (상위 3개)
+    if (summary.categoryStats && summary.categoryStats.length > 0) {
+      response += "카테고리별로 보면 ";
+      summary.categoryStats.slice(0, 3).forEach((category, index) => {
+        const categoryAmount = Math.floor(category.totalAmount);
+        if (index === 0) {
+          response += `${category.category}에서 ${categoryAmount.toLocaleString()}원(${category.percentage}%)`;
+        } else if (index === summary.categoryStats.slice(0, 3).length - 1) {
+          response += `, ${category.category}에서 ${categoryAmount.toLocaleString()}원(${category.percentage}%)을 사용하셨어요. `;
+        } else {
+          response += `, ${category.category}에서 ${categoryAmount.toLocaleString()}원(${category.percentage}%)`;
+        }
+      });
+    }
+    
+    response += "더 자세한 내용은 소비내역 페이지에서 확인하실 수 있어요.";
+    
+    return response;
+  }
+
+  // 가장 많이 사용한 카테고리 응답
+  formatHighestCategoryResponse(summary, originalMessage) {
+    if (!summary.categoryStats || summary.categoryStats.length === 0) {
+      return "카테고리별 데이터가 없습니다.";
+    }
+    
+    const period = this.getPeriodFromMessage(originalMessage);
+    const highestCategory = summary.categoryStats[0];
+    const amount = Math.floor(highestCategory.totalAmount);
+    
+    return `${period} 가장 많이 사용한 카테고리는 **${highestCategory.category}**예요! ` +
+           `${amount.toLocaleString()}원으로 전체의 ${highestCategory.percentage}%를 차지하고 있네요. ` +
+           `다음으로는 ${summary.categoryStats[1]?.category || '기타'} 카테고리가 많았어요.`;
+  }
+
+  // 가장 적게 사용한 카테고리 응답
+  formatLowestCategoryResponse(summary, originalMessage) {
+    if (!summary.categoryStats || summary.categoryStats.length === 0) {
+      return "카테고리별 데이터가 없습니다.";
+    }
+    
+    const period = this.getPeriodFromMessage(originalMessage);
+    const lowestCategory = summary.categoryStats[summary.categoryStats.length - 1];
+    const amount = Math.floor(lowestCategory.totalAmount);
+    
+    return `${period} 가장 적게 사용한 카테고리는 **${lowestCategory.category}**예요! ` +
+           `${amount.toLocaleString()}원으로 전체의 ${lowestCategory.percentage}%만 사용하셨네요. ` +
+           `반대로 가장 많이 사용한 건 ${summary.categoryStats[0].category} 카테고리였어요.`;
+  }
+
+  // 카테고리 비교 응답
+  formatCategoryComparisonResponse(summary, originalMessage) {
+    if (!summary.categoryStats || summary.categoryStats.length === 0) {
+      return "카테고리별 데이터가 없습니다.";
+    }
+    
+    const period = this.getPeriodFromMessage(originalMessage);
+    let response = `${period} 카테고리별 소비 순위를 알려드릴게요!\\n\\n`;
+    
+    summary.categoryStats.forEach((category, index) => {
+      const amount = Math.floor(category.totalAmount);
+      const rank = index + 1;
+      const emoji = this.getCategoryEmoji(category.category);
+      
+      response += `${rank}위. ${emoji} ${category.category}: ${amount.toLocaleString()}원 (${category.percentage}%)\\n`;
+    });
+    
+    response += `\\n가장 큰 차이는 ${summary.categoryStats[0].category}와 ${summary.categoryStats[summary.categoryStats.length - 1].category} 사이네요!`;
+    
+    return response;
+  }
+
+  // 카테고리 세부 분석 응답
+  formatCategoryBreakdownResponse(summary, originalMessage) {
+    const period = this.getPeriodFromMessage(originalMessage);
+    let response = `${period} 카테고리별 소비 분석이에요!\\n\\n`;
+    
+    if (summary.categoryStats && summary.categoryStats.length > 0) {
+      summary.categoryStats.forEach((category, index) => {
+        const amount = Math.floor(category.totalAmount);
+        const emoji = this.getCategoryEmoji(category.category);
+        
+        response += `${emoji} **${category.category}**: ${amount.toLocaleString()}원 (${category.percentage}%)\\n`;
+      });
+      
+      const total = Math.floor(summary.totalAmount);
+      response += `\\n💰 **총 합계**: ${total.toLocaleString()}원`;
+    }
+    
+    return response;
+  }
+
+  // 상점/장소 분석 응답
+  formatMerchantAnalysisResponse(consumptions, originalMessage) {
+    const period = this.getPeriodFromMessage(originalMessage);
+    const merchantStats = this.calculateMerchantStats(consumptions);
+    
+    let response = `${period} 주로 이용한 곳들을 알려드릴게요!\\n\\n`;
+    
+    merchantStats.slice(0, 5).forEach((merchant, index) => {
+      const amount = Math.floor(merchant.totalAmount);
+      response += `${index + 1}. **${merchant.merchantName}**: ${amount.toLocaleString()}원 (${merchant.count}회)\\n`;
+    });
+    
+    if (merchantStats.length > 5) {
+      response += `\\n그 외 ${merchantStats.length - 5}곳에서 더 사용하셨어요.`;
+    }
+    
+    return response;
+  }
+
+  // 총액/요약 응답
+  formatExpenseSummaryResponse(summary, originalMessage) {
+    const period = this.getPeriodFromMessage(originalMessage);
+    const totalAmount = Math.floor(summary.totalAmount);
+    
+    let response = `${period} 총 **${totalAmount.toLocaleString()}원**을 사용하셨어요! `;
+    
+    if (summary.totalCount) {
+      response += `${summary.totalCount}건의 거래가 있었고, `;
+    }
+    
+    if (summary.categoryStats && summary.categoryStats.length > 0) {
+      const avgPerCategory = Math.floor(totalAmount / summary.categoryStats.length);
+      response += `카테고리당 평균 ${avgPerCategory.toLocaleString()}원 정도씩 사용하셨네요. `;
+      
+      response += `가장 많이 사용한 건 ${summary.categoryStats[0].category}(${summary.categoryStats[0].percentage}%)이고, `;
+      response += `가장 적게 사용한 건 ${summary.categoryStats[summary.categoryStats.length - 1].category}(${summary.categoryStats[summary.categoryStats.length - 1].percentage}%)예요.`;
+    }
+    
+    return response;
+  }
+
+  // 메시지에서 기간 추출 (개선됨)
+  getPeriodFromMessage(message) {
+    const lowercaseMessage = message.toLowerCase();
+    
+    if (lowercaseMessage.includes('오늘')) return '오늘';
+    if (lowercaseMessage.includes('어제')) return '어제';
+    if (lowercaseMessage.includes('이번주')) return '이번 주';
+    if (lowercaseMessage.includes('지난주')) return '지난 주';
+    if (lowercaseMessage.includes('이번달') || lowercaseMessage.includes('한달')) return '이번 달';
+    if (lowercaseMessage.includes('지난달')) return '지난 달';
+    if (lowercaseMessage.includes('5월')) return '5월';
+    if (lowercaseMessage.includes('4월')) return '4월';
+    if (lowercaseMessage.includes('3월')) return '3월';
+    
+    return '최근';
+  }
+
+  // 상점별 통계 계산
+  calculateMerchantStats(consumptions) {
+    const merchantMap = new Map();
+    
+    consumptions.forEach(transaction => {
+      const merchantName = transaction.merchantName || '기타';
+      if (!merchantMap.has(merchantName)) {
+        merchantMap.set(merchantName, {
+          merchantName: merchantName,
+          totalAmount: 0,
+          count: 0
+        });
+      }
+      
+      const merchant = merchantMap.get(merchantName);
+      merchant.totalAmount += transaction.amount;
+      merchant.count += 1;
+    });
+    
+    return Array.from(merchantMap.values())
+      .sort((a, b) => b.totalAmount - a.totalAmount);
+  }
+
+  // 카테고리별 이모지
+  getCategoryEmoji(category) {
+    if (!category) return '📝';
+    
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('식비') || categoryLower.includes('음식')) return '🍽️';
+    if (categoryLower.includes('교통')) return '🚗';
+    if (categoryLower.includes('쇼핑') || categoryLower.includes('의류')) return '🛍️';
+    if (categoryLower.includes('의료') || categoryLower.includes('건강')) return '🏥';
+    if (categoryLower.includes('생활용품')) return '🏠';
+    if (categoryLower.includes('문화') || categoryLower.includes('여가')) return '🎭';
+    if (categoryLower.includes('통신')) return '📱';
+    if (categoryLower.includes('교육')) return '📚';
+    
+    return '💰';
+  }
+
   extractDateFromText(text) {
     const today = new Date();
     
@@ -579,6 +940,34 @@ class AIChatService {
         };
       }
       
+      // 6. 소비내역 조회 요청 감지 (개선됨)
+      if (this.isExpenseInquiry(message)) {
+        logger.info('소비내역 조회 요청 감지');
+        try {
+          // 질문 의도 분석
+          const questionAnalysis = this.analyzeExpenseQuestion(message);
+          logger.info('질문 의도 분석 결과:', questionAnalysis);
+          
+          const expenseHistory = await this.getExpenseHistory(message, userId);
+          const formattedResponse = this.formatExpenseHistory(expenseHistory, message, questionAnalysis);
+          
+          return {
+            type: 'expense_inquiry',
+            content: formattedResponse,
+            needsVoice: true,
+            questionAnalysis: questionAnalysis
+          };
+        } catch (error) {
+          logger.error('소비내역 조회 오류:', error);
+          return {
+            type: 'expense_inquiry_error',
+            content: '소비내역을 조회하는 중 오류가 발생했습니다. 다시 시도해주세요.',
+            needsVoice: true
+          };
+        }
+      }
+
+      
       // 3. 기존 소비내역 처리 로직
       const expenseData = this.parseExpenseFromInput(message, true);
       
@@ -637,7 +1026,7 @@ class AIChatService {
 
   generateSmartResponse(expenseData, saved, dateFormatted = null) {
     if (expenseData && saved) {
-      const amount = expenseData.amount.toLocaleString();
+      const amount = Math.floor(expenseData.amount).toLocaleString();
       const category = expenseData.category;
       const merchant = expenseData.merchantName;
       const dateText = dateFormatted || '오늘';
