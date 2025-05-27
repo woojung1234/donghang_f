@@ -26,6 +26,12 @@ class AIChatService {
       '복지서비스', '복지 서비스', '서비스 추천', '프로그램 추천',
       '건강', '운동', '문화', '교육', '봉사', '취미', '여가', '일자리', '취업'
     ];
+
+    // 상세정보 요청 키워드
+    this.detailKeywords = [
+      '자세히', '상세히', '더 알려줘', '더 알고 싶어', '정보 알려줘', '어떤 서비스',
+      '무슨 서비스', '뭔가요', '뭐예요', '설명해줘', '알려주세요', '궁금해'
+    ];
   }
 
   // 세션 상태 초기화
@@ -33,7 +39,9 @@ class AIChatService {
     if (!this.sessionStates.has(sessionId)) {
       this.sessionStates.set(sessionId, {
         pendingExpenseData: null,
-        waitingForDateConfirmation: false
+        waitingForDateConfirmation: false,
+        lastRecommendedServices: null, // 마지막으로 추천한 서비스들 저장
+        waitingForServiceDetail: false
       });
     }
   }
@@ -50,9 +58,18 @@ class AIChatService {
     this.sessionStates.set(sessionId, { ...currentState, ...updates });
   }
 
+  // 상세정보 요청 감지
+  isDetailRequest(message, sessionState) {
+    const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
+    
+    // 세션에 마지막 추천 서비스가 있고, 상세정보 요청 키워드가 포함된 경우
+    return sessionState.lastRecommendedServices && 
+           this.detailKeywords.some(keyword => lowercaseMessage.includes(keyword));
+  }
+
   // 활동/복지서비스 추천 요청 감지
   analyzeActivityInquiry(message) {
-    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
     
     // 활동 추천 관련 키워드 확인
     const isActivityRequest = this.activityKeywords.some(keyword => 
@@ -88,8 +105,8 @@ class AIChatService {
     };
   }
 
-  // 복지서비스 추천 생성 (기존 공공 API 데이터 활용)
-  async generateWelfareRecommendation(specificCategory = null, userId = null) {
+  // 복지서비스 추천 생성 (간소화된 형태)
+  async generateWelfareRecommendation(specificCategory = null, userId = null, sessionId = 'default') {
     try {
       logger.info('복지서비스 추천 생성 시작:', { specificCategory, userId });
 
@@ -109,8 +126,14 @@ class AIChatService {
         return this.getDefaultActivityRecommendation();
       }
 
+      // 세션에 추천된 서비스들 저장
+      this.updateSessionState(sessionId, { 
+        lastRecommendedServices: recommendedServices,
+        waitingForServiceDetail: true 
+      });
+
       logger.info('추천할 복지서비스 수:', recommendedServices.length);
-      return this.formatWelfareRecommendationResponse(recommendedServices, specificCategory);
+      return this.formatSimpleWelfareRecommendation(recommendedServices, specificCategory);
 
     } catch (error) {
       logger.error('복지서비스 추천 생성 오류:', error);
@@ -118,8 +141,8 @@ class AIChatService {
     }
   }
 
-  // 복지서비스 추천 응답 포맷팅 (공공 API 데이터 구조에 맞게 수정)
-  formatWelfareRecommendationResponse(services, specificCategory = null) {
+  // 간소화된 복지서비스 추천 응답 포맷팅 (제목만)
+  formatSimpleWelfareRecommendation(services, specificCategory = null) {
     if (!services || services.length === 0) {
       return this.getDefaultActivityRecommendation();
     }
@@ -133,56 +156,76 @@ class AIChatService {
     // 인사말
     const greetings = [
       `안녕하세요! 오늘 ${todayName}에는 이런 복지서비스는 어떠세요? 😊`,
-      `좋은 하루예요! 오늘은 이런 활동을 추천해드려요! 🌟`,
-      `안녕하세요! 오늘 ${todayName}에 해볼 만한 서비스를 소개해드릴게요! 👍`,
-      `반갑습니다! 오늘은 이런 복지서비스가 있어요! ✨`
+      `좋은 하루예요! 오늘은 이런 서비스들을 추천해드려요! 🌟`,
+      `안녕하세요! 오늘 ${todayName}에 이용하실 수 있는 서비스예요! 👍`
     ];
 
-    response += greetings[Math.floor(Math.random() * greetings.length)] + '\n\n';
+    response += greetings[Math.floor(Math.random() * greetings.length)] + '\\n\\n';
 
-    // 서비스별 소개
+    // 서비스 제목만 간단히 나열
     services.forEach((service, index) => {
       const emoji = this.getServiceEmoji(service.category);
-      response += `${emoji} **${service.serviceName}**\n`;
+      response += `${index + 1}. ${emoji} **${service.serviceName}**\\n`;
       
+      // 카테고리만 간단히 표시
       if (service.category) {
-        response += `   분류: ${service.category}\n`;
-      }
-      
-      if (service.serviceSummary) {
-        // 요약이 너무 길면 줄여서 표시
-        const summary = service.serviceSummary.length > 100 
-          ? service.serviceSummary.substring(0, 100) + '...'
-          : service.serviceSummary;
-        response += `   ${summary}\n`;
-      }
-
-      if (service.targetAudience) {
-        response += `   대상: ${service.targetAudience}\n`;
-      }
-
-      if (service.organizationName) {
-        response += `   담당: ${service.organizationName}\n`;
-      }
-
-      if (service.contactInfo) {
-        response += `   문의: ${service.contactInfo}\n`;
+        response += `   📂 ${service.category}\\n`;
       }
       
       if (index < services.length - 1) {
-        response += '\n';
+        response += '\\n';
       }
     });
 
-    // 마무리 멘트
-    const closingMessages = [
-      '\n관심 있는 서비스가 있으시면 복지서비스 페이지에서 자세한 정보를 확인하실 수 있어요!',
-      '\n더 자세한 내용은 복지서비스 메뉴에서 확인해보세요! 📋',
-      '\n궁금한 서비스가 있으시면 언제든 말씀해주세요! 🤗',
-      '\n오늘도 건강하고 즐거운 하루 보내세요! 💝'
-    ];
+    // 상세정보 안내 멘트
+    response += '\\n\\n💡 궁금한 서비스가 있으시면 "자세히 알려줘"라고 말씀해주세요!';
+    response += '\\n복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요! 📋';
 
-    response += closingMessages[Math.floor(Math.random() * closingMessages.length)];
+    return response;
+  }
+
+  // 상세 복지서비스 정보 제공
+  formatDetailedWelfareRecommendation(services) {
+    if (!services || services.length === 0) {
+      return '죄송합니다. 상세 정보를 가져올 수 없습니다.';
+    }
+
+    let response = '📋 **복지서비스 상세 정보**\\n\\n';
+
+    services.forEach((service, index) => {
+      const emoji = this.getServiceEmoji(service.category);
+      response += `${emoji} **${service.serviceName}**\\n`;
+      
+      if (service.serviceSummary) {
+        response += `📝 **내용**: ${service.serviceSummary}\\n`;
+      }
+
+      if (service.targetAudience) {
+        response += `👥 **대상**: ${service.targetAudience}\\n`;
+      }
+
+      if (service.applicationMethod) {
+        response += `📋 **신청방법**: ${service.applicationMethod}\\n`;
+      }
+
+      if (service.organizationName) {
+        response += `🏢 **담당기관**: ${service.organizationName}\\n`;
+      }
+
+      if (service.contactInfo) {
+        response += `📞 **문의**: ${service.contactInfo}\\n`;
+      }
+
+      if (service.website) {
+        response += `🌐 **웹사이트**: ${service.website}\\n`;
+      }
+      
+      if (index < services.length - 1) {
+        response += '\\n' + '─'.repeat(30) + '\\n\\n';
+      }
+    });
+
+    response += '\\n\\n📱 더 많은 복지서비스는 복지서비스 메뉴에서 확인하세요!';
 
     return response;
   }
@@ -234,7 +277,7 @@ class AIChatService {
 
     const selected = defaultActivities[Math.floor(Math.random() * defaultActivities.length)];
     
-    return `오늘은 **${selected.name}**은/는 어떠세요?\n\n${selected.description}\n\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요! 😊`;
+    return `오늘은 **${selected.name}**은/는 어떠세요?\\n\\n${selected.description}\\n\\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요! 😊`;
   }
 
   // 기존 함수들 (날짜 추출, 소비내역 파싱 등)...
@@ -408,19 +451,40 @@ class AIChatService {
     return defaultMerchants[category] || '일반가맹점';
   }
 
-  // 메인 AI 응답 처리 함수 (복지서비스 추천 기능 강화)
+  // 메인 AI 응답 처리 함수 (수정됨)
   async processMessage(message, userId, sessionId = 'default') {
     try {
       logger.info(`AI 메시지 처리 시작 - 사용자: ${userId}, 세션: ${sessionId}, 메시지: ${message}`);
       
-      // 1. 복지서비스/활동 추천 요청 감지 (최우선)
+      const sessionState = this.getSessionState(sessionId);
+      
+      // 1. 상세정보 요청 확인 (우선순위 최상위)
+      if (this.isDetailRequest(message, sessionState)) {
+        logger.info('복지서비스 상세정보 요청 감지');
+        const detailedInfo = this.formatDetailedWelfareRecommendation(sessionState.lastRecommendedServices);
+        
+        // 세션 상태 초기화
+        this.updateSessionState(sessionId, { 
+          lastRecommendedServices: null,
+          waitingForServiceDetail: false 
+        });
+        
+        return {
+          type: 'welfare_detail',
+          content: detailedInfo,
+          needsVoice: true
+        };
+      }
+      
+      // 2. 복지서비스/활동 추천 요청 감지
       const activityAnalysis = this.analyzeActivityInquiry(message);
       
       if (activityAnalysis) {
         logger.info('복지서비스 추천 요청 감지:', activityAnalysis);
         const recommendation = await this.generateWelfareRecommendation(
           activityAnalysis.specificCategory, 
-          userId
+          userId,
+          sessionId
         );
         
         return {
@@ -430,7 +494,7 @@ class AIChatService {
         };
       }
       
-      // 2. 기존 소비내역 처리 로직...
+      // 3. 기존 소비내역 처리 로직
       const expenseData = this.parseExpenseFromInput(message, true);
       
       if (expenseData && !expenseData.needsDateConfirmation) {
@@ -447,7 +511,7 @@ class AIChatService {
         };
       }
       
-      // 3. 기본 오프라인 응답
+      // 4. 기본 오프라인 응답
       const response = this.getOfflineResponse(message);
       return {
         type: 'general',
