@@ -66,23 +66,13 @@ npm start   # http://localhost:3000
   - 챗봇 서비스 사용 가능
 
 ## 해야 할 작업
-- [x] 백엔드 서버 실행 테스트
-- [x] 프론트엔드 실행 테스트
-- [x] API 연결 상태 확인 
-- [x] 음성 소비내역 입력 문제 해결 ✅
-  - 환경변수 API URL 수정 (9090 → 5000)
-- [x] AI 서버 TTS 오류 해결 ✅
-  - TTS 라우터 임시 비활성화 (모델 파일 없음)
-  - 브라우저 기본 TTS 사용으로 전환
-- [x] 소비내역 페이지 오류 수정 ✅
-  - ConsumList 컴포넌트 API 응답 구조 불일치 해결
-  - 필드명 변경: cardHistoryAmount → amount, transactionDate 등
+- [ ] **리팩토링된 시스템 테스트** 🔧
+  - [ ] 새로운 백엔드 AI 서비스 API 테스트
+  - [ ] 프론트엔드 chatScript_new.js 적용 및 테스트
+  - [ ] 기존 chatScript.js → chatScript_new.js 교체
+  - [ ] 대화형 시스템 정상 작동 확인
+  - [ ] 소비내역 입력/조회 기능 테스트
 - [ ] 로그 설정 구성
-- [x] SQLite 완전 제거 및 PostgreSQL 전환 ✅
-  - SQLite 데이터베이스 파일 삭제 (donghang.db, knockknock.db)
-  - package.json에서 sqlite3 의존성 제거
-  - seed-sqlite 스크립트 제거
-  - database.js를 PostgreSQL 전용으로 설정
 - [ ] 데이터베이스 연결 확인
 
 ## 테스트 계정
@@ -150,3 +140,21 @@ npm start   # http://localhost:3000
   - 사용자 친화적 날짜 확인 메시지 생성
   - 기존 날짜 포함 소비내역은 즉시 저장 (기존 기능 유지)
   - chatScript.js 완전 재작성으로 대화형 시스템 구현
+- 2025-05-27: **구조 리팩토링 완료** ✨🏗️
+  - **문제**: 프론트엔드에 비즈니스 로직과 서비스 로직이 과도하게 집중됨
+  - **백엔드 개선**:
+    * `aiChatService.js` 생성 - AI 처리 로직 백엔드로 이관
+    * 소비내역 파싱, 날짜 계산, 카테고리 추론 로직 백엔드로 이동
+    * 대화형 처리, 응답 생성 로직 백엔드로 이동
+    * `consumptionService.js`에 기간별 날짜 범위 계산 함수 추가
+    * `aiChatController.js`, `aiChatRoutes.js` 생성
+    * API 엔드포인트: `/api/v1/ai-chat/message`, `/api/v1/ai-chat/reset-session`
+  - **프론트엔드 단순화**:
+    * `chatScript_new.js` 생성 - UI 로직만 남기고 비즈니스 로직 제거
+    * 백엔드 API 호출 중심으로 단순화
+    * 음성 인식, UI 상태 관리만 프론트엔드에서 처리
+    * 서비스 로직은 백엔드 API로 완전 이관
+  - **아키텍처 개선**:
+    * 관심사 분리: UI ↔ 비즈니스 로직 완전 분리
+    * 확장성 향상: 비즈니스 로직 중앙화
+    * 유지보수성 개선: 단일 책임 원칙 적용

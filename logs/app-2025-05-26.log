@@ -1,0 +1,354 @@
+[2025-05-26T15:46:44.142Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: test, 메시지: 안녕하세요
+[2025-05-26T15:46:44.143Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: test, 메시지: 안녕하세요
+[2025-05-26T15:46:44.143Z] [INFO] 대화형 소비내역 처리 시작: 안녕하세요 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T15:46:44.144Z] [INFO] 파싱 시도 - 입력 텍스트: 안녕하세요
+[2025-05-26T15:46:44.144Z] [INFO] 추출된 금액: 0
+[2025-05-26T15:46:44.145Z] [INFO] 파싱 시도 - 입력 텍스트: 안녕하세요
+[2025-05-26T15:46:44.146Z] [INFO] 추출된 금액: 0
+[2025-05-26T15:47:08.022Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: test, 메시지: 5000원 점심 먹었어
+[2025-05-26T15:47:08.022Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: test, 메시지: 5000원 점심 먹었어
+[2025-05-26T15:47:08.023Z] [INFO] 대화형 소비내역 처리 시작: 5000원 점심 먹었어 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T15:47:08.023Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 점심 먹었어
+[2025-05-26T15:47:08.023Z] [INFO] 추출된 금액: 5000
+[2025-05-26T15:47:08.024Z] [INFO] 금액 감지: 5000원, 카테고리: 식비, 가맹점: 일반음식점
+[2025-05-26T15:47:08.025Z] [INFO] 소비내역 감지됨: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 점심 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:47:08.025Z] [INFO] 날짜 확인 필요
+[2025-05-26T15:47:08.031Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date",
+  "data": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 점심 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "message": "식비로 5,000원 쓰신 걸 확인했어요. 언제 지출하셨는지 말씀해주세요!"
+}
+[2025-05-26T15:47:28.256Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: test, 메시지: 이번 달 소비내역 알려줘
+[2025-05-26T15:47:28.256Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: test, 메시지: 이번 달 소비내역 알려줘
+[2025-05-26T15:47:28.257Z] [INFO] 대화형 소비내역 처리 시작: 이번 달 소비내역 알려줘 {
+  "pendingExpenseData": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 점심 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "waitingForDateConfirmation": true
+}
+[2025-05-26T15:47:28.257Z] [INFO] 날짜 확인 응답 처리
+[2025-05-26T15:47:28.258Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date_again",
+  "message": "날짜를 정확히 알려주세요. 예를 들어 \"오늘\", \"어제\", \"3일 전\", 또는 \"5월 20일\" 같이 말씀해주세요."
+}
+[2025-05-26T15:54:39.728Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 저녁 먹었어
+[2025-05-26T15:54:39.730Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 저녁 먹었어
+[2025-05-26T15:54:39.731Z] [INFO] 대화형 소비내역 처리 시작: 5000원 저녁 먹었어 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T15:54:39.732Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 저녁 먹었어
+[2025-05-26T15:54:39.734Z] [INFO] 추출된 금액: 5000
+[2025-05-26T15:54:39.736Z] [INFO] 금액 감지: 5000원, 카테고리: 식비, 가맹점: 일반음식점
+[2025-05-26T15:54:39.737Z] [INFO] 소비내역 감지됨: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 저녁 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:54:39.740Z] [INFO] 날짜 확인 필요
+[2025-05-26T15:54:39.758Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date",
+  "data": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 저녁 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "message": "일반음식점에서 5,000원 식비 지출을 기록할게요! 언제 사용하셨나요? (예: 오늘, 어제, 3일 전, 5월 20일)"
+}
+[2025-05-26T15:54:48.486Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T15:54:48.487Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T15:54:48.488Z] [INFO] 대화형 소비내역 처리 시작: 5월 20일에 {
+  "pendingExpenseData": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 저녁 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "waitingForDateConfirmation": true
+}
+[2025-05-26T15:54:48.489Z] [INFO] 날짜 확인 응답 처리
+[2025-05-26T15:54:48.489Z] [INFO] 최종 소비내역 데이터: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 저녁 먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:54:48.491Z] [INFO] 대화형 처리 결과: {
+  "type": "save_expense",
+  "data": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 저녁 먹었어",
+    "transactionDate": "2025-05-19",
+    "needsDateConfirmation": true
+  },
+  "dateFormatted": "5월 19일"
+}
+[2025-05-26T15:54:48.492Z] [INFO] 소비내역 저장 시도: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 저녁 먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:54:48.495Z] [ERROR] 소비 내역 저장 실패: {}
+[2025-05-26T15:57:59.489Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
+[2025-05-26T15:57:59.490Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
+[2025-05-26T15:57:59.491Z] [INFO] 대화형 소비내역 처리 시작: 5000원 점심 먹었어 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T15:57:59.492Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 점심 먹었어
+[2025-05-26T15:57:59.493Z] [INFO] 추출된 금액: 5000
+[2025-05-26T15:57:59.495Z] [INFO] 금액 감지: 5000원, 카테고리: 식비, 가맹점: 일반음식점
+[2025-05-26T15:57:59.497Z] [INFO] 소비내역 감지됨: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 점심 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:57:59.498Z] [INFO] 날짜 확인 필요
+[2025-05-26T15:57:59.511Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date",
+  "data": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 점심 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "message": "일반음식점에서 5,000원 식비 지출을 기록할게요! 언제 사용하셨나요? (예: 오늘, 어제, 3일 전, 5월 20일)"
+}
+[2025-05-26T15:58:07.106Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T15:58:07.108Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T15:58:07.109Z] [INFO] 대화형 소비내역 처리 시작: 5월 20일에 {
+  "pendingExpenseData": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 점심 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "waitingForDateConfirmation": true
+}
+[2025-05-26T15:58:07.110Z] [INFO] 날짜 확인 응답 처리
+[2025-05-26T15:58:07.111Z] [INFO] 최종 소비내역 데이터: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 점심 먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:58:07.113Z] [INFO] 대화형 처리 결과: {
+  "type": "save_expense",
+  "data": {
+    "amount": 5000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "5000원 점심 먹었어",
+    "transactionDate": "2025-05-19",
+    "needsDateConfirmation": true
+  },
+  "dateFormatted": "5월 19일"
+}
+[2025-05-26T15:58:07.114Z] [INFO] 소비내역 저장 시도: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 점심 먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T15:58:07.167Z] [INFO] 소비 내역 저장 성공: 17
+[2025-05-26T16:00:44.586Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 8000원 저녁먹었어
+[2025-05-26T16:00:44.588Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 8000원 저녁먹었어
+[2025-05-26T16:00:44.589Z] [INFO] 대화형 소비내역 처리 시작: 8000원 저녁먹었어 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T16:00:44.590Z] [INFO] 파싱 시도 - 입력 텍스트: 8000원 저녁먹었어
+[2025-05-26T16:00:44.592Z] [INFO] 추출된 금액: 8000
+[2025-05-26T16:00:44.594Z] [INFO] 금액 감지: 8000원, 카테고리: 식비, 가맹점: 일반음식점
+[2025-05-26T16:00:44.595Z] [INFO] 소비내역 감지됨: {
+  "amount": 8000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "8000원 저녁먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:00:44.596Z] [INFO] 날짜 확인 필요
+[2025-05-26T16:00:44.621Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date",
+  "data": {
+    "amount": 8000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "8000원 저녁먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "message": "일반음식점에서 8,000원 식비 지출을 기록할게요! 언제 사용하셨나요? (예: 오늘, 어제, 3일 전, 5월 20일)"
+}
+[2025-05-26T16:00:51.667Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T16:00:51.668Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 20일에
+[2025-05-26T16:00:51.669Z] [INFO] 대화형 소비내역 처리 시작: 5월 20일에 {
+  "pendingExpenseData": {
+    "amount": 8000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "8000원 저녁먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "waitingForDateConfirmation": true
+}
+[2025-05-26T16:00:51.670Z] [INFO] 날짜 확인 응답 처리
+[2025-05-26T16:00:51.671Z] [INFO] 날짜 파싱 디버그 - 입력월: 5, 현재월: 5, 일: 20
+[2025-05-26T16:00:51.672Z] [INFO] 최종 날짜 결과: 2025-05-19 (2025-5-20)
+[2025-05-26T16:00:51.673Z] [INFO] 최종 소비내역 데이터: {
+  "amount": 8000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "8000원 저녁먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:00:51.674Z] [INFO] 대화형 처리 결과: {
+  "type": "save_expense",
+  "data": {
+    "amount": 8000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "8000원 저녁먹었어",
+    "transactionDate": "2025-05-19",
+    "needsDateConfirmation": true
+  },
+  "dateFormatted": "5월 19일"
+}
+[2025-05-26T16:00:51.677Z] [INFO] 소비내역 저장 시도: {
+  "amount": 8000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "8000원 저녁먹었어",
+  "transactionDate": "2025-05-19",
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:00:51.733Z] [INFO] 소비 내역 저장 성공: 18
+[2025-05-26T16:03:59.798Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 10000원 아침 먹었어
+[2025-05-26T16:03:59.799Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 10000원 아침 먹었어
+[2025-05-26T16:03:59.800Z] [INFO] 대화형 소비내역 처리 시작: 10000원 아침 먹었어 {
+  "pendingExpenseData": null,
+  "waitingForDateConfirmation": false
+}
+[2025-05-26T16:03:59.801Z] [INFO] 파싱 시도 - 입력 텍스트: 10000원 아침 먹었어
+[2025-05-26T16:03:59.802Z] [INFO] 추출된 금액: 10000
+[2025-05-26T16:03:59.803Z] [INFO] 금액 감지: 10000원, 카테고리: 식비, 가맹점: 일반음식점
+[2025-05-26T16:03:59.804Z] [INFO] 소비내역 감지됨: {
+  "amount": 10000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "10000원 아침 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:03:59.805Z] [INFO] 날짜 확인 필요
+[2025-05-26T16:03:59.817Z] [INFO] 대화형 처리 결과: {
+  "type": "ask_date",
+  "data": {
+    "amount": 10000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "10000원 아침 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "message": "일반음식점에서 10,000원 식비 지출을 기록할게요! 언제 사용하셨나요? (예: 오늘, 어제, 3일 전, 5월 20일)"
+}
+[2025-05-26T16:04:06.393Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 4일에
+[2025-05-26T16:04:06.394Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 4일에
+[2025-05-26T16:04:06.395Z] [INFO] 대화형 소비내역 처리 시작: 5월 4일에 {
+  "pendingExpenseData": {
+    "amount": 10000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "10000원 아침 먹었어",
+    "transactionDate": null,
+    "needsDateConfirmation": true
+  },
+  "waitingForDateConfirmation": true
+}
+[2025-05-26T16:04:06.396Z] [INFO] 날짜 확인 응답 처리
+[2025-05-26T16:04:06.397Z] [INFO] 날짜 파싱 디버그 - 입력월: 5, 현재월: 5, 일: 4
+[2025-05-26T16:04:06.397Z] [INFO] 최종 날짜 결과: 2025-05-04 (2025-5-4)
+[2025-05-26T16:04:06.398Z] [INFO] 최종 소비내역 데이터: {
+  "amount": 10000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "10000원 아침 먹었어",
+  "transactionDate": "2025-05-04",
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:04:06.399Z] [INFO] 대화형 처리 결과: {
+  "type": "save_expense",
+  "data": {
+    "amount": 10000,
+    "category": "식비",
+    "merchantName": "일반음식점",
+    "originalText": "10000원 아침 먹었어",
+    "transactionDate": "2025-05-04",
+    "needsDateConfirmation": true
+  },
+  "dateFormatted": "5월 4일"
+}
+[2025-05-26T16:04:06.400Z] [INFO] 소비내역 저장 시도: {
+  "amount": 10000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "10000원 아침 먹었어",
+  "transactionDate": "2025-05-04",
+  "needsDateConfirmation": true
+}
+[2025-05-26T16:04:06.460Z] [INFO] 소비 내역 저장 성공: 19
