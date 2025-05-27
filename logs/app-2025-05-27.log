@@ -156,3 +156,88 @@
 [2025-05-27T00:27:48.672Z] [INFO] 추출된 금액: 0
 [2025-05-27T00:27:48.673Z] [INFO] 파싱 시도 - 입력 텍스트: 금복아 나 오늘 뭐 할까?
 [2025-05-27T00:27:48.673Z] [INFO] 추출된 금액: 0
+[2025-05-27T00:52:00.661Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 나 오늘 뭐할까?
+[2025-05-27T00:52:00.662Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 나 오늘 뭐할까?
+[2025-05-27T00:52:00.663Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "나 오늘 뭐할까?"
+}
+[2025-05-27T00:52:00.664Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T00:52:22.920Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T00:52:22.921Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T00:52:22.922Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지서비스 알려줘"
+}
+[2025-05-27T00:52:22.922Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T01:33:50.108Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 나 오늘 뭐할까?
+[2025-05-27T01:33:50.109Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 나 오늘 뭐할까?
+[2025-05-27T01:33:50.110Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "나 오늘 뭐할까?"
+}
+[2025-05-27T01:33:50.110Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T01:33:50.117Z] [INFO] 추천할 복지서비스가 없습니다.
+[2025-05-27T01:34:14.827Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T01:34:14.827Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T01:34:14.828Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지서비스 알려줘"
+}
+[2025-05-27T01:34:14.829Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T01:34:14.834Z] [INFO] 추천할 복지서비스가 없습니다.
+[2025-05-27T01:45:58.545Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T01:45:58.545Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 알려줘
+[2025-05-27T01:45:58.547Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지서비스 알려줘"
+}
+[2025-05-27T01:45:58.549Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T01:45:58.559Z] [INFO] 추천할 복지서비스 수: 3
+[2025-05-27T01:47:14.941Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 오늘 뭐할까?
+[2025-05-27T01:47:14.943Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 오늘 뭐할까?
+[2025-05-27T01:47:14.945Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "오늘 뭐할까?"
+}
+[2025-05-27T01:47:14.946Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T01:47:14.957Z] [INFO] 추천할 복지서비스 수: 3
+[2025-05-27T02:02:53.969Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 오늘 뭐할까
+[2025-05-27T02:02:53.971Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 오늘 뭐할까
+[2025-05-27T02:02:53.972Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "오늘 뭐할까"
+}
+[2025-05-27T02:02:53.972Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-27T02:02:53.978Z] [INFO] 추천할 복지서비스 수: 3
+[2025-05-27T02:03:24.485Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 장애인활동 지원 자세히 알려줘
+[2025-05-27T02:03:24.485Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 장애인활동 지원 자세히 알려줘
+[2025-05-27T02:03:24.486Z] [INFO] 복지서비스 상세정보 요청 감지
