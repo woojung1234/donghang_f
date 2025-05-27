@@ -23,7 +23,8 @@ class AIChatService {
       '심심해', '심심하다', '할게 없어', '할게없어', '할일없어', '할일 없어',
       '추천해줘', '추천해주세요', '뭐 좋은거 있나', '뭐 좋은거 있을까',
       '오늘 프로그램', '오늘 서비스', '이용할 수 있는', '할 수 있는',
-      '복지서비스', '복지 서비스', '서비스 추천', '프로그램 추천'
+      '복지서비스', '복지 서비스', '서비스 추천', '프로그램 추천',
+      '건강', '운동', '문화', '교육', '봉사', '취미', '여가'
     ];
   }
 
@@ -65,11 +66,12 @@ class AIChatService {
     // 구체적인 카테고리 요청 확인
     let specificCategory = null;
     const categoryKeywords = {
-      '건강': ['건강', '운동', '체조', '걷기', '산책'],
-      '문화': ['문화', '음악', '미술', '독서', '영화'],
-      '교육': ['교육', '배우기', '공부', '강의', '수업'],
-      '사회': ['봉사', '모임', '커뮤니티', '만남', '사회'],
-      '돌봄': ['돌봄', '지원', '도움', '케어', '관리']
+      '건강': ['건강', '운동', '체조', '걷기', '산책', '스포츠', '헬스'],
+      '문화': ['문화', '음악', '미술', '독서', '영화', '공연', '예술'],
+      '교육': ['교육', '배우기', '공부', '강의', '수업', '학습', '스마트폰'],
+      '사회참여': ['봉사', '모임', '커뮤니티', '만남', '사회', '참여'],
+      '돌봄': ['돌봄', '지원', '도움', '케어', '관리', '상담'],
+      '취업': ['일자리', '취업', '일', '직업', '근무']
     };
 
     for (const [category, keywords] of Object.entries(categoryKeywords)) {
@@ -86,72 +88,43 @@ class AIChatService {
     };
   }
 
-  // 복지서비스 추천 생성
+  // 복지서비스 추천 생성 (개선된 버전)
   async generateWelfareRecommendation(specificCategory = null, userId = null) {
     try {
       logger.info('복지서비스 추천 생성 시작:', { specificCategory, userId });
 
-      // 데이터베이스에서 복지서비스 목록 조회
-      const allWelfareServices = await WelfareService.getAllWelfareServices();
-      
-      if (!allWelfareServices || allWelfareServices.length === 0) {
-        return this.getDefaultActivityRecommendation();
-      }
+      // 사용자 정보 추론 (나이 등) - 실제로는 사용자 DB에서 가져와야 함
+      const userAge = 65; // 기본값
+      const interests = specificCategory ? [specificCategory] : [];
 
-      logger.info('조회된 복지서비스 수:', allWelfareServices.length);
+      // WelfareService의 AI용 추천 함수 사용
+      const recommendedServices = await WelfareService.getRecommendedWelfareForAI(
+        userAge, 
+        interests, 
+        3
+      );
 
-      // 카테고리별 필터링 (카테고리가 지정된 경우)
-      let recommendedServices = allWelfareServices;
-      
-      if (specificCategory) {
-        recommendedServices = allWelfareServices.filter(service => 
-          service.welfareCategory && 
-          service.welfareCategory.toLowerCase().includes(specificCategory.toLowerCase())
+      if (!recommendedServices || recommendedServices.length === 0) {
+        // 샘플 데이터가 없으면 생성
+        logger.info('복지서비스 데이터가 없어 샘플 데이터 생성 시도');
+        await WelfareService.createSampleWelfareData();
+        
+        // 다시 시도
+        const retryServices = await WelfareService.getRecommendedWelfareForAI(
+          userAge, 
+          interests, 
+          3
         );
         
-        // 특정 카테고리에 해당하는 서비스가 없으면 전체에서 선택
-        if (recommendedServices.length === 0) {
-          recommendedServices = allWelfareServices;
+        if (retryServices && retryServices.length > 0) {
+          return this.formatWelfareRecommendationResponse(retryServices, specificCategory);
+        } else {
+          return this.getDefaultActivityRecommendation();
         }
       }
 
-      // 무료 서비스 우선 정렬 (가격이 0이거나 낮은 순서)
-      recommendedServices.sort((a, b) => {
-        const priceA = a.welfarePrice || 0;
-        const priceB = b.welfarePrice || 0;
-        return priceA - priceB;
-      });
-
-      // 최대 3개 서비스 선택 (무료 서비스 우선, 나머지는 랜덤)
-      const freeServices = recommendedServices.filter(service => !service.welfarePrice || service.welfarePrice === 0);
-      const paidServices = recommendedServices.filter(service => service.welfarePrice && service.welfarePrice > 0);
-      
-      let selectedServices = [];
-      
-      // 무료 서비스를 먼저 추가 (최대 2개)
-      if (freeServices.length > 0) {
-        const shuffledFree = freeServices.sort(() => 0.5 - Math.random());
-        selectedServices = selectedServices.concat(shuffledFree.slice(0, 2));
-      }
-      
-      // 부족한 만큼 유료 서비스에서 추가
-      if (selectedServices.length < 3 && paidServices.length > 0) {
-        const shuffledPaid = paidServices.sort(() => 0.5 - Math.random());
-        const needed = 3 - selectedServices.length;
-        selectedServices = selectedServices.concat(shuffledPaid.slice(0, needed));
-      }
-      
-      // 그래도 부족하면 전체에서 추가
-      if (selectedServices.length < 3) {
-        const remaining = allWelfareServices.filter(service => 
-          !selectedServices.some(selected => selected.welfareNo === service.welfareNo)
-        );
-        const shuffledRemaining = remaining.sort(() => 0.5 - Math.random());
-        const needed = Math.min(3 - selectedServices.length, shuffledRemaining.length);
-        selectedServices = selectedServices.concat(shuffledRemaining.slice(0, needed));
-      }
-
-      return this.formatWelfareRecommendationResponse(selectedServices, specificCategory);
+      logger.info('추천할 복지서비스 수:', recommendedServices.length);
+      return this.formatWelfareRecommendationResponse(recommendedServices, specificCategory);
 
     } catch (error) {
       logger.error('복지서비스 추천 생성 오류:', error);
@@ -159,7 +132,7 @@ class AIChatService {
     }
   }
 
-  // 복지서비스 추천 응답 포맷팅
+  // 복지서비스 추천 응답 포맷팅 (개선된 버전)
   formatWelfareRecommendationResponse(services, specificCategory = null) {
     if (!services || services.length === 0) {
       return this.getDefaultActivityRecommendation();
@@ -196,7 +169,19 @@ class AIChatService {
         response += `   이용료: 무료 💝\n`;
       }
       
-      response += `   ${this.getServiceDescription(service.welfareName, service.welfareCategory)}\n`;
+      if (service.welfareDescription) {
+        response += `   ${service.welfareDescription}\n`;
+      } else {
+        response += `   ${this.getServiceDescription(service.welfareName, service.welfareCategory)}\n`;
+      }
+
+      if (service.targetAge) {
+        response += `   대상: ${service.targetAge}\n`;
+      }
+
+      if (service.contactInfo) {
+        response += `   문의: ${service.contactInfo}\n`;
+      }
       
       if (index < services.length - 1) {
         response += '\n';
@@ -225,13 +210,14 @@ class AIChatService {
     if (categoryLower.includes('건강') || categoryLower.includes('운동')) return '🏃‍♂️';
     if (categoryLower.includes('문화') || categoryLower.includes('음악') || categoryLower.includes('미술')) return '🎨';
     if (categoryLower.includes('교육') || categoryLower.includes('학습')) return '📚';
-    if (categoryLower.includes('사회') || categoryLower.includes('봉사')) return '🤝';
+    if (categoryLower.includes('사회') || categoryLower.includes('봉사') || categoryLower.includes('참여')) return '🤝';
     if (categoryLower.includes('돌봄') || categoryLower.includes('지원')) return '💜';
     if (categoryLower.includes('생활')) return '🏠';
     if (categoryLower.includes('의료') || categoryLower.includes('치료')) return '🏥';
     if (categoryLower.includes('상담')) return '💬';
     if (categoryLower.includes('여가') || categoryLower.includes('오락')) return '🎯';
     if (categoryLower.includes('요리') || categoryLower.includes('식사')) return '🍳';
+    if (categoryLower.includes('취업') || categoryLower.includes('일자리')) return '💼';
     
     return '📝';
   }
@@ -301,7 +287,7 @@ class AIChatService {
       return dayBeforeYesterday.toISOString().split('T')[0];
     }
     
-    const daysAgoPattern = /(\d+)\s*일\s*전/;
+    const daysAgoPattern = /(\\d+)\\s*일\\s*전/;
     const daysAgoMatch = text.match(daysAgoPattern);
     if (daysAgoMatch) {
       const daysAgo = parseInt(daysAgoMatch[1]);
@@ -310,7 +296,7 @@ class AIChatService {
       return targetDate.toISOString().split('T')[0];
     }
     
-    const monthDayPattern = /(?:(\d{1,2})월\s*)?(\d{1,2})일/;
+    const monthDayPattern = /(?:(\\d{1,2})월\\s*)?(\\d{1,2})일/;
     const monthDayMatch = text.match(monthDayPattern);
     if (monthDayMatch) {
       const month = monthDayMatch[1] ? parseInt(monthDayMatch[1]) : today.getMonth() + 1;
@@ -335,14 +321,14 @@ class AIChatService {
   }
 
   parseExpenseFromInput(input, requestDate = false) {
-    const text = input.toLowerCase().replace(/\s+/g, ' ').trim();
+    const text = input.toLowerCase().replace(/\\s+/g, ' ').trim();
     logger.info('파싱 시도 - 입력 텍스트:', text);
     
     const amountPatterns = [
-      /(\d+)\s*원(?:[으로로]+)?/g,
-      /(\d+)\s*천\s*원?(?:[으로로]+)?/g,
-      /(\d+)\s*만\s*원?(?:[으로로]+)?/g,
-      /(\d+)(?=.*(?:썼|먹|샀|지불|결제|냈))/g
+      /(\\d+)\\s*원(?:[으로로]+)?/g,
+      /(\\d+)\\s*천\\s*원?(?:[으로로]+)?/g,
+      /(\\d+)\\s*만\\s*원?(?:[으로로]+)?/g,
+      /(\\d+)(?=.*(?:썼|먹|샀|지불|결제|냈))/g
     ];
 
     let amount = 0;
@@ -452,7 +438,7 @@ class AIChatService {
     return defaultMerchants[category] || '일반가맹점';
   }
 
-  // 메인 AI 응답 처리 함수 (복지서비스 추천 기능 추가)
+  // 메인 AI 응답 처리 함수 (복지서비스 추천 기능 강화)
   async processMessage(message, userId, sessionId = 'default') {
     try {
       logger.info(`AI 메시지 처리 시작 - 사용자: ${userId}, 세션: ${sessionId}, 메시지: ${message}`);
@@ -557,7 +543,7 @@ class AIChatService {
     }
     
     if (lowercaseMessage.includes("안녕") || lowercaseMessage.includes("반가")) {
-      return "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시면 가계부에 자동으로 기록해드려요! 💰";
+      return "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시거나 '오늘 뭐할까?'라고 물어보시면 복지서비스를 추천해드려요! 💰";
     } else if (lowercaseMessage.includes("이름") || lowercaseMessage.includes("누구")) {
       return "저는 금복이라고 합니다. 가계부 관리와 복지서비스 추천을 도와드릴 수 있어요!";
     } else if (lowercaseMessage.includes("도움") || lowercaseMessage.includes("도와줘")) {
