@@ -8,29 +8,6 @@ Error
     at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
     at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
     at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
-[2025-05-28T05:13:21.651Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
-[2025-05-28T05:13:21.655Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
-[2025-05-28T05:13:21.656Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 점심 먹었어
-[2025-05-28T05:13:21.657Z] [INFO] AI 응답 생성 성공 - 타입: general, 사용자: 1
-[2025-05-28T05:13:29.788Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어~
-[2025-05-28T05:13:29.789Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어~
-[2025-05-28T05:13:29.792Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 점심 먹었어~
-[2025-05-28T05:13:29.796Z] [INFO] AI 응답 생성 성공 - 타입: general, 사용자: 1
-[2025-05-28T05:13:52.858Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 오늘 아침 9시 5000원 아침 먹었어
-[2025-05-28T05:13:52.860Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 오늘 아침 9시 5000원 아침 먹었어
-[2025-05-28T05:13:52.862Z] [INFO] 파싱 시도 - 입력 텍스트: 오늘 아침 9시 5000원 아침 먹었어
-[2025-05-28T05:13:52.863Z] [INFO] AI 응답 생성 성공 - 타입: general, 사용자: 1
-[2025-05-28T05:16:50.710Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
-[2025-05-28T05:16:50.712Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 점심 먹었어
-[2025-05-28T05:16:50.715Z] [INFO] 파싱 시도 - 입력 텍스트: 5000원 점심 먹었어
-[2025-05-28T05:16:50.717Z] [INFO] AI 응답 생성 성공 - 타입: general, 사용자: 1
-[2025-05-28T05:17:07.801Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:17:07.801Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:17:07.802Z] [INFO] 소비내역 조회 요청 감지
-[2025-05-28T05:17:07.803Z] [INFO] 질문 의도 분석 결과: {
-  "type": "general_inquiry",
-  "intent": "expense_overview"
-}
 [2025-05-28T05:17:07.806Z] [ERROR] 소비내역 조회 오류: logger is not defined
 ReferenceError: logger is not defined
     at ConsumptionService.getExpenseHistory (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\ConsumptionService.js:383:7)
@@ -55,14 +32,6 @@ ReferenceError: logger is not defined
     at Layer.handle [as handle_request] (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\layer.js:95:5)
     at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:284:15
     at Function.process_params (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:346:12)
-[2025-05-28T05:17:07.810Z] [INFO] AI 응답 생성 성공 - 타입: expense_inquiry_error, 사용자: 1
-[2025-05-28T05:18:03.307Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:18:03.308Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:18:03.309Z] [INFO] 소비내역 조회 요청 감지
-[2025-05-28T05:18:03.309Z] [INFO] 질문 의도 분석 결과: {
-  "type": "general_inquiry",
-  "intent": "expense_overview"
-}
 [2025-05-28T05:18:03.310Z] [ERROR] 소비내역 조회 오류: logger is not defined
 ReferenceError: logger is not defined
     at ConsumptionService.getExpenseHistory (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\ConsumptionService.js:383:7)
@@ -87,14 +56,6 @@ ReferenceError: logger is not defined
     at Layer.handle [as handle_request] (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\layer.js:95:5)
     at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:284:15
     at Function.process_params (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:346:12)
-[2025-05-28T05:18:03.311Z] [INFO] AI 응답 생성 성공 - 타입: expense_inquiry_error, 사용자: 1
-[2025-05-28T05:18:30.626Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:18:30.626Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 소비내역 알려줘
-[2025-05-28T05:18:30.628Z] [INFO] 소비내역 조회 요청 감지
-[2025-05-28T05:18:30.630Z] [INFO] 질문 의도 분석 결과: {
-  "type": "general_inquiry",
-  "intent": "expense_overview"
-}
 [2025-05-28T05:18:30.632Z] [ERROR] 소비내역 조회 오류: logger is not defined
 ReferenceError: logger is not defined
     at ConsumptionService.getExpenseHistory (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\ConsumptionService.js:383:7)
@@ -119,11 +80,6 @@ ReferenceError: logger is not defined
     at Layer.handle [as handle_request] (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\layer.js:95:5)
     at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:284:15
     at Function.process_params (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\express\lib\router\index.js:346:12)
-[2025-05-28T05:18:30.638Z] [INFO] AI 응답 생성 성공 - 타입: expense_inquiry_error, 사용자: 1
-[2025-05-28T05:31:01.943Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5천원 점심 먹었어
-[2025-05-28T05:31:01.943Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5천원 점심 먹었어
-[2025-05-28T05:31:01.944Z] [INFO] 파싱 시도 - 입력 텍스트: 5천원 점심 먹었어
-[2025-05-28T05:31:01.945Z] [INFO] AI 응답 생성 성공 - 타입: general, 사용자: 1
 [2025-05-28T05:31:26.621Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
 Error
     at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
