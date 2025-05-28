@@ -89,3 +89,66 @@ Error
     at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
     at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
     at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T05:49:00.983Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T05:49:59.223Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T05:59:58.325Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T06:09:03.138Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T06:09:07.934Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T06:12:02.802Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
+[2025-05-28T06:17:41.247Z] [ERROR] 복지서비스 상세 조회 오류: "nan" 이름의 칼럼은 없습니다
+Error
+    at Query.run (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\sequelize.js:315:28
+    at async PostgresQueryInterface.select (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Welfare.findAll (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1140:21)
+    at async Welfare.findOne (C:\Users\pc\StudioProjects\donghang_f\backend-main\node_modules\sequelize\lib\model.js:1240:12)
+    at async WelfareService.getWelfareById (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\services\WelfareService.js:40:23)
+    at async getWelfareServiceDetail (C:\Users\pc\StudioProjects\donghang_f\backend-main\src\controllers\WelfareSyncController.js:96:23)
