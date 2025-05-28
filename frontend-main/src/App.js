@@ -46,6 +46,7 @@ import AlarmList from 'alarm/AlarmList';
 import WelfareList from 'welfare/component/WelfareList';
 import WelfareMain from 'welfare/component/WelfareMain';
 import WelfareServices from 'welfare/component/WelfareServices';
+import WelfareBookingPage from 'welfare/component/WelfareBookingPage';
 import WelfareReservedList from 'welfare/component/WelfareReservedList';
 import WelfareReserveCancelModal from 'welfare/component/WelfareReserveCancelModal';
 import WelfareInputTotal from 'welfare/component/WelfareInputTotal';
@@ -152,6 +153,7 @@ function App() {
         <Route path="/welfare-list" element={<PrivateRoute><WelfareList /></PrivateRoute>} />
         <Route path="/welfare-main" element={<PrivateRoute><WelfareMain /></PrivateRoute>} />
         <Route path="/welfare-services" element={<PrivateRoute><WelfareServices /></PrivateRoute>} />
+        <Route path="/welfare-booking" element={<PrivateRoute><WelfareBookingPage /></PrivateRoute>} />
         
         {/* 복지 서비스 예약 관리 */}
         <Route path="/welfare-reserved-list/*" element={<PrivateRoute><WelfareReservedList /></PrivateRoute>}>

@@ -1,0 +1,230 @@
+.container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContainer {
+  flex: 1;
+  background-color: #F8FBFF;
+  padding: 20px;
+}
+
+.titleSection {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+  font-size: 16px;
+  color: #686868;
+  margin: 0;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background-color: white;
+  color: #686868;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+  border-color: #FF6B35;
+  color: #FF6B35;
+}
+
+.filterButton.active {
+  background-color: #FF6B35;
+  border-color: #FF6B35;
+  color: white;
+}
+
+.servicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.serviceCard {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.serviceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.serviceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin: 0;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.servicePrice {
+  display: flex;
+  align-items: center;
+}
+
+.freeTag {
+  background-color: #28a745;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.priceTag {
+  background-color: #007bff;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.serviceInfo {
+  margin-bottom: 15px;
+}
+
+.serviceCategory {
+  margin: 0 0 8px 0;
+}
+
+.categoryTag {
+  background-color: #f8f9fa;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.serviceDescription {
+  font-size: 14px;
+  color: #686868;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.bookingButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #FF6B35;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bookingButton:hover {
+  background-color: #E55A2B;
+  transform: translateY(-1px);
+}
+
+.loadingContainer,
+.errorContainer,
+.noServicesContainer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #686868;
+}
+
+.errorContainer p,
+.noServicesContainer p {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.retryButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+  background-color: #0056b3;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+
+  .mainContainer {
+    padding: 40px;
+  }
+
+  .pageTitle {
+    font-size: 28px;
+  }
+
+  .pageSubtitle {
+    font-size: 18px;
+  }
+
+  .serviceCard {
+    padding: 30px;
+  }
+
+  .serviceName {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+
+  .servicesList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}

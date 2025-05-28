@@ -1,0 +1,273 @@
+.modalContainer {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.serviceInfo {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin: 0 0 10px 0;
+}
+
+.serviceDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 20px;
+  border: 1px solid #f5c6cb;
+  margin: 0;
+  font-size: 14px;
+}
+
+.bookingForm {
+  padding: 20px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #FF6B35;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.timeDisplay {
+  font-size: 12px;
+  color: #666;
+  margin: 5px 0 0 0;
+  font-style: italic;
+}
+
+.priceInfo {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.priceRow:last-child {
+  margin-bottom: 0;
+}
+
+.totalPriceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c2c2c;
+}
+
+.totalPrice {
+  color: #FF6B35;
+  font-size: 18px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.cancelButton,
+.submitButton {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.submitButton {
+  background-color: #FF6B35;
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #E55A2B;
+}
+
+.cancelButton:disabled,
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .modalContainer {
+    margin: 10px;
+    max-width: none;
+  }
+
+  .modalHeader {
+    padding: 15px;
+  }
+
+  .modalTitle {
+    font-size: 18px;
+  }
+
+  .serviceInfo {
+    padding: 15px;
+  }
+
+  .bookingForm {
+    padding: 15px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .submitButton {
+    margin-bottom: 10px;
+  }
+
+  .submitButton {
+    margin-bottom: 0;
+  }
+
+  .formGroupRow {
+    flex-direction: column;
+  }
+}
+
+/* Step 관련 스타일 */
+.stepTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #FF6B35;
+}
+
+.formGroupRow {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.formGroupRow .formGroup {
+  flex: 1;
+  margin-bottom: 0;
+}

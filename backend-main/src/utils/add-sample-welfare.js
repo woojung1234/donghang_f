@@ -66,12 +66,13 @@ async function addSampleWelfareData() {
     
     for (const data of sampleData) {
       await sequelize.query(`
-        INSERT OR IGNORE INTO welfare_services (
+        INSERT INTO welfare_services (
           service_id, service_name, service_summary, ministry_name, 
           organization_name, contact_info, website, service_url,
           reference_year, last_modified_date, target_audience, 
           application_method, category, is_active, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+        ON CONFLICT (service_id) DO NOTHING
       `, {
         replacements: data
       });

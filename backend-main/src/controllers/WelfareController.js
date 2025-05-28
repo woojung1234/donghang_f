@@ -39,17 +39,34 @@ class WelfareController {
    */
   static async readAll(req, res, next) {
     try {
-      const welfareList = await WelfareService.getAllWelfareServices();
-      
-      if (!welfareList || welfareList.length === 0) {
-        return res.status(404).json({
-          message: '복지 목록이 존재하지 않습니다.'
-        });
-      }
+      // 슬라이드에 표시되는 3개 서비스만 반환
+      const slideServices = [
+        {
+          welfareNo: 1,
+          welfareName: '일상가사 돌봄',
+          welfarePrice: 50000,
+          welfareCategory: '가사지원',
+          welfareDescription: '주변 정리나 청소, 빨래, 밥짓기 등 일상가사 일을 힘들고 어려우신 어르신을 돕습니다'
+        },
+        {
+          welfareNo: 2,
+          welfareName: '가정간병 돌봄',
+          welfarePrice: 80000,
+          welfareCategory: '간병지원',
+          welfareDescription: '의료진의 진료와 치료 외에도 항상 곁에서 누군가 돌봄주어야하나, 집에서 혼자 몸이 아프때에 어르신을 돕습니다'
+        },
+        {
+          welfareNo: 3,
+          welfareName: '정서지원 돌봄',
+          welfarePrice: 0,
+          welfareCategory: '정서지원',
+          welfareDescription: '심리적,정서적 지원에 집중한 말벗, 산책 동행, 취미활동 보조 등으로 노인의 외로움과 우울감 해소를 도와드립니다'
+        }
+      ];
 
-      console.log(`📋 Welfare list retrieved - Count: ${welfareList.length}`);
+      console.log(`📋 Welfare list retrieved - Count: ${slideServices.length}`);
 
-      res.status(200).json(welfareList);
+      res.status(200).json(slideServices);
 
     } catch (error) {
       console.error('❌ WelfareController.readAll Error:', error);
