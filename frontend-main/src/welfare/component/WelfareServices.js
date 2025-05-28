@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Header from 'header/BlueHeader';
 import styles from 'welfare/css/WelfareServices.module.css';
 import { getPublicWelfareServices } from 'services/welfareService';
+import { useNavigate } from 'react-router-dom';
 
 function WelfareServices() {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,11 +72,26 @@ function WelfareServices() {
     window.location.reload();
   };
 
+  // 복지 서비스 예약 페이지로 이동
+  const goToReservation = () => {
+    navigate('/welfare-reservation');
+  };
+
   return (
     <div className={styles.container}>
       <Header />
       <div className={styles.contentContainer}>
-        <h1 className={styles.title}>복지 서비스</h1>
+        <div className={styles.titleSection}>
+          <h1 className={styles.title}>복지 서비스</h1>
+          <div className={styles.buttonGroup}>
+            <button className={styles.moreButton}>
+              복지 서비스 더보기
+            </button>
+            <button className={styles.reservationButton} onClick={goToReservation}>
+              복지 서비스 예약
+            </button>
+          </div>
+        </div>
         
         {loading ? (
           <div className={styles.loadingContainer}>
