@@ -2,39 +2,40 @@ import React, { useState, useEffect } from 'react';
 import Header from 'header/BlueHeader';
 import styles from 'welfare/css/WelfareReservation.module.css';
 import { useNavigate } from 'react-router-dom';
+import { call } from 'login/service/ApiService';
 
 function WelfareReservation() {
   const navigate = useNavigate();
   
-  // 가상 데이터 - 실제로는 API에서 가져올 데이터
+  // 가상 데이터 대신 백엔드에서 가져올 서비스 목록
   const [services, setServices] = useState([
     {
-      id: 1,
+      id: 'daily-care',
       name: '일상가사 돌봄',
       description: '일상적인 가사일 도움 서비스',
       provider: '지역복지센터',
       duration: '2시간',
-      price: '15,000원',
+      price: 15000,
       availableDates: ['2025-05-29', '2025-05-30', '2025-06-01', '2025-06-02'],
       timeSlots: ['09:00', '11:00', '14:00', '16:00']
     },
     {
-      id: 2,
+      id: 'home-nursing',
       name: '가정간병 돌봄',
       description: '환자 또는 거동불편자 간병 서비스',
-      provider: '의료복지센터',
+      provider: '의료복지센터',  
       duration: '4시간',
-      price: '35,000원',
+      price: 35000,
       availableDates: ['2025-05-29', '2025-05-31', '2025-06-01', '2025-06-03'],
       timeSlots: ['08:00', '12:00', '16:00', '20:00']
     },
     {
-      id: 3,
+      id: 'comprehensive-care',
       name: '하나 돌봄',
       description: '종합적인 돌봄 서비스',
       provider: '종합복지관',
       duration: '3시간',
-      price: '25,000원',
+      price: 25000,
       availableDates: ['2025-05-30', '2025-05-31', '2025-06-02', '2025-06-04'],
       timeSlots: ['10:00', '13:00', '15:00', '18:00']
     }
@@ -50,14 +51,55 @@ function WelfareReservation() {
   });
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [userNo, setUserNo] = useState(null);
 
-  // 로컬 스토리지에서 예약 정보 로드
+  // 사용자 정보 및 예약 목록 로드
   useEffect(() => {
-    const savedReservations = localStorage.getItem('welfareReservations');
-    if (savedReservations) {
-      setReservations(JSON.parse(savedReservations));
+    const userNoFromStorage = localStorage.getItem("userNo");
+    if (userNoFromStorage) {
+      setUserNo(userNoFromStorage);
+      fetchUserInfo(userNoFromStorage);
+      fetchReservations();
     }
   }, []);
+
+  // 사용자 정보 조회
+  const fetchUserInfo = (userNo) => {
+    call('/api/v1/users', 'GET', userNo)
+      .then((response) => {
+        setUserInfo({
+          name: response.userName || '',
+          phone: response.phone || '',
+          address: response.address || ''
+        });
+      })
+      .catch(error => {
+        console.log("사용자 정보 조회 오류", error);
+      });
+  };
+
+  // 예약 목록 조회
+  const fetchReservations = () => {
+    setLoading(true);
+    call('/api/v1/welfare/bookings', 'GET', null)
+      .then((response) => {
+        console.log("예약 목록 조회 성공:", response);
+        if (response.bookings) {
+          setReservations(response.bookings);
+        } else if (Array.isArray(response)) {
+          setReservations(response);
+        } else {
+          setReservations([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("예약 목록 조회 실패:", error);
+        setReservations([]);
+        setLoading(false);
+      });
+  };
 
   // 서비스 선택
   const handleServiceSelect = (service) => {
@@ -75,7 +117,7 @@ function WelfareReservation() {
     }));
   };
 
-  // 예약 제출
+  // 예약 제출 (백엔드 API 호출)
   const handleReservationSubmit = (e) => {
     e.preventDefault();
     
@@ -84,41 +126,87 @@ function WelfareReservation() {
       return;
     }
 
-    // 새 예약 생성
-    const newReservation = {
-      id: Date.now(),
-      service: selectedService,
-      date: selectedDate,
-      time: selectedTime,
-      userInfo: { ...userInfo },
-      status: '예약완료',
-      reservationDate: new Date().toISOString().split('T')[0]
+    if (!userNo) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    setLoading(true);
+
+    // 예약 데이터 준비
+    const reservationData = {
+      welfareId: selectedService.id,
+      serviceName: selectedService.name,
+      serviceProvider: selectedService.provider,
+      bookingDate: selectedDate,
+      bookingTime: selectedTime,
+      duration: selectedService.duration,
+      paymentAmount: selectedService.price,
+      userInfo: {
+        name: userInfo.name,
+        phone: userInfo.phone,
+        address: userInfo.address
+      },
+      status: 'PENDING' // 대기중 상태로 생성
     };
 
-    // 예약 목록에 추가
-    const updatedReservations = [...reservations, newReservation];
-    setReservations(updatedReservations);
-    
-    // 로컬 스토리지에 저장
-    localStorage.setItem('welfareReservations', JSON.stringify(updatedReservations));
+    console.log("예약 데이터:", reservationData);
 
-    alert('예약이 완료되었습니다!');
-    
-    // 폼 초기화
-    setShowReservationForm(false);
-    setSelectedService(null);
-    setSelectedDate('');
-    setSelectedTime('');
-    setUserInfo({ name: '', phone: '', address: '' });
+    // 백엔드 API 호출
+    call('/api/v1/welfare/bookings', 'POST', reservationData)
+      .then((response) => {
+        console.log("예약 성공:", response);
+        alert('예약이 완료되었습니다!');
+        
+        // 폼 초기화
+        setShowReservationForm(false);
+        setSelectedService(null);
+        setSelectedDate('');
+        setSelectedTime('');
+        
+        // 예약 목록 새로고침
+        fetchReservations();
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("예약 실패:", error);
+        alert('예약 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+        setLoading(false);
+      });
   };
 
-  // 예약 취소
+  // 예약 취소 (백엔드 API 호출)
   const handleCancelReservation = (reservationId) => {
     if (window.confirm('정말로 예약을 취소하시겠습니까?')) {
-      const updatedReservations = reservations.filter(res => res.id !== reservationId);
-      setReservations(updatedReservations);
-      localStorage.setItem('welfareReservations', JSON.stringify(updatedReservations));
-      alert('예약이 취소되었습니다.');
+      setLoading(true);
+      
+      call(`/api/v1/welfare/bookings/${reservationId}/cancel`, 'PUT', null)
+        .then(() => {
+          alert('예약이 취소되었습니다.');
+          fetchReservations(); // 목록 새로고침
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("예약 취소 실패:", error);
+          alert('예약 취소 처리 중 오류가 발생했습니다.');
+          setLoading(false);
+        });
+    }
+  };
+
+  // 가격 포맷팅
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('ko-KR').format(price);
+  };
+
+  // 상태 한글 변환
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'PENDING': return '예약대기';
+      case 'CONFIRMED': return '예약확정';
+      case 'COMPLETED': return '이용완료';
+      case 'CANCELLED': return '취소됨';
+      default: return '알 수 없음';
     }
   };
 
@@ -127,6 +215,12 @@ function WelfareReservation() {
       <Header />
       <div className={styles.contentContainer}>
         <h1 className={styles.title}>복지 서비스 예약</h1>
+        
+        {loading && (
+          <div className={styles.loadingContainer}>
+            <p>처리 중...</p>
+          </div>
+        )}
         
         {!showReservationForm ? (
           <>
@@ -141,11 +235,12 @@ function WelfareReservation() {
                     <div className={styles.serviceDetails}>
                       <p><span className={styles.label}>제공기관:</span> {service.provider}</p>
                       <p><span className={styles.label}>소요시간:</span> {service.duration}</p>
-                      <p><span className={styles.label}>이용료:</span> {service.price}</p>
+                      <p><span className={styles.label}>이용료:</span> {formatPrice(service.price)}원</p>
                     </div>
                     <button 
                       className={styles.reserveButton}
                       onClick={() => handleServiceSelect(service)}
+                      disabled={loading}
                     >
                       예약하기
                     </button>
@@ -160,20 +255,30 @@ function WelfareReservation() {
                 <h2 className={styles.sectionTitle}>나의 예약 현황</h2>
                 <div className={styles.reservationsList}>
                   {reservations.map(reservation => (
-                    <div key={reservation.id} className={styles.reservationCard}>
+                    <div key={reservation._id || reservation.id} className={styles.reservationCard}>
                       <div className={styles.reservationInfo}>
-                        <h3 className={styles.reservationServiceName}>{reservation.service.name}</h3>
-                        <p><span className={styles.label}>예약일시:</span> {reservation.date} {reservation.time}</p>
-                        <p><span className={styles.label}>신청자:</span> {reservation.userInfo.name}</p>
-                        <p><span className={styles.label}>연락처:</span> {reservation.userInfo.phone}</p>
-                        <p><span className={styles.label}>상태:</span> <span className={styles.status}>{reservation.status}</span></p>
+                        <h3 className={styles.reservationServiceName}>
+                          {reservation.serviceName || reservation.welfareId?.serviceName || '알 수 없는 서비스'}
+                        </h3>
+                        <p><span className={styles.label}>예약일시:</span> {reservation.bookingDate} {reservation.bookingTime}</p>
+                        <p><span className={styles.label}>신청자:</span> {reservation.userInfo?.name || userInfo.name}</p>
+                        <p><span className={styles.label}>연락처:</span> {reservation.userInfo?.phone || userInfo.phone}</p>
+                        <p><span className={styles.label}>상태:</span> 
+                          <span className={styles.status}>{getStatusText(reservation.status)}</span>
+                        </p>
+                        {reservation.paymentAmount && (
+                          <p><span className={styles.label}>결제금액:</span> {formatPrice(reservation.paymentAmount)}원</p>
+                        )}
                       </div>
-                      <button 
-                        className={styles.cancelButton}
-                        onClick={() => handleCancelReservation(reservation.id)}
-                      >
-                        취소
-                      </button>
+                      {(reservation.status === 'PENDING' || reservation.status === 'CONFIRMED') && (
+                        <button 
+                          className={styles.cancelButton}
+                          onClick={() => handleCancelReservation(reservation._id || reservation.id)}
+                          disabled={loading}
+                        >
+                          취소
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -192,7 +297,7 @@ function WelfareReservation() {
                 <p><span className={styles.label}>서비스명:</span> {selectedService?.name}</p>
                 <p><span className={styles.label}>제공기관:</span> {selectedService?.provider}</p>
                 <p><span className={styles.label}>소요시간:</span> {selectedService?.duration}</p>
-                <p><span className={styles.label}>이용료:</span> {selectedService?.price}</p>
+                <p><span className={styles.label}>이용료:</span> {formatPrice(selectedService?.price)}원</p>
               </div>
 
               {/* 날짜 선택 */}
@@ -270,11 +375,16 @@ function WelfareReservation() {
                   type="button" 
                   className={styles.cancelFormButton}
                   onClick={() => setShowReservationForm(false)}
+                  disabled={loading}
                 >
                   취소
                 </button>
-                <button type="submit" className={styles.submitButton}>
-                  예약 신청
+                <button 
+                  type="submit" 
+                  className={styles.submitButton}
+                  disabled={loading}
+                >
+                  {loading ? '처리 중...' : '예약 신청'}
                 </button>
               </div>
             </form>
