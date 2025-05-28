@@ -1,0 +1,328 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentContainer {
+  padding: 20px;
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #2d3748;
+  text-align: center;
+}
+
+/* 서비스 목록 섹션 */
+.servicesSection {
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #4a5568;
+  border-bottom: 2px solid #3182ce;
+  padding-bottom: 8px;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.serviceCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.serviceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #3182ce;
+  margin-bottom: 12px;
+}
+
+.serviceDescription {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.serviceDetails {
+  background-color: #f7fafc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.serviceDetails p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-right: 8px;
+}
+
+.reserveButton {
+  width: 100%;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reserveButton:hover {
+  background-color: #2c5aa0;
+}
+
+/* 예약 현황 섹션 */
+.reservationsSection {
+  margin-bottom: 40px;
+}
+
+.reservationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reservationCard {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reservationInfo {
+  flex: 1;
+}
+
+.reservationServiceName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #3182ce;
+  margin-bottom: 8px;
+}
+
+.reservationInfo p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.status {
+  color: #38a169;
+  font-weight: 600;
+  background-color: #f0fff4;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.cancelButton {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #c53030;
+}
+
+/* 예약 폼 */
+.reservationForm {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.formTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 24px;
+  text-align: center;
+  border-bottom: 2px solid #3182ce;
+  padding-bottom: 12px;
+}
+
+.serviceInfo {
+  background-color: #f7fafc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.serviceInfo h3 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.serviceInfo p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.formInput,
+.formSelect {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.formButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.cancelFormButton {
+  flex: 1;
+  background-color: #gray;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelFormButton:hover {
+  background-color: #f7fafc;
+}
+
+.submitButton {
+  flex: 1;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #2c5aa0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reservationCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .reservationForm {
+    padding: 24px 20px;
+  }
+  
+  .formButtons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .serviceCard {
+    padding: 16px;
+  }
+  
+  .reservationForm {
+    padding: 20px 16px;
+  }
+}
