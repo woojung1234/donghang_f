@@ -52,6 +52,11 @@ function WelfareList() {
       navigate('/welfare-services');
     }
 
+    // 복지 서비스 예약 페이지로 이동
+    const goWelfareReservation = () => {
+      navigate('/welfare-reservation');
+    }
+
     useEffect(() => {
         const userNo = localStorage.getItem("userNo");
         if (userNo) {
@@ -96,9 +101,13 @@ function WelfareList() {
                   
                 </div>
 
+                {/* 버튼 컨테이너 수정 - 두 개의 버튼을 나란히 배치 */}
                 <div className={styles["main-button-container"]}>
                     <div className={styles["reserve-list-container"]} onClick={goWelfareServices}>
                           <p className={styles["reserved-list-btn"]}>복지 서비스 더 보기</p>
+                    </div>
+                    <div className={styles["reservation-container"]} onClick={goWelfareReservation}>
+                          <p className={styles["reservation-btn"]}>복지 서비스 예약하기</p>
                     </div>
                 </div>
 
