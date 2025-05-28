@@ -22,6 +22,7 @@ const conversationRoomRoutes = require('./routes/conversation-room');
 const consumptionRoutes = require('./routes/consumption');
 const welfareRoutes = require('./routes/welfare');
 const welfareBookRoutes = require('./routes/welfare-book');
+const welfareBookingsRoutes = require('./routes/welfare-bookings'); // 새로운 라우트 추가
 const notificationRoutes = require('./routes/notifications');
 const pageRoutes = require('./routes/pages');
 const aiChatRoutes = require('./routes/aiChatRoutes');
@@ -91,7 +92,8 @@ app.use('/api/v1/conversation-log', conversationLogRoutes);
 app.use('/api/v1/conversation-room', conversationRoomRoutes);
 app.use('/api/v1/consumption', consumptionRoutes);
 app.use('/api/v1/welfare', welfareRoutes);
-app.use('/api/v1/welfare-book', welfareBookRoutes);
+app.use('/api/v1/welfare', welfareBookingsRoutes); // 새로운 bookings API 추가
+app.use('/api/v1/welfare-book', welfareBookRoutes); // 기존 API 유지
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/ai-chat', aiChatRoutes);
 
@@ -138,6 +140,7 @@ async function startServer() {
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
       console.log(`🌐 CORS Origin: ${allowedOrigins.join(', ')}`);
       console.log(`💾 Database: donghang.db`);
+      console.log(`🆕 New Welfare Bookings API: /api/v1/welfare/bookings`);
       console.log(`🔑 API Key issues resolved with better error handling`);
     });
   } catch (error) {
