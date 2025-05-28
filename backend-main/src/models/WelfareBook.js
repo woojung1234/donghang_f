@@ -2,11 +2,11 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const WelfareBook = sequelize.define('WelfareBook', {
-  bookNo: {
+  welfareBookNo: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true,
-    field: 'book_no'
+    field: 'welfare_book_no'
   },
   userNo: {
     type: DataTypes.BIGINT,
@@ -26,42 +26,50 @@ const WelfareBook = sequelize.define('WelfareBook', {
       key: 'welfare_no'
     }
   },
-  bookingDate: {
-    type: DataTypes.DATE,
+  welfareBookStartDate: {
+    type: DataTypes.DATEONLY,
     allowNull: false,
-    field: 'booking_date'
+    field: 'welfare_book_start_date'
   },
-  bookingTime: {
-    type: DataTypes.TIME,
+  welfareBookEndDate: {
+    type: DataTypes.DATEONLY,
     allowNull: false,
-    field: 'booking_time'
+    field: 'welfare_book_end_date'
   },
-  status: {
-    type: DataTypes.ENUM('RESERVED', 'CONFIRMED', 'COMPLETED', 'CANCELLED'),
+  welfareBookIsCancel: {
+    type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: 'RESERVED',
-    field: 'status'
+    defaultValue: false,
+    field: 'welfare_book_is_cancel'
   },
-  totalPrice: {
+  welfareBookIsComplete: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'welfare_book_is_complete'
+  },
+  welfareBookUseTime: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'welfare_book_use_time'
+  },
+  welfareBookTotalPrice: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
-    field: 'total_price'
+    defaultValue: 0,
+    field: 'welfare_book_total_price'
   },
-  paymentStatus: {
-    type: DataTypes.ENUM('PENDING', 'PAID', 'REFUNDED'),
+  welfareBookReservationDate: {
+    type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: 'PENDING',
-    field: 'payment_status'
+    defaultValue: DataTypes.NOW,
+    field: 'welfare_book_reservation_date'
   },
   specialRequest: {
     type: DataTypes.TEXT,
     allowNull: true,
     field: 'special_request'
-  },
-  cancelledAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    field: 'cancelled_at'
   }
 }, {
   tableName: 'welfare_bookings',
