@@ -14,7 +14,7 @@ const authMiddleware = require('../middleware/auth');
  * @query {number} limit - 페이지당 항목 수 (기본값: 20)
  * @access Public
  */
-router.get('/', WelfareSyncController.getWelfareServices);
+router.get('/', WelfareController.readAll);
 
 /**
  * @route GET /api/welfare/stats

@@ -105,7 +105,7 @@ function WelfareList() {
                           <p className={styles["reserved-list-btn"]}>복지 서비스 더보기</p>
                     </div>
                     <div className={styles["reserve-booking-container"]} onClick={goWelfareReservation}>
-                          <p className={styles["reserved-booking-btn"]}>복지 서비스 예약하기</p>
+                          <p className={styles["reserved-booking-btn"]}>복지 서비스 예약</p>
                     </div>
                 </div>
 

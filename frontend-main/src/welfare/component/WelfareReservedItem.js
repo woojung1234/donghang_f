@@ -9,7 +9,8 @@ function WelfareReservedItem({
   welfareTotalPrice, 
   status = 'PENDING',
   paymentStatus = 'UNPAID',
-  onCancel 
+  onCancel,
+  onDetail 
 }) {
 
   function formatDate(dateString) {
@@ -94,7 +95,11 @@ function WelfareReservedItem({
   const showCancelButton = status !== 'CANCELLED' && status !== 'COMPLETED';
 
   return (
-    <div className={`${styles["main-section"]} ${styles["detailed-reserve"]}`}>
+    <div 
+      className={`${styles["main-section"]} ${styles["detailed-reserve"]}`}
+      onClick={onDetail}
+      style={{ cursor: 'pointer' }}
+    >
       <div className={styles["reserved-header"]}>
         <p className={`${styles["main-text"]} ${styles["detailed-reserved-title"]}`}>{title}</p>
         <div className={styles.statusContainer}>
@@ -108,7 +113,10 @@ function WelfareReservedItem({
         {showCancelButton && (
           <span 
             className={`${styles["main-text"]} ${styles["detailed-reserved-cancel"]}`} 
-            onClick={onCancel}
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel();
+            }}
           >
             예약취소
           </span>

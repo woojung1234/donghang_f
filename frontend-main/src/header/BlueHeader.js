@@ -11,15 +11,15 @@ function Header() {
     const getTitle = (pathname) => {
         switch (pathname) {
             case '/dolbom-main':
-                return '복지 서비스 예약하기';
+                return '복지 서비스 예약';
             case '/welfare-check-pw':
                 return '결제하기';
             case '/welfare-check-spec':
-                return '복지 서비스 예약하기';
+                return '복지 서비스 예약';
             case '/welfare-input/*':
-                return '복지 서비스 예약하기';
+                return '복지 서비스 예약';
             case '/welfare-list':
-                return '복지 서비스 예약하기';
+                return '복지 서비스 예약';
             case '/welfare-main':
                 return '복지 서비스';
             case '/welfare-reserved-list':

@@ -22,15 +22,19 @@ function WelfareBookingPage() {
   const fetchWelfareServices = async () => {
     try {
       setLoading(true);
-      const response = await call('/api/welfare', 'GET', null);
+      const response = await call('/api/v1/welfare', 'GET', null);
       
       console.log('복지서비스 목록:', response);
       
-      if (response && response.data && response.data.services) {
-        setWelfareServices(response.data.services);
-      } else if (Array.isArray(response)) {
+      // 백엔드에서 배열을 직접 반환하므로
+      if (Array.isArray(response)) {
         setWelfareServices(response);
+      } else if (response && response.data && Array.isArray(response.data)) {
+        setWelfareServices(response.data);
+      } else if (response && response.data && response.data.services) {
+        setWelfareServices(response.data.services);
       } else {
+        console.log('예상치 못한 응답 형식:', response);
         setWelfareServices([]);
       }
       setError(null);
@@ -60,8 +64,9 @@ function WelfareBookingPage() {
 
   const filteredServices = welfareServices.filter(service => {
     if (filter === 'all') return true;
-    if (filter === 'free') return service.welfarePrice === 0;
-    if (filter === 'paid') return service.welfarePrice > 0;
+    if (filter === 'housework') return service.welfareCategory === '가사지원';
+    if (filter === 'nursing') return service.welfareCategory === '간병지원';
+    if (filter === 'emotional') return service.welfareCategory === '정서지원';
     return true;
   });
 
@@ -105,16 +110,22 @@ function WelfareBookingPage() {
             전체
           </button>
           <button 
-            className={`${styles.filterButton} ${filter === 'free' ? styles.active : ''}`}
-            onClick={() => setFilter('free')}
+            className={`${styles.filterButton} ${filter === 'housework' ? styles.active : ''}`}
+            onClick={() => setFilter('housework')}
           >
-            무료 서비스
+            가사지원
           </button>
           <button 
-            className={`${styles.filterButton} ${filter === 'paid' ? styles.active : ''}`}
-            onClick={() => setFilter('paid')}
+            className={`${styles.filterButton} ${filter === 'nursing' ? styles.active : ''}`}
+            onClick={() => setFilter('nursing')}
           >
-            유료 서비스
+            간병지원
+          </button>
+          <button 
+            className={`${styles.filterButton} ${filter === 'emotional' ? styles.active : ''}`}
+            onClick={() => setFilter('emotional')}
+          >
+            정서지원
           </button>
         </div>
 
@@ -137,13 +148,9 @@ function WelfareBookingPage() {
                 <div className={styles.serviceHeader}>
                   <h3 className={styles.serviceName}>{service.welfareName}</h3>
                   <div className={styles.servicePrice}>
-                    {service.welfarePrice === 0 ? (
-                      <span className={styles.freeTag}>무료</span>
-                    ) : (
-                      <span className={styles.priceTag}>
-                        {new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원
-                      </span>
-                    )}
+                    <span className={styles.priceTag}>
+                      {new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원/시간
+                    </span>
                   </div>
                 </div>
                 

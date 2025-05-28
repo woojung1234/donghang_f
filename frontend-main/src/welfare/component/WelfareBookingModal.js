@@ -33,7 +33,24 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
   };
 
   const calculateTotalPrice = () => {
-    return service.welfarePrice * formData.useTime;
+    const timeValue = parseInt(formData.useTime);
+    let actualHours = 0;
+    
+    // 시간 옵션에 따른 실제 시간 계산
+    switch(timeValue) {
+      case 1: actualHours = 3; break;  // 3시간
+      case 2: actualHours = 6; break;  // 6시간  
+      case 3: actualHours = 9; break;  // 9시간
+      case 4: actualHours = 24 * 30; break;  // 1개월 (30일 기준)
+      case 5: actualHours = 24 * 60; break;  // 2개월 (60일 기준)
+      case 6: actualHours = 24 * 90; break;  // 3개월 (90일 기준)
+      case 7: actualHours = 24 * 120; break; // 4개월 (120일 기준)
+      case 8: actualHours = 24 * 150; break; // 5개월 (150일 기준)
+      case 9: actualHours = 24 * 180; break; // 6개월 (180일 기준)
+      default: actualHours = timeValue;
+    }
+    
+    return service.welfarePrice * actualHours;
   };
 
   const handleSubmit = async (e) => {
@@ -122,7 +139,7 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
         <div className={styles.serviceDetails}>
           <span className={styles.category}>{service.welfareCategory}</span>
           <span className={styles.price}>
-            {service.welfarePrice === 0 ? '무료' : `${new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원`}
+            {new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원/시간
           </span>
         </div>
       </div>
@@ -343,12 +360,32 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
 
         <div className={styles.priceInfo}>
           <div className={styles.priceRow}>
-            <span>기본 요금:</span>
+            <span>시간당 요금:</span>
             <span>{new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원</span>
           </div>
           <div className={styles.priceRow}>
-            <span>이용 시간:</span>
+            <span>선택된 시간:</span>
             <span>{getTimeDisplayText(formData.useTime)}</span>
+          </div>
+          <div className={styles.priceRow}>
+            <span>총 시간:</span>
+            <span>{(() => {
+              const timeValue = parseInt(formData.useTime);
+              let actualHours = 0;
+              switch(timeValue) {
+                case 1: actualHours = 3; break;
+                case 2: actualHours = 6; break;
+                case 3: actualHours = 9; break;
+                case 4: actualHours = 24 * 30; break;
+                case 5: actualHours = 24 * 60; break;
+                case 6: actualHours = 24 * 90; break;
+                case 7: actualHours = 24 * 120; break;
+                case 8: actualHours = 24 * 150; break;
+                case 9: actualHours = 24 * 180; break;
+                default: actualHours = timeValue;
+              }
+              return `${actualHours.toLocaleString()}시간`;
+            })()}</span>
           </div>
           <div className={styles.totalPriceRow}>
             <span>총 결제 금액:</span>
