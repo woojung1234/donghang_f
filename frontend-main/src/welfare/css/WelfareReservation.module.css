@@ -21,6 +21,23 @@
   text-align: center;
 }
 
+/* 로딩 컨테이너 */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.loadingContainer p {
+  font-size: 16px;
+  color: #4a5568;
+}
+
 /* 서비스 목록 섹션 */
 .servicesSection {
   margin-bottom: 40px;
@@ -99,10 +116,16 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
+  disabled: opacity 0.6;
 }
 
-.reserveButton:hover {
+.reserveButton:hover:not(:disabled) {
   background-color: #2c5aa0;
+}
+
+.reserveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 예약 현황 섹션 */
@@ -124,7 +147,7 @@
   border: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .reservationInfo {
@@ -145,12 +168,16 @@
 }
 
 .status {
-  color: #38a169;
   font-weight: 600;
-  background-color: #f0fff4;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
+  margin-left: 4px;
+}
+
+.status {
+  background-color: #bee3f8;
+  color: #2b6cb0;
 }
 
 .cancelButton {
@@ -162,10 +189,16 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-left: 16px;
 }
 
-.cancelButton:hover {
+.cancelButton:hover:not(:disabled) {
   background-color: #c53030;
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 예약 폼 */
@@ -247,7 +280,7 @@
 
 .cancelFormButton {
   flex: 1;
-  background-color: #gray;
+  background-color: #e2e8f0;
   color: #4a5568;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -258,8 +291,13 @@
   transition: background-color 0.2s;
 }
 
-.cancelFormButton:hover {
-  background-color: #f7fafc;
+.cancelFormButton:hover:not(:disabled) {
+  background-color: #cbd5e0;
+}
+
+.cancelFormButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .submitButton {
@@ -275,8 +313,39 @@
   transition: background-color 0.2s;
 }
 
-.submitButton:hover {
+.submitButton:hover:not(:disabled) {
   background-color: #2c5aa0;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 상태별 색상 */
+.reservationCard .status {
+  background-color: #e6fffa;
+  color: #234e52;
+}
+
+.reservationCard[data-status="PENDING"] .status {
+  background-color: #fef5e7;
+  color: #744210;
+}
+
+.reservationCard[data-status="CONFIRMED"] .status {
+  background-color: #e6fffa;
+  color: #234e52;
+}
+
+.reservationCard[data-status="COMPLETED"] .status {
+  background-color: #f0fff4;
+  color: #22543d;
+}
+
+.reservationCard[data-status="CANCELLED"] .status {
+  background-color: #fed7d7;
+  color: #742a2a;
 }
 
 /* 반응형 디자인 */
@@ -297,6 +366,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+  
+  .cancelButton {
+    margin-left: 0;
+    align-self: flex-end;
   }
   
   .reservationForm {
