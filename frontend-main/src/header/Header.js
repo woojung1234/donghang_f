@@ -45,7 +45,7 @@ function Header() {
       case "/consumption":
           return "소비내역";
       case "/alarm":
-          return "이상 징후 알림 내역";
+          return "알림 내역";
 
         case "/cardapp/familycardyn":
         return "가족카드 신청";
