@@ -45,6 +45,15 @@
   height: 200px;
 }
 
+/* 기존 버튼 컨테이너 */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
 .main-section {
   width: 80%;
   padding: 20px;
@@ -54,6 +63,13 @@
   border-radius: 15px;
   text-align: center;
   margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.main-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .detailed-reserve {
@@ -83,6 +99,58 @@
   font-weight: bold;
 }
 
+/* 새로운 서비스 버튼 컨테이너 */
+.service-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  width: 85%;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.service-more-button,
+.service-reservation-button {
+  flex: 1;
+  padding: 15px 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-more-button {
+  background-color: #f0f8ff;
+  color: #007bff;
+  border: 2px solid #007bff;
+}
+
+.service-more-button:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.service-reservation-button {
+  background-color: #38a169;
+  color: white;
+  border: 2px solid #38a169;
+}
+
+.service-reservation-button:hover {
+  background-color: #2f855a;
+  border-color: #2f855a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+}
+
 .main-link {
   color: #007bff;
   text-decoration: none;
@@ -91,14 +159,27 @@
 }
 
 /* 반응형 디자인 */
+@media (max-width: 480px) {
+  .service-buttons-container {
+    flex-direction: column;
+    width: 85%;
+  }
+  
+  .service-more-button,
+  .service-reservation-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .main-section {
+    width: 85%;
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     max-width: 768px;
     padding: 40px;
-  }
-
-  .header {
-    margin-bottom: 30px;
   }
 
   .main-section {
@@ -107,6 +188,12 @@
 
   .main-text {
     font-size: 20px;
+  }
+  
+  .service-more-button,
+  .service-reservation-button {
+    font-size: 16px;
+    padding: 18px 15px;
   }
 }
 
@@ -122,5 +209,15 @@
 
   .main-text {
     font-size: 24px;
+  }
+  
+  .service-buttons-container {
+    width: 70%;
+  }
+  
+  .service-more-button,
+  .service-reservation-button {
+    font-size: 18px;
+    padding: 20px 20px;
   }
 }
