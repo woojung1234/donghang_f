@@ -7,6 +7,9 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
+// 라우터 시작 로그
+console.log('🔧 Welfare-bookings router loaded');
+
 // 테스트용 라우트 (인증 없음) - 서비스 목록 조회
 /**
  * @route   GET /api/v1/welfare/services/available
@@ -15,6 +18,8 @@ const router = express.Router();
  */
 router.get('/services/available', async (req, res) => {
   try {
+    console.log('📋 GET /services/available - Request received');
+    
     // 가상 데이터 반환 (실제로는 Welfare 테이블에서 조회)
     const availableServices = [
       {
@@ -55,7 +60,7 @@ router.get('/services/available', async (req, res) => {
       }
     ];
 
-    console.log(`📋 Available services retrieved - Count: ${availableServices.length}`);
+    console.log(`✅ Available services retrieved - Count: ${availableServices.length}`);
 
     res.status(200).json({
       services: availableServices,
@@ -85,10 +90,18 @@ router.get('/bookings', async (req, res) => {
     const userNo = req.user.userNo;
     const { status, page = 1, limit = 10 } = req.query;
 
-    console.log(`📋 Fetching bookings from DB for UserNo: ${userNo}`);
+    console.log(`📋 GET /bookings - UserNo: ${userNo}, Query:`, req.query);
 
-    // 실제 DB에서 조회
-    const welfareBooks = await WelfareBookService.getAllByUserNo(userNo);
+    // DB 연결 테스트를 위한 try-catch
+    let welfareBooks;
+    try {
+      welfareBooks = await WelfareBookService.getAllByUserNo(userNo);
+      console.log(`✅ DB Query successful - Found ${welfareBooks.length} bookings`);
+    } catch (dbError) {
+      console.error('❌ DB Query failed:', dbError.message);
+      // DB 실패 시 빈 배열 반환
+      welfareBooks = [];
+    }
 
     // 프론트엔드 호환 형식으로 변환
     const bookings = welfareBooks.map(book => ({
@@ -111,6 +124,8 @@ router.get('/bookings', async (req, res) => {
       createdAt: book.welfareBookReservationDate
     }));
 
+    console.log(`✅ Bookings response prepared - Count: ${bookings.length}`);
+
     res.status(200).json({
       bookings: bookings,
       total: bookings.length,
@@ -121,6 +136,7 @@ router.get('/bookings', async (req, res) => {
 
   } catch (error) {
     console.error('❌ GET /bookings Error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       message: '예약 목록 조회 중 오류가 발생했습니다.',
       error: error.message 
@@ -141,6 +157,7 @@ router.get('/bookings/:id', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({
         message: '잘못된 요청입니다.',
         errors: errors.array()
@@ -150,10 +167,20 @@ router.get('/bookings/:id', [
     const bookingId = req.params.id;
     const userNo = req.user.userNo;
 
-    console.log(`🔍 Fetching booking detail from DB - ID: ${bookingId}, UserNo: ${userNo}`);
+    console.log(`🔍 GET /bookings/${bookingId} - UserNo: ${userNo}`);
 
-    // 실제 DB에서 조회
-    const welfareBook = await WelfareBookService.getDetailById(bookingId, userNo);
+    // DB 연결 테스트를 위한 try-catch
+    let welfareBook;
+    try {
+      welfareBook = await WelfareBookService.getDetailById(bookingId, userNo);
+      console.log(`✅ DB Query successful - Found booking:`, !!welfareBook);
+    } catch (dbError) {
+      console.error('❌ DB Query failed:', dbError.message);
+      return res.status(500).json({
+        message: 'DB 연결 오류가 발생했습니다.',
+        error: dbError.message
+      });
+    }
 
     if (!welfareBook) {
       return res.status(404).json({
@@ -182,10 +209,13 @@ router.get('/bookings/:id', [
       createdAt: welfareBook.welfareBookReservationDate
     };
 
+    console.log(`✅ Booking detail response prepared`);
     res.status(200).json(booking);
 
   } catch (error) {
     console.error('❌ GET /bookings/:id Error:', error);
+    console.error('Error stack:', error.stack);
+    
     if (error.message.includes('찾을 수 없습니다')) {
       return res.status(404).json({ message: error.message });
     }
@@ -237,6 +267,7 @@ router.post('/bookings', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({
         message: '입력 데이터가 올바르지 않습니다.',
         errors: errors.array()
@@ -256,7 +287,8 @@ router.post('/bookings', [
       status = 'PENDING'
     } = req.body;
 
-    console.log(`✅ Creating booking in DB - UserNo: ${userNo}, Service: ${serviceName}`);
+    console.log(`✅ POST /bookings - UserNo: ${userNo}, Service: ${serviceName}`);
+    console.log('Request body:', req.body);
 
     // duration에서 숫자 추출 (예: "2시간" -> 2)
     let useTime = 1;
@@ -272,19 +304,32 @@ router.post('/bookings', [
     if (welfareId === 'home-nursing') welfareNo = 2;
     else if (welfareId === 'comprehensive-care') welfareNo = 3;
 
-    // 실제 DB에 저장
-    const bookingData = {
-      welfareNo: welfareNo,
-      welfareBookStartDate: bookingDate,
-      welfareBookEndDate: bookingDate, // 하루 서비스라고 가정
-      welfareBookUseTime: useTime,
-      welfareBookReservationDate: new Date(),
-      userNo
-    };
+    console.log(`Mapping: welfareId(${welfareId}) -> welfareNo(${welfareNo}), useTime: ${useTime}`);
 
-    const welfareBookNo = await WelfareBookService.createWelfareBook(bookingData);
+    // DB 저장 시도
+    let welfareBookNo;
+    try {
+      const bookingData = {
+        welfareNo: welfareNo,
+        welfareBookStartDate: bookingDate,
+        welfareBookEndDate: bookingDate, // 하루 서비스라고 가정
+        welfareBookUseTime: useTime,
+        welfareBookReservationDate: new Date(),
+        userNo
+      };
 
-    console.log(`✅ Booking saved to DB - BookNo: ${welfareBookNo}`);
+      console.log('Creating booking with data:', bookingData);
+      welfareBookNo = await WelfareBookService.createWelfareBook(bookingData);
+      console.log(`✅ Booking saved to DB - BookNo: ${welfareBookNo}`);
+    } catch (dbError) {
+      console.error('❌ DB Save failed:', dbError.message);
+      console.error('DB Error stack:', dbError.stack);
+      
+      return res.status(500).json({
+        message: 'DB 저장 중 오류가 발생했습니다.',
+        error: dbError.message
+      });
+    }
 
     // 성공 응답
     const newBooking = {
@@ -303,10 +348,12 @@ router.post('/bookings', [
       message: '예약이 성공적으로 생성되어 데이터베이스에 저장되었습니다.'
     };
 
+    console.log(`✅ Booking creation successful - Response prepared`);
     res.status(201).json(newBooking);
 
   } catch (error) {
     console.error('❌ POST /bookings Error:', error);
+    console.error('Error stack:', error.stack);
     
     if (error.message.includes('존재하지 않습니다')) {
       return res.status(400).json({ 
@@ -335,6 +382,7 @@ router.put('/bookings/:id/cancel', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({
         message: '잘못된 요청입니다.',
         errors: errors.array()
@@ -344,18 +392,26 @@ router.put('/bookings/:id/cancel', [
     const bookingId = req.params.id;
     const userNo = req.user.userNo;
 
-    console.log(`🗑️ Cancelling booking in DB - ID: ${bookingId}, UserNo: ${userNo}`);
+    console.log(`🗑️ PUT /bookings/${bookingId}/cancel - UserNo: ${userNo}`);
 
-    // 실제 DB에서 취소 처리
-    const cancelled = await WelfareBookService.deleteWelfareBook(bookingId, userNo);
+    // DB 업데이트 시도
+    let cancelled;
+    try {
+      cancelled = await WelfareBookService.deleteWelfareBook(bookingId, userNo);
+      console.log(`✅ Booking cancelled in DB - Success: ${cancelled}`);
+    } catch (dbError) {
+      console.error('❌ DB Update failed:', dbError.message);
+      return res.status(500).json({
+        message: 'DB 업데이트 중 오류가 발생했습니다.',
+        error: dbError.message
+      });
+    }
 
     if (!cancelled) {
       return res.status(404).json({
         message: '예약 정보를 찾을 수 없습니다.'
       });
     }
-
-    console.log(`✅ Booking cancelled in DB - BookNo: ${bookingId}`);
 
     res.status(200).json({
       id: parseInt(bookingId),
@@ -366,6 +422,7 @@ router.put('/bookings/:id/cancel', [
 
   } catch (error) {
     console.error('❌ PUT /bookings/:id/cancel Error:', error);
+    console.error('Error stack:', error.stack);
     
     if (error.message.includes('찾을 수 없습니다')) {
       return res.status(404).json({ message: error.message });
@@ -387,10 +444,23 @@ router.get('/bookings/stats', async (req, res) => {
   try {
     const userNo = req.user.userNo;
     
-    console.log(`📊 Fetching booking stats from DB for UserNo: ${userNo}`);
+    console.log(`📊 GET /bookings/stats - UserNo: ${userNo}`);
 
-    // 실제 DB에서 통계 조회
-    const stats = await WelfareBookService.getBookingStats(userNo);
+    // DB 조회 시도
+    let stats;
+    try {
+      stats = await WelfareBookService.getBookingStats(userNo);
+      console.log(`✅ Stats retrieved from DB:`, stats);
+    } catch (dbError) {
+      console.error('❌ DB Query failed:', dbError.message);
+      // DB 실패 시 기본값 반환
+      stats = {
+        totalCount: 0,
+        pendingCount: 0,
+        completedCount: 0,
+        cancelledCount: 0
+      };
+    }
 
     res.status(200).json({
       total: stats.totalCount,
@@ -402,6 +472,7 @@ router.get('/bookings/stats', async (req, res) => {
     
   } catch (error) {
     console.error('❌ GET /bookings/stats Error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       message: '예약 통계 조회 중 오류가 발생했습니다.',
       error: error.message 
@@ -409,4 +480,5 @@ router.get('/bookings/stats', async (req, res) => {
   }
 });
 
+console.log('✅ Welfare-bookings router setup complete');
 module.exports = router;
