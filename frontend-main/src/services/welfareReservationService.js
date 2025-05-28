@@ -1,4 +1,4 @@
-import { call } from 'login/service/ApiService';
+import { call } from '../login/service/ApiService';
 
 // 복지 서비스 예약 관련 API 함수들
 
