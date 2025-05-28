@@ -2,11 +2,12 @@ const express = require('express');
 const { body, param, query } = require('express-validator');
 const { validationResult } = require('express-validator');
 const WelfareBookController = require('../controllers/WelfareBookController');
+const WelfareBookService = require('../services/WelfareBookService');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// 테스트용 라우트 (인증 없음)
+// 테스트용 라우트 (인증 없음) - 서비스 목록 조회
 /**
  * @route   GET /api/v1/welfare/services/available
  * @desc    이용 가능한 복지 서비스 목록 조회 (테스트용 - 인증 없음)
@@ -14,10 +15,11 @@ const router = express.Router();
  */
 router.get('/services/available', async (req, res) => {
   try {
-    // 가상 데이터 반환
+    // 가상 데이터 반환 (실제로는 Welfare 테이블에서 조회)
     const availableServices = [
       {
         id: 'daily-care',
+        welfareNo: 1,
         name: '일상가사 돌봄',
         description: '일상적인 가사일 도움 서비스',
         provider: '지역복지센터',
@@ -29,6 +31,7 @@ router.get('/services/available', async (req, res) => {
       },
       {
         id: 'home-nursing',
+        welfareNo: 2,
         name: '가정간병 돌봄',
         description: '환자 또는 거동불편자 간병 서비스',
         provider: '의료복지센터',
@@ -40,6 +43,7 @@ router.get('/services/available', async (req, res) => {
       },
       {
         id: 'comprehensive-care',
+        welfareNo: 3,
         name: '하나 돌봄',
         description: '종합적인 돌봄 서비스',
         provider: '종합복지관',
@@ -73,7 +77,7 @@ router.use(authMiddleware);
 
 /**
  * @route   GET /api/v1/welfare/bookings
- * @desc    복지 서비스 예약 목록 조회 (프론트엔드 호환)
+ * @desc    복지 서비스 예약 목록 조회 (실제 DB 사용)
  * @access  Private
  */
 router.get('/bookings', async (req, res) => {
@@ -81,33 +85,35 @@ router.get('/bookings', async (req, res) => {
     const userNo = req.user.userNo;
     const { status, page = 1, limit = 10 } = req.query;
 
-    console.log(`📋 Fetching bookings for UserNo: ${userNo}`);
+    console.log(`📋 Fetching bookings from DB for UserNo: ${userNo}`);
 
-    // 임시 데이터 반환 (DB 연결 문제 방지)
-    const mockBookings = [
-      {
-        id: 1,
-        welfareBookNo: 1,
-        welfareId: 'daily-care',
-        serviceName: '일상가사 돌봄',
-        serviceProvider: '지역복지센터',
-        bookingDate: '2025-05-29',
-        bookingTime: '09:00',
-        duration: '2시간',
-        paymentAmount: 15000,
-        status: 'CONFIRMED',
-        userInfo: {
-          name: '김철수',
-          phone: '010-1234-5678',
-          address: '서울시 강남구'
-        },
-        createdAt: new Date().toISOString()
-      }
-    ];
+    // 실제 DB에서 조회
+    const welfareBooks = await WelfareBookService.getAllByUserNo(userNo);
+
+    // 프론트엔드 호환 형식으로 변환
+    const bookings = welfareBooks.map(book => ({
+      id: book.welfareBookNo,
+      welfareBookNo: book.welfareBookNo,
+      welfareId: book.welfare ? book.welfare.welfareNo : null,
+      serviceName: book.welfare ? book.welfare.welfareName : '서비스명 없음',
+      serviceProvider: book.welfare ? book.welfare.welfareCategory : '제공기관',
+      bookingDate: book.welfareBookStartDate,
+      bookingTime: '09:00', // 기본값 (실제로는 별도 시간 필드 필요)
+      duration: `${book.welfareBookUseTime}시간`,
+      paymentAmount: book.welfareBookTotalPrice,
+      status: book.welfareBookIsCancel ? 'CANCELLED' : 
+              (book.welfareBookIsComplete ? 'COMPLETED' : 'CONFIRMED'),
+      userInfo: {
+        name: '사용자', // 실제로는 User 테이블에서 가져와야 함
+        phone: '010-0000-0000',
+        address: '주소 정보'
+      },
+      createdAt: book.welfareBookReservationDate
+    }));
 
     res.status(200).json({
-      bookings: mockBookings,
-      total: mockBookings.length,
+      bookings: bookings,
+      total: bookings.length,
       page: parseInt(page),
       limit: parseInt(limit),
       message: '예약 목록 조회 성공'
@@ -124,7 +130,7 @@ router.get('/bookings', async (req, res) => {
 
 /**
  * @route   GET /api/v1/welfare/bookings/:id
- * @desc    특정 예약 상세 조회
+ * @desc    특정 예약 상세 조회 (실제 DB 사용)
  * @access  Private
  */
 router.get('/bookings/:id', [
@@ -144,32 +150,45 @@ router.get('/bookings/:id', [
     const bookingId = req.params.id;
     const userNo = req.user.userNo;
 
-    console.log(`🔍 Fetching booking detail - ID: ${bookingId}, UserNo: ${userNo}`);
+    console.log(`🔍 Fetching booking detail from DB - ID: ${bookingId}, UserNo: ${userNo}`);
 
-    // 임시 데이터 반환
-    const mockBooking = {
-      id: parseInt(bookingId),
-      welfareBookNo: parseInt(bookingId),
-      welfareId: 'daily-care',
-      serviceName: '일상가사 돌봄',
-      serviceProvider: '지역복지센터',
-      bookingDate: '2025-05-29',
-      bookingTime: '09:00',
-      duration: '2시간',
-      paymentAmount: 15000,
-      status: 'CONFIRMED',
+    // 실제 DB에서 조회
+    const welfareBook = await WelfareBookService.getDetailById(bookingId, userNo);
+
+    if (!welfareBook) {
+      return res.status(404).json({
+        message: '예약 정보를 찾을 수 없습니다.'
+      });
+    }
+
+    // 프론트엔드 호환 형식으로 변환
+    const booking = {
+      id: welfareBook.welfareBookNo,
+      welfareBookNo: welfareBook.welfareBookNo,
+      welfareId: welfareBook.welfare ? welfareBook.welfare.welfareNo : null,
+      serviceName: welfareBook.welfare ? welfareBook.welfare.welfareName : '서비스명 없음',
+      serviceProvider: welfareBook.welfare ? welfareBook.welfare.welfareCategory : '제공기관',
+      bookingDate: welfareBook.welfareBookStartDate,
+      bookingTime: '09:00', // 기본값
+      duration: `${welfareBook.welfareBookUseTime}시간`,
+      paymentAmount: welfareBook.welfareBookTotalPrice,
+      status: welfareBook.welfareBookIsCancel ? 'CANCELLED' : 
+              (welfareBook.welfareBookIsComplete ? 'COMPLETED' : 'CONFIRMED'),
       userInfo: {
-        name: '김철수',
-        phone: '010-1234-5678',
-        address: '서울시 강남구'
+        name: welfareBook.user ? welfareBook.user.userName : '사용자',
+        phone: '010-0000-0000',
+        address: '주소 정보'
       },
-      createdAt: new Date().toISOString()
+      createdAt: welfareBook.welfareBookReservationDate
     };
 
-    res.status(200).json(mockBooking);
+    res.status(200).json(booking);
 
   } catch (error) {
     console.error('❌ GET /bookings/:id Error:', error);
+    if (error.message.includes('찾을 수 없습니다')) {
+      return res.status(404).json({ message: error.message });
+    }
     res.status(500).json({ 
       message: '예약 상세 조회 중 오류가 발생했습니다.',
       error: error.message 
@@ -179,7 +198,7 @@ router.get('/bookings/:id', [
 
 /**
  * @route   POST /api/v1/welfare/bookings
- * @desc    복지 서비스 예약 생성 (프론트엔드 호환)
+ * @desc    복지 서비스 예약 생성 (실제 DB 저장)
  * @access  Private
  */
 router.post('/bookings', [
@@ -237,12 +256,40 @@ router.post('/bookings', [
       status = 'PENDING'
     } = req.body;
 
-    console.log(`✅ Creating booking - UserNo: ${userNo}, Service: ${serviceName}`);
+    console.log(`✅ Creating booking in DB - UserNo: ${userNo}, Service: ${serviceName}`);
 
-    // 임시로 성공 응답 반환 (실제 DB 저장 생략)
+    // duration에서 숫자 추출 (예: "2시간" -> 2)
+    let useTime = 1;
+    if (duration) {
+      const timeMatch = duration.match(/(\d+)/);
+      if (timeMatch) {
+        useTime = parseInt(timeMatch[1]);
+      }
+    }
+
+    // welfareId를 숫자로 변환 (예: "daily-care" -> 1, "home-nursing" -> 2)
+    let welfareNo = 1;
+    if (welfareId === 'home-nursing') welfareNo = 2;
+    else if (welfareId === 'comprehensive-care') welfareNo = 3;
+
+    // 실제 DB에 저장
+    const bookingData = {
+      welfareNo: welfareNo,
+      welfareBookStartDate: bookingDate,
+      welfareBookEndDate: bookingDate, // 하루 서비스라고 가정
+      welfareBookUseTime: useTime,
+      welfareBookReservationDate: new Date(),
+      userNo
+    };
+
+    const welfareBookNo = await WelfareBookService.createWelfareBook(bookingData);
+
+    console.log(`✅ Booking saved to DB - BookNo: ${welfareBookNo}`);
+
+    // 성공 응답
     const newBooking = {
-      id: Math.floor(Math.random() * 1000) + 1,
-      welfareBookNo: Math.floor(Math.random() * 1000) + 1,
+      id: welfareBookNo,
+      welfareBookNo,
       welfareId,
       serviceName,
       serviceProvider,
@@ -251,15 +298,23 @@ router.post('/bookings', [
       duration,
       paymentAmount,
       userInfo,
-      status: 'CONFIRMED', // 테스트용으로 바로 확정
+      status: 'CONFIRMED',
       createdAt: new Date().toISOString(),
-      message: '예약이 성공적으로 생성되었습니다.'
+      message: '예약이 성공적으로 생성되어 데이터베이스에 저장되었습니다.'
     };
 
     res.status(201).json(newBooking);
 
   } catch (error) {
     console.error('❌ POST /bookings Error:', error);
+    
+    if (error.message.includes('존재하지 않습니다')) {
+      return res.status(400).json({ 
+        message: '사용자 또는 복지 서비스 정보를 찾을 수 없습니다.',
+        error: error.message
+      });
+    }
+    
     res.status(500).json({ 
       message: '예약 생성 중 오류가 발생했습니다.',
       error: error.message 
@@ -269,7 +324,7 @@ router.post('/bookings', [
 
 /**
  * @route   PUT /api/v1/welfare/bookings/:id/cancel
- * @desc    복지 서비스 예약 취소
+ * @desc    복지 서비스 예약 취소 (실제 DB 업데이트)
  * @access  Private
  */
 router.put('/bookings/:id/cancel', [
@@ -289,17 +344,33 @@ router.put('/bookings/:id/cancel', [
     const bookingId = req.params.id;
     const userNo = req.user.userNo;
 
-    console.log(`🗑️ Cancelling booking - ID: ${bookingId}, UserNo: ${userNo}`);
+    console.log(`🗑️ Cancelling booking in DB - ID: ${bookingId}, UserNo: ${userNo}`);
+
+    // 실제 DB에서 취소 처리
+    const cancelled = await WelfareBookService.deleteWelfareBook(bookingId, userNo);
+
+    if (!cancelled) {
+      return res.status(404).json({
+        message: '예약 정보를 찾을 수 없습니다.'
+      });
+    }
+
+    console.log(`✅ Booking cancelled in DB - BookNo: ${bookingId}`);
 
     res.status(200).json({
       id: parseInt(bookingId),
       status: 'CANCELLED',
-      message: '예약이 성공적으로 취소되었습니다.',
+      message: '예약이 성공적으로 취소되어 데이터베이스에 반영되었습니다.',
       cancelledAt: new Date().toISOString()
     });
 
   } catch (error) {
     console.error('❌ PUT /bookings/:id/cancel Error:', error);
+    
+    if (error.message.includes('찾을 수 없습니다')) {
+      return res.status(404).json({ message: error.message });
+    }
+    
     res.status(500).json({ 
       message: '예약 취소 중 오류가 발생했습니다.',
       error: error.message 
@@ -309,25 +380,26 @@ router.put('/bookings/:id/cancel', [
 
 /**
  * @route   GET /api/v1/welfare/bookings/stats
- * @desc    예약 통계 조회
+ * @desc    예약 통계 조회 (실제 DB 사용)
  * @access  Private
  */
 router.get('/bookings/stats', async (req, res) => {
   try {
     const userNo = req.user.userNo;
     
-    console.log(`📊 Fetching booking stats for UserNo: ${userNo}`);
+    console.log(`📊 Fetching booking stats from DB for UserNo: ${userNo}`);
 
-    // 임시 통계 데이터
-    const stats = {
-      total: 5,
-      pending: 1,
-      confirmed: 3,
-      completed: 1,
-      cancelled: 0
-    };
+    // 실제 DB에서 통계 조회
+    const stats = await WelfareBookService.getBookingStats(userNo);
 
-    res.status(200).json(stats);
+    res.status(200).json({
+      total: stats.totalCount,
+      pending: stats.pendingCount,
+      confirmed: stats.pendingCount, // pending과 같다고 가정
+      completed: stats.completedCount,
+      cancelled: stats.cancelledCount
+    });
+    
   } catch (error) {
     console.error('❌ GET /bookings/stats Error:', error);
     res.status(500).json({ 
