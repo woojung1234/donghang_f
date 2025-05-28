@@ -5,6 +5,17 @@ import Modal from 'react-modal';
 
 function AlarmDetailModal({isOpen,closeModal,notificationNo,getAlarmList,fetchAlarmCount}) {
     const [notification, setNotification] =useState([]);
+
+    // 알림 타입을 한국어로 변환하는 함수
+    const getNotificationTypeLabel = (notificationType) => {
+        switch(notificationType) {
+            case 'SYSTEM': return '시스템';
+            case 'PAYMENT': return '결제';
+            case 'WELFARE': return '복지';
+            case 'ANOMALY': return '이상징후';
+            default: return notificationType || '알림';
+        }
+    };
    
     useEffect(()=>{
         call(`/api/v1/notifications/${notificationNo}`,"GET",null).then((response)=>{
@@ -36,11 +47,11 @@ function AlarmDetailModal({isOpen,closeModal,notificationNo,getAlarmList,fetchAl
                 <p className='adModal-title'>상세조회</p>
                 {/* <hr></hr> */}
                 <div className='adModal-info-title'>
-                    <p>{notification.notificationCategory}</p>
+                    <p>{getNotificationTypeLabel(notification.notificationType)} - {notification.title}</p>
                 </div>
 
                 <div className='adModal-content adModal-dashed'>
-                    <p>{notification.notificationContent}</p>
+                    <p>{notification.content}</p>
                 </div>
                 <button className='adModalBtn' onClick={closeModal}>닫기</button>
             </Modal>
