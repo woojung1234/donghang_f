@@ -46,12 +46,16 @@ hr {
 .welfare-slide{
   width: 90%;
 }
+
+/* 버튼 컨테이너 수정 - 두 개의 버튼을 나란히 배치 */
 .main-button-container {
   display: flex;
   flex-direction: row;
   width: 92%;
   margin-bottom: 10px;
+  gap: 10px;
 }
+
 .main-section-container {
   display: flex;
   flex-direction: row;
@@ -82,6 +86,7 @@ hr {
   position: relative;
 }
 
+/* 기존 "복지 서비스 더 보기" 버튼 */
 .reserve-list-container {
   padding: 10px 15px 10px 15px;
   margin-left: 5px;
@@ -92,6 +97,34 @@ hr {
   width: 50%;
   border-color: #ccc;
   box-shadow: 0px 2px 4px #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reserve-list-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 8px #666;
+}
+
+/* 새로운 "복지 서비스 예약하기" 버튼 */
+.reservation-container {
+  padding: 10px 15px 10px 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-radius: 15px;
+  margin-top: 5%;
+  background-color: #38a169;
+  width: 50%;
+  border-color: #38a169;
+  box-shadow: 0px 2px 4px #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reservation-container:hover {
+  background-color: #2f855a;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 8px #2f855a;
 }
 
 .reserve-btn-container {
@@ -187,6 +220,16 @@ hr {
   text-align: center;
   font-weight: bold;
   font-size: 18px;
+  margin: 0;
+}
+
+/* 새로운 예약 버튼 텍스트 스타일 */
+.reservation-btn {
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin: 0;
 }
 
 .reserve-btn {
@@ -235,6 +278,20 @@ hr {
 }
 
 /* 반응형 디자인 */
+@media (max-width: 480px) {
+  .main-button-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .reserve-list-container,
+  .reservation-container {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     max-width: 768px;
@@ -261,6 +318,11 @@ hr {
   .main-text {
     font-size: 20px;
   }
+  
+  .reserved-list-btn,
+  .reservation-btn {
+    font-size: 16px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -284,5 +346,10 @@ hr {
 
   .main-text {
     font-size: 24px;
+  }
+  
+  .reserved-list-btn,
+  .reservation-btn {
+    font-size: 18px;
   }
 }
