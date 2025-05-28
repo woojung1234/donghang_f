@@ -36,6 +36,11 @@ function WelfareMain() {
     navigate('/welfare-list');
   }
 
+  // 복지 서비스 예약 페이지로 이동
+  const goToReservation = () => {
+    navigate('/welfare-reservation');
+  }
+
   return (
     <div className={styles.container}>
       <Header />
@@ -48,11 +53,25 @@ function WelfareMain() {
         <p className={styles.infomation}>복지 서비스를</p>
         <p className={styles.infomation}>금복이에서 예약해보세요</p>
         <img src={welfare} alt="복지" className={styles["img-welfare"]} />
-        <div className={`${styles["main-section"]} ${styles["detailed-reserve"]}`} onClick={goDetailReserved}>
-          <p className={`${styles["main-text"]} ${styles["detailed-reserve-text"]}`}>예약 내역 보기</p>
+        
+        {/* 버튼 컨테이너 추가 */}
+        <div className={styles["button-container"]}>
+          <div className={`${styles["main-section"]} ${styles["detailed-reserve"]}`} onClick={goDetailReserved}>
+            <p className={`${styles["main-text"]} ${styles["detailed-reserve-text"]}`}>예약 내역 보기</p>
+          </div>
+          <div className={`${styles["main-section"]} ${styles["go-reserve"]}`} onClick={goDolbomMain}>
+            <p className={`${styles["main-text"]} ${styles["go-reserve-text"]}`}>예약하러 가기</p>
+          </div>
         </div>
-        <div className={`${styles["main-section"]} ${styles["go-reserve"]}`} onClick={goDolbomMain}>
-          <p className={`${styles["main-text"]} ${styles["go-reserve-text"]}`}>예약하러 가기</p>
+
+        {/* 복지 서비스 더보기와 예약 버튼 섹션 */}
+        <div className={styles["service-buttons-container"]}>
+          <button className={styles["service-more-button"]} onClick={goDolbomMain}>
+            복지 서비스 더보기
+          </button>
+          <button className={styles["service-reservation-button"]} onClick={goToReservation}>
+            복지 서비스 예약하기
+          </button>
         </div>
       </div>
     </div>
