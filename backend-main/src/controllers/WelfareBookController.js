@@ -46,9 +46,6 @@ class WelfareBookController {
     try {
       const userNo = req.user.userNo;
 
-      // TODO: 매칭 시스템 구현 시 보호자/피보호자 관계 확인 로직 추가
-      // 현재는 단순히 해당 사용자의 예약 내역만 조회
-
       const welfareBooks = await WelfareBookService.getAllByUserNo(userNo);
 
       console.log(`📋 Welfare book list retrieved - UserNo: ${userNo}, Count: ${welfareBooks.length}`);
@@ -126,7 +123,7 @@ class WelfareBookController {
    *     tags:
    *       - 4. 복지 예약 내역
    *     summary: 복지 예약 하기
-   *     description: 일반 사용자와 보호자가 복지 서비스를 예약하는 API입니다.
+   *     description: 복지 서비스를 예약하는 API입니다.
    *     security:
    *       - BearerAuth: []
    *     requestBody:
@@ -179,9 +176,6 @@ class WelfareBookController {
 
       const userNo = req.user.userNo;
       const { welfareNo, welfareBookStartDate, welfareBookEndDate, welfareBookUseTime, welfareBookReservationDate } = req.body;
-
-      // TODO: 매칭 시스템 구현 시 보호자/피보호자 관계 확인 로직 추가
-      // 현재는 단순히 요청한 사용자의 userNo 사용
 
       const welfareBookNo = await WelfareBookService.createWelfareBook({
         welfareNo,

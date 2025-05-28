@@ -1,6 +1,5 @@
 const Consumption = require('../models/Consumption');
 const User = require('../models/User');
-const logger = require('../utils/logger');
 
 class ConsumptionService {
   /**
@@ -96,7 +95,7 @@ class ConsumptionService {
         isAnomalous: false
       });
 
-      logger.info(`💰 Consumption created - No: ${consumption.consumptionNo}, UserNo: ${userNo}, Amount: ${amount}`);
+      console.log(`💰 Consumption created - No: ${consumption.consumptionNo}, UserNo: ${userNo}, Amount: ${amount}`);
 
       return consumption.consumptionNo;
 

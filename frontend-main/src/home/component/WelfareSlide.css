@@ -16,7 +16,12 @@ color: #686868;
 font-weight: bold;
 font-size: 22px;
 color: #2C2C2C;
+}
 
+.welfare-button-container{
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .welfare-main-button{
@@ -27,12 +32,81 @@ color: #2C2C2C;
     padding: 5px 50px;
     font-weight: bold;
     box-shadow: 0px 2px 5px #888;
-    margin-top: 10px;
     color: #2C2C2C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.welfare-main-button:hover{
+    background-color: #f8f8f8;
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 8px #888;
+}
+
+.welfare-reservation-button{
+    height: 50px;
+    border: none;
+    background-color: white;
+    border-radius: 10px;
+    padding: 5px 50px;
+    font-weight: bold;
+    box-shadow: 0px 2px 5px #888;
+    color: #2C2C2C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.welfare-reservation-button:hover{
+    background-color: #f8f8f8;
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 8px #888;
 }
 .slide {
     width: 100%;
     height: auto;
     display: block;
-  }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .welfare-button-container {
+        flex-direction: row; /* 가로 배치 유지 */
+        gap: 8px;
+        justify-content: space-between;
+    }
+    
+    .welfare-main-button,
+    .welfare-reservation-button {
+        height: 45px;
+        font-size: 14px;
+        padding: 5px 20px;
+        flex: 1; /* 동일한 크기로 확장 */
+    }
+    
+    .welfare-main-text p:nth-child(2) {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welfare-main-text {
+        padding: 15px;
+    }
+    
+    .welfare-main-text p:nth-child(2) {
+        font-size: 18px;
+    }
+    
+    .welfare-button-container {
+        gap: 6px;
+    }
+    
+    .welfare-main-button,
+    .welfare-reservation-button {
+        height: 40px;
+        font-size: 12px;
+        padding: 5px 15px;
+        flex: 1; /* 동일한 크기로 확장 */
+    }
+}
   

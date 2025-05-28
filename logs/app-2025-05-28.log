@@ -1,0 +1,497 @@
+[2025-05-28T03:19:39.941Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5,000원 점심 먹었어
+[2025-05-28T03:19:39.943Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5,000원 점심 먹었어
+[2025-05-28T03:19:39.945Z] [INFO] 🔍 간단 파싱 - 입력: 5,000원 점심 먹었어
+[2025-05-28T03:19:39.946Z] [INFO] 💰 원 패턴 매치: 5,000 → 5000
+[2025-05-28T03:19:39.948Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "먹었",
+  "점심"
+]
+[2025-05-28T03:19:39.949Z] [INFO] ✅ 파싱 성공: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5,000원 점심 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-28T03:19:39.951Z] [INFO] ▶▶▶ expenseData: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5,000원 점심 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-28T03:19:39.951Z] [INFO] 소비 내역 감지: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5,000원 점심 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-28T03:20:00.411Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: AI 쪽은 이제
+[2025-05-28T03:20:00.412Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: AI 쪽은 이제
+[2025-05-28T03:20:00.414Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-28T03:21:20.346Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지로 사이트 이동해줘
+[2025-05-28T03:21:20.347Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지로 사이트 이동해줘
+[2025-05-28T03:21:20.348Z] [INFO] 복지로 사이트 이동 요청 감지
+[2025-05-28T03:21:35.785Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 이런 것도 잘
+[2025-05-28T03:21:35.787Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 이런 것도 잘
+[2025-05-28T03:21:35.790Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-28T03:21:52.750Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내 소비내역 알려줘
+[2025-05-28T03:21:52.751Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내 소비내역 알려줘
+[2025-05-28T03:21:52.752Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-28T03:22:00.862Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 어제
+[2025-05-28T03:22:00.864Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 어제
+[2025-05-28T03:22:00.865Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-28T03:22:00.867Z] [INFO] 📅 어제 날짜 (KST): 2025-05-27
+[2025-05-28T03:22:00.927Z] [INFO] 📅 날짜 비교 - 입력: 2025-05-27 오늘(KST): 2025-05-28 어제(KST): 2025-05-27
+[2025-05-28T03:22:07.867Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 오늘 소비내역 알려줘
+[2025-05-28T03:22:07.868Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 오늘 소비내역 알려줘
+[2025-05-28T03:22:07.870Z] [INFO] 🔍 간단 파싱 - 입력: 오늘 소비내역 알려줘
+[2025-05-28T03:22:07.871Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-28T03:22:07.872Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-28T03:22:07.874Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-28T03:22:07.876Z] [INFO] 질문 의도 분석 결과: {
+  "type": "general_inquiry",
+  "intent": "expense_overview"
+}
+[2025-05-28T03:22:17.173Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 카테고리별로 알려 줘
+[2025-05-28T03:22:17.175Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 카테고리별로 알려 줘
+[2025-05-28T03:22:17.176Z] [INFO] 🔍 간단 파싱 - 입력: 카테고리별로 알려 줘
+[2025-05-28T03:22:17.178Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-28T03:22:17.179Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-28T03:22:17.180Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-28T03:22:17.181Z] [INFO] 질문 의도 분석 결과: {
+  "type": "category_general",
+  "intent": "category_breakdown"
+}
+[2025-05-28T03:23:15.885Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 들어가면은 API 가져온 거
+[2025-05-28T03:23:15.889Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 들어가면은 API 가져온 거
+[2025-05-28T03:23:15.895Z] [INFO] 🔍 간단 파싱 - 입력: 들어가면은 api 가져온 거
+[2025-05-28T03:23:15.900Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-28T03:23:15.905Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-28T03:23:24.425Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 나오고 있다는 거 아니에요
+[2025-05-28T03:23:24.426Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 나오고 있다는 거 아니에요
+[2025-05-28T03:23:24.428Z] [INFO] 🔍 간단 파싱 - 입력: 나오고 있다는 거 아니에요
+[2025-05-28T03:23:24.431Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-28T03:23:24.434Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-28T04:28:15.762Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내 소비내역 알려줘
+[2025-05-28T04:28:15.765Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내 소비내역 알려줘
+[2025-05-28T04:28:15.766Z] [INFO] 🔍 간단 파싱 - 입력: 내 소비내역 알려줘
+[2025-05-28T04:28:15.766Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-28T04:28:15.766Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-28T04:28:15.767Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-28T04:28:15.767Z] [INFO] 질문 의도 분석 결과: {
+  "type": "general_inquiry",
+  "intent": "expense_overview"
+}
+[2025-05-28T04:28:54.961Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 넌 뭘 할수있어?
+[2025-05-28T04:28:54.962Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 넌 뭘 할수있어?
+[2025-05-28T04:28:54.963Z] [INFO] 기능 문의 메시지 감지
+[2025-05-28T04:32:53.651Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:33:10.178Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:33:23.418Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:33:33.767Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:33:45.561Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:37:39.237Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:37:49.089Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:40:03.597Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:40:16.779Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:40:22.886Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:40:55.214Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:41:34.492Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:42:56.235Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:44:41.787Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}
+[2025-05-28T04:56:05.072Z] [ERROR] 복지서비스 상세 조회 오류: {
+  "name": "SequelizeDatabaseError",
+  "parent": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "original": {
+    "length": 104,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "42703",
+    "position": "590",
+    "file": "parse_relation.c",
+    "line": "3665",
+    "routine": "errorMissingColumn",
+    "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;"
+  },
+  "sql": "SELECT \"welfare_no\" AS \"welfareNo\", \"service_id\" AS \"serviceId\", \"service_name\" AS \"serviceName\", \"service_summary\" AS \"serviceSummary\", \"ministry_name\" AS \"ministryName\", \"organization_name\" AS \"organizationName\", \"contact_info\" AS \"contactInfo\", \"website\", \"service_url\" AS \"serviceUrl\", \"reference_year\" AS \"referenceYear\", \"last_modified_date\" AS \"lastModifiedDate\", \"target_audience\" AS \"targetAudience\", \"application_method\" AS \"applicationMethod\", \"category\", \"is_active\" AS \"isActive\", \"created_at\", \"updated_at\" FROM \"welfare_services\" AS \"Welfare\" WHERE \"Welfare\".\"welfare_no\" = NaN AND \"Welfare\".\"is_active\" = true;",
+  "parameters": {}
+}

@@ -11,27 +11,17 @@ function WelfareReservedList() {
   const [isOpen, setIsOpen] = useState(false);
   const [reservedItems, setReserveItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
-  const [isProtege, setIsProtege] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all', 'active', 'completed', 'cancelled'
-
-  const [protegeUserNo, setProtegeUserNo] = useState(null);
   const [userNo, setUserNo] = useState(null);
 
-
   useEffect(() => {
-    // 보호자 기능 제거로 모든 사용자를 동일하게 처리
-    const userType = localStorage.getItem("loginUser");
     const userNo = localStorage.getItem("userNo");
     
     if (userNo) {
       setUserNo(userNo);
-      setIsProtege(false);
-      fetchReservations();
-    } else {
-      setIsProtege(false);
-      fetchReservations();
     }
+    fetchReservations();
   }, []);
   
   const fetchReservations = () => {

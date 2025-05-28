@@ -1,51 +1,32 @@
-import React, { useState } from 'react';
-import SignUpHeader from './header/SignUpHeader';
-import { Link, useNavigate } from 'react-router-dom';
-import yes from 'image/yes.png';
-import no from 'image/no.png';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMember } from 'signUp/SignUpMain';
 
 function RoleCheck(props) {
-    const [role, setRole] = useState('');
-    const {userInfo, handlechange} =useMember();
+    const {handlechange} = useMember();
     const navi = useNavigate();
 
-    const handleAgreeClick = () => {
-        setRole('PROTECTOR')
-        handlechange({ target: { value: 'PROTECTOR', name: 'userType' } });
-    };
-    const handleDisagreeClick = () => {
-        setRole('PROTEGE');
-        handlechange({ target: { value: 'PROTEGE', name: 'userType' } });
-
-    };
-    const handleNextClick = () => {
-        if (role) {
+    useEffect(() => {
+        // 모든 사용자를 일반 사용자로 자동 설정
+        handlechange({ target: { value: 'USER', name: 'userType' } });
+        
+        // 자동으로 다음 단계로 이동
+        setTimeout(() => {
             navi("/signup/quickloginsetup");
-        }
-    };
-    const buttonClass = role ? "signup-nextBtn" : "signup-nextBtn disabled";
+        }, 100);
+    }, [handlechange, navi]);
+
     return (
         <div>
-            <SignUpHeader/>
             <div className="signup-container">
-                <div className='signup-rolecheck'>
-                    <div className={`signup-role ${role === 'PROTECTOR' ? 'selected-role-blue' : ''}`} onClick={handleAgreeClick}>
-                        <img src={yes} alt="보호자동의버튼" className="icon-yes" />
-                        <p>맞습니다</p>
-                    </div>
-                    <div className={`signup-role ${role === 'PROTEGE' ? 'selected-role-red' : ''}`} onClick={handleDisagreeClick}>
-                        <img src={no} alt="보호자비동의버튼" className="icon-no" />
-                        <p>아닙니다</p>
-                    </div>
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '200px' 
+                }}>
+                    <p>회원가입을 진행하고 있습니다...</p>
                 </div>
-            </div>
-
-            <input type="hidden" value={userInfo.userType} onChange={handlechange} name='userType' />
-            <div className="signUpBtn">
-                <Link to="../verifycode" className="signup-backBtn">이전</Link>
-                <button onClick={handleNextClick}
-                    className={buttonClass} disabled={!role}>다음</button>
             </div>
         </div>
     );

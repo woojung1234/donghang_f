@@ -16,16 +16,20 @@ class NotificationService {
             attributes: ['userNo', 'userId', 'userName']
           }
         ],
-        order: [['notificationCreatedAt', 'DESC']]
+        order: [['created_at', 'DESC']]
       });
 
       return notifications.map(notification => ({
         notificationNo: notification.notificationNo,
-        notificationTitle: notification.notificationTitle,
-        notificationContent: notification.notificationContent,
-        notificationIsRead: notification.notificationIsRead,
+        title: notification.title,
+        content: notification.content,
+        isRead: notification.isRead,
         notificationType: notification.notificationType,
-        notificationCreatedAt: notification.notificationCreatedAt
+        priority: notification.priority,
+        readAt: notification.readAt,
+        relatedId: notification.relatedId,
+        relatedType: notification.relatedType,
+        createdAt: notification.created_at
       }));
 
     } catch (error) {
@@ -37,7 +41,7 @@ class NotificationService {
   /**
    * 알림 생성
    */
-  static async createNotification({ userNo, notificationTitle, notificationContent, notificationType = 'GENERAL' }) {
+  static async createNotification({ userNo, title, content, notificationType = 'SYSTEM', priority = 'NORMAL', relatedId = null, relatedType = null }) {
     try {
       // 사용자 존재 확인
       const user = await User.findOne({
@@ -50,11 +54,13 @@ class NotificationService {
 
       const notification = await Notification.create({
         userNo,
-        notificationTitle,
-        notificationContent,
-        notificationIsRead: false,
+        title,
+        content,
+        isRead: false,
         notificationType,
-        notificationCreatedAt: new Date()
+        priority,
+        relatedId,
+        relatedType
       });
 
       console.log(`🔔 Notification created - No: ${notification.notificationNo}, UserNo: ${userNo}, Type: ${notificationType}`);
@@ -83,12 +89,13 @@ class NotificationService {
         throw new Error('알림을 찾을 수 없습니다.');
       }
 
-      if (notification.notificationIsRead) {
+      if (notification.isRead) {
         return false; // 이미 읽음 처리됨
       }
 
       await notification.update({
-        notificationIsRead: true
+        isRead: true,
+        readAt: new Date()
       });
 
       console.log(`📖 Notification marked as read - No: ${notificationNo}, UserNo: ${userNo}`);
@@ -107,11 +114,14 @@ class NotificationService {
   static async markAllAsRead(userNo) {
     try {
       const result = await Notification.update(
-        { notificationIsRead: true },
+        { 
+          isRead: true,
+          readAt: new Date()
+        },
         { 
           where: { 
             userNo,
-            notificationIsRead: false
+            isRead: false
           }
         }
       );
@@ -162,7 +172,7 @@ class NotificationService {
       const count = await Notification.count({
         where: { 
           userNo,
-          notificationIsRead: false
+          isRead: false
         }
       });
 
@@ -184,16 +194,20 @@ class NotificationService {
           userNo,
           notificationType
         },
-        order: [['notificationCreatedAt', 'DESC']]
+        order: [['created_at', 'DESC']]
       });
 
       return notifications.map(notification => ({
         notificationNo: notification.notificationNo,
-        notificationTitle: notification.notificationTitle,
-        notificationContent: notification.notificationContent,
-        notificationIsRead: notification.notificationIsRead,
+        title: notification.title,
+        content: notification.content,
+        isRead: notification.isRead,
         notificationType: notification.notificationType,
-        notificationCreatedAt: notification.notificationCreatedAt
+        priority: notification.priority,
+        readAt: notification.readAt,
+        relatedId: notification.relatedId,
+        relatedType: notification.relatedType,
+        createdAt: notification.created_at
       }));
 
     } catch (error) {
@@ -213,10 +227,10 @@ class NotificationService {
 
       const result = await Notification.destroy({
         where: {
-          notificationCreatedAt: {
+          created_at: {
             [Op.lt]: thirtyDaysAgo
           },
-          notificationIsRead: true // 읽은 알림만 삭제
+          isRead: true // 읽은 알림만 삭제
         }
       });
 
@@ -226,6 +240,124 @@ class NotificationService {
 
     } catch (error) {
       console.error('❌ NotificationService.cleanupOldNotifications Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 복지서비스 예약 완료 알림 생성
+   */
+  static async createWelfareBookingNotification({ userNo, welfareBookNo, welfareName, startDate, endDate, totalPrice }) {
+    try {
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ko-KR', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      };
+
+      const title = '복지서비스 예약 완료';
+      const content = `${welfareName} 서비스 예약이 완료되었습니다.\n` +
+                     `예약기간: ${formatDate(startDate)} ~ ${formatDate(endDate)}\n` +
+                     `총 비용: ${totalPrice.toLocaleString()}원\n` +
+                     `예약번호: ${welfareBookNo}`;
+
+      const notificationNo = await this.createNotification({
+        userNo,
+        title,
+        content,
+        notificationType: 'WELFARE',
+        priority: 'NORMAL',
+        relatedId: welfareBookNo,
+        relatedType: 'WELFARE_BOOKING'
+      });
+
+      console.log(`🔔 Welfare booking notification created - NotificationNo: ${notificationNo}, BookingNo: ${welfareBookNo}`);
+
+      return notificationNo;
+
+    } catch (error) {
+      console.error('❌ NotificationService.createWelfareBookingNotification Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 복지서비스 예약 취소 알림 생성
+   */
+  static async createWelfareBookingCancelNotification({ userNo, welfareBookNo, welfareName, startDate, endDate }) {
+    try {
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ko-KR', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      };
+
+      const title = '복지서비스 예약 취소';
+      const content = `${welfareName} 서비스 예약이 취소되었습니다.\n` +
+                     `취소된 예약기간: ${formatDate(startDate)} ~ ${formatDate(endDate)}\n` +
+                     `예약번호: ${welfareBookNo}`;
+
+      const notificationNo = await this.createNotification({
+        userNo,
+        title,
+        content,
+        notificationType: 'WELFARE',
+        priority: 'NORMAL',
+        relatedId: welfareBookNo,
+        relatedType: 'WELFARE_CANCEL'
+      });
+
+      console.log(`🔔 Welfare booking cancel notification created - NotificationNo: ${notificationNo}, BookingNo: ${welfareBookNo}`);
+
+      return notificationNo;
+
+    } catch (error) {
+      console.error('❌ NotificationService.createWelfareBookingCancelNotification Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 복지서비스 예약 확인 알림 생성 (예약일 하루 전)
+   */
+  static async createWelfareBookingReminderNotification({ userNo, welfareBookNo, welfareName, startDate }) {
+    try {
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ko-KR', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      };
+
+      const title = '복지서비스 예약 안내';
+      const content = `내일 예약된 ${welfareName} 서비스를 잊지 마세요!\n` +
+                     `서비스 날짜: ${formatDate(startDate)}\n` +
+                     `예약번호: ${welfareBookNo}`;
+
+      const notificationNo = await this.createNotification({
+        userNo,
+        title,
+        content,
+        notificationType: 'WELFARE',
+        priority: 'HIGH',
+        relatedId: welfareBookNo,
+        relatedType: 'WELFARE_REMINDER'
+      });
+
+      console.log(`🔔 Welfare booking reminder notification created - NotificationNo: ${notificationNo}, BookingNo: ${welfareBookNo}`);
+
+      return notificationNo;
+
+    } catch (error) {
+      console.error('❌ NotificationService.createWelfareBookingReminderNotification Error:', error);
       throw error;
     }
   }

@@ -32,7 +32,7 @@ class NotificationController {
 
       const notifications = await Notification.findAndCountAll({
         where: whereConditions,
-        order: [['createdAt', 'DESC']],
+        order: [['created_at', 'DESC']],
         limit: parseInt(limit),
         offset: offset
       });
@@ -279,7 +279,7 @@ class NotificationController {
       const todayNotifications = await Notification.count({
         where: {
           userNo: userNo,
-          createdAt: {
+          created_at: {
             [Op.gte]: new Date().setHours(0, 0, 0, 0)
           }
         }
