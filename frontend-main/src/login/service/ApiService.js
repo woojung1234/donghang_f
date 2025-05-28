@@ -1,4 +1,3 @@
-
 export function call(api, method, request) {
   let headers = new Headers({
     "Content-Type": "application/json",
@@ -40,8 +39,8 @@ export function call(api, method, request) {
     const contentType = response.headers.get("content-type");
 
     //헤더에 값이 있으면 로컬 스토리지에 ACCESS TOKEN 저장하기
-    if(response.headers.authorization){
-      localStorage.setItem("ACCESS_TOKEN", response.headers.authorization);
+    if(response.headers.get("authorization")){
+      localStorage.setItem("ACCESS_TOKEN", response.headers.get("authorization"));
     }
     
     // 응답이 JSON 형식인지 확인
@@ -70,12 +69,15 @@ export function call(api, method, request) {
   })
   .catch((error) => {
     console.error("API 호출 오류:", error);
-    if (error.status === undefined || error.status === 403) {
+    // error.status가 undefined인 경우를 처리
+    if (error && (error.status === undefined || error.status === 403)) {
      // window.location.href = "/login"; // redirect
     }
     return Promise.reject(error);
   });
 }
 
-
-
+// default export 추가
+export default {
+  call
+};
