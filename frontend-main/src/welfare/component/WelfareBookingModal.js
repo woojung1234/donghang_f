@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { call } from 'login/service/ApiService';
 import styles from 'welfare/css/WelfareBookingModal.module.css';
 
-function WelfareBookingModal({ service, onClose, onSuccess }) {
+function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) {
   const [formData, setFormData] = useState({
     // 예약 정보
     address: '',
@@ -16,7 +16,7 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
   const [error, setError] = useState('');
   const [userInfo, setUserInfo] = useState(null);
 
-  // 사용자 정보 가져오기
+  // 사용자 정보 가져오기 및 음성 예약 데이터 처리
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -30,7 +30,21 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
     };
     
     fetchUserInfo();
-  }, []);
+    
+    // 음성 예약 데이터가 있으면 폼에 자동 입력
+    if (voiceBookingData) {
+      console.log('🎙️ 음성 예약 데이터를 폼에 적용:', voiceBookingData);
+      
+      setFormData(prev => ({
+        ...prev,
+        address: voiceBookingData.address || '',
+        startDate: voiceBookingData.startDate || '',
+        endDate: voiceBookingData.endDate || '',
+        useTime: voiceBookingData.timeOption || 1
+      }));
+    }
+    
+  }, [voiceBookingData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -162,6 +176,12 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
             {new Intl.NumberFormat('ko-KR').format(service.welfarePrice)}원/시간
           </span>
         </div>
+        {voiceBookingData && (
+          <div className={styles.voiceBookingNotice}>
+            🎙️ 음성으로 요청하신 예약 정보가 자동으로 입력되었습니다. 
+            확인 후 필요에 따라 수정해주세요.
+          </div>
+        )}
       </div>
 
       {error && (

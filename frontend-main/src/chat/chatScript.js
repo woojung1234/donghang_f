@@ -179,6 +179,33 @@ export function handleAutoSub(
       }
       return;
     }
+
+    // 복지서비스 예약 취소 요청인 경우 예약 내역 페이지로 이동
+    if ((result.type === 'booking_cancel_single' || result.type === 'booking_cancel_multiple') && result.needsNavigation) {
+      console.log("🗑️ 복지서비스 예약 취소 요청 - 예약 내역 페이지로 이동");
+      
+      // 음성으로 응답 읽기
+      if ('speechSynthesis' in window && result.needsVoice) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          // 음성 응답 후 예약 내역 페이지로 이동
+          setTimeout(() => {
+            showWelfareReservedListConfirm(setShowConfirmModal);
+          }, 500);
+        };
+        speechSynthesis.speak(utterance);
+      } else {
+        setIsSpeaking(false);
+        // 음성 없이 바로 예약 내역 페이지로 이동
+        setTimeout(() => {
+          showWelfareReservedListConfirm(setShowConfirmModal);
+        }, 1000);
+      }
+      return;
+    }
     
     // 일반 응답 처리
     // 음성으로 응답 읽기
@@ -321,7 +348,7 @@ function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
         console.log("✅ 복지서비스 예약 페이지 이동 확인");
         
         // 예약 페이지로 이동하면서 데이터 전달
-        const bookingUrl = '/welfare-booking-page';
+        const bookingUrl = '/welfare-booking';
         const queryParams = new URLSearchParams({
           serviceId: navigationData.serviceId,
           serviceName: navigationData.serviceName,
@@ -336,6 +363,33 @@ function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
       },
       onCancel: () => {
         console.log("❌ 복지서비스 예약 페이지 이동 취소");
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      }
+    });
+  }
+}
+
+// 복지서비스 예약 내역 페이지로 이동 확인 팝업 표시
+function showWelfareReservedListConfirm(setShowConfirmModal) {
+  console.log("🗑️ 복지서비스 예약 내역 페이지 이동 확인 팝업 표시");
+  
+  if (setShowConfirmModal) {
+    setShowConfirmModal({
+      show: true,
+      title: '예약 내역',
+      message: '복지서비스 예약 내역 페이지로 이동하시겠습니까?',
+      onConfirm: () => {
+        console.log("✅ 복지서비스 예약 내역 페이지 이동 확인");
+        // 예약 내역 페이지로 이동
+        window.location.href = '/welfare-reserved-list';
+        setShowConfirmModal({ show: false });
+      },
+      onCancel: () => {
+        console.log("❌ 복지서비스 예약 내역 페이지 이동 취소");
         setShowConfirmModal({ show: false });
         // 음성 인식 재시작
         setTimeout(() => {

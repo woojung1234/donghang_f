@@ -36,6 +36,23 @@ class WelfareBookingAiService {
   analyzeWelfareBookingRequest(message) {
     const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
     
+    logger.info('🔍 복지서비스 예약 요청 분석 - 입력:', message);
+    logger.info('🔍 소문자 변환 후:', lowercaseMessage);
+    
+    // 먼저 취소 관련 키워드가 있는지 확인
+    const cancelKeywords = [
+      '취소', '철회', '취소하고', '취소해줘', '취소하고 싶어', '취소해주세요'
+    ];
+    
+    const hasCancelKeyword = cancelKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    );
+    
+    if (hasCancelKeyword) {
+      logger.info('🚫 취소 키워드 감지됨, 예약 요청이 아님');
+      return false;
+    }
+    
     const bookingKeywords = [
       '복지서비스 예약', '복지 서비스 예약', '복지예약', '서비스 예약',
       '예약하고 싶어', '예약해줘', '예약하고 싶다', '예약 신청',
@@ -43,9 +60,16 @@ class WelfareBookingAiService {
       '돌봄 서비스 예약', '돌봄 예약'
     ];
     
-    return bookingKeywords.some(keyword => 
+    const matchedKeywords = bookingKeywords.filter(keyword => 
       lowercaseMessage.includes(keyword.toLowerCase())
     );
+    
+    logger.info('🔍 매칭된 키워드들:', matchedKeywords);
+    
+    const isBookingRequest = matchedKeywords.length > 0;
+    logger.info('🔍 예약 요청 감지 결과:', isBookingRequest);
+    
+    return isBookingRequest;
   }
 
   // 복지서비스 목록 조회 (캐시 사용)

@@ -297,6 +297,66 @@ class WelfareBookController {
       });
     }
   }
+  /**
+   * @swagger
+   * /api/v1/welfare-book/{welfareBookNo}/permanent:
+   *   delete:
+   *     tags:
+   *       - 4. 복지 예약 내역
+   *     summary: 복지 예약 완전 삭제
+   *     description: 취소된 복지 서비스 예약을 완전히 삭제하는 API입니다.
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: welfareBookNo
+   *         required: true
+   *         schema:
+   *           type: number
+   *         description: 복지 예약 번호
+   *     responses:
+   *       200:
+   *         description: 복지 예약 완전 삭제 성공
+   *       400:
+   *         description: 취소되거나 완료된 예약만 삭제할 수 있습니다
+   *       404:
+   *         description: 복지 예약 내역을 찾을 수 없습니다
+   *       500:
+   *         description: 서버 오류
+   */
+  static async permanentlyDelete(req, res, next) {
+    try {
+      const { welfareBookNo } = req.params;
+      const userNo = req.user.userNo;
+
+      const deleted = await WelfareBookService.permanentlyDeleteWelfareBook(welfareBookNo, userNo);
+
+      if (!deleted) {
+        return res.status(404).json({ message: '복지 예약 내역을 찾을 수 없습니다.' });
+      }
+
+      console.log(`🗑️ Welfare booking permanently deleted - BookNo: ${welfareBookNo}, UserNo: ${userNo}`);
+
+      res.status(200).json({ 
+        message: '복지 예약이 완전히 삭제되었습니다.' 
+      });
+
+    } catch (error) {
+      console.error('❌ WelfareBookController.permanentlyDelete Error:', error);
+      
+      if (error.message.includes('찾을 수 없습니다')) {
+        return res.status(404).json({ message: error.message });
+      }
+      
+      if (error.message.includes('취소되거나 완료된 예약만')) {
+        return res.status(400).json({ message: error.message });
+      }
+      
+      res.status(500).json({ 
+        message: '복지 예약 삭제에 실패했습니다.' 
+      });
+    }
+  }
 }
 
 module.exports = WelfareBookController;

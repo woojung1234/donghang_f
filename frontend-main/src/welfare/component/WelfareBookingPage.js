@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from 'header/BlueHeader';
 import { call } from 'login/service/ApiService';
 import styles from 'welfare/css/WelfareBookingPage.module.css';
@@ -13,11 +13,45 @@ function WelfareBookingPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [voiceBookingData, setVoiceBookingData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchWelfareServices();
+    // URL 파라미터에서 음성 예약 데이터 추출
+    checkForVoiceBookingData();
   }, []);
+
+  const checkForVoiceBookingData = () => {
+    const params = new URLSearchParams(location.search);
+    const serviceId = params.get('serviceId');
+    const serviceName = params.get('serviceName');
+    const startDate = params.get('startDate');
+    const endDate = params.get('endDate');
+    const timeOption = params.get('timeOption');
+    const address = params.get('address');
+
+    if (serviceId && serviceName) {
+      console.log('🎙️ 음성 예약 데이터 감지:', {
+        serviceId,
+        serviceName,
+        startDate,
+        endDate,
+        timeOption,
+        address
+      });
+      
+      setVoiceBookingData({
+        serviceId: parseInt(serviceId),
+        serviceName: decodeURIComponent(serviceName),
+        startDate,
+        endDate,
+        timeOption: parseInt(timeOption),
+        address: decodeURIComponent(address)
+      });
+    }
+  };
 
   const fetchWelfareServices = async () => {
     try {
@@ -38,6 +72,19 @@ function WelfareBookingPage() {
         setWelfareServices([]);
       }
       setError(null);
+      
+      // 음성 예약 데이터가 있으면 해당 서비스로 자동 모달 열기
+      if (voiceBookingData) {
+        const targetService = (Array.isArray(response) ? response : response?.data || [])
+          .find(service => service.welfareNo === voiceBookingData.serviceId);
+        
+        if (targetService) {
+          console.log('🎙️ 음성 예약 서비스 자동 선택:', targetService.welfareName);
+          setSelectedService(targetService);
+          setIsModalOpen(true);
+        }
+      }
+      
     } catch (err) {
       console.error('복지서비스 목록 조회 실패:', err);
       setError('복지서비스 목록을 불러오는데 실패했습니다.');
@@ -194,6 +241,7 @@ function WelfareBookingPage() {
             service={selectedService}
             onClose={closeModal}
             onSuccess={handleBookingSuccess}
+            voiceBookingData={voiceBookingData}
           />
         )}
       </Modal>

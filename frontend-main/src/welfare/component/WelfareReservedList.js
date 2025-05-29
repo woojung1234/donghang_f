@@ -100,6 +100,24 @@ function WelfareReservedList() {
     }
   };
 
+  const handlePermanentDelete = (itemId) => {
+    console.log("Permanently deleting reservation:", itemId);
+    call(`/api/v1/welfare-book/${itemId}/permanent`, "DELETE")
+      .then((response) => {
+        console.log("Reservation permanently deleted successfully:", response);
+        fetchReservations(); // 목록 새로고침
+        alert("예약 내역이 완전히 삭제되었습니다.");
+      })
+      .catch((error) => {
+        console.error("예약 완전 삭제 실패:", error);
+        if (error.message && error.message.includes('취소되거나 완료된 예약만')) {
+          alert("취소되거나 완료된 예약만 삭제할 수 있습니다.");
+        } else {
+          alert("예약 삭제 처리 중 오류가 발생했습니다.");
+        }
+      });
+  };
+
   const filterReservations = (status) => {
     setFilter(status);
   };
@@ -179,6 +197,7 @@ function WelfareReservedList() {
               paymentStatus={'PENDING'}
               onCancel={() => openModal(item.welfareBookNo)}
               onDetail={() => openDetailModal(item)}
+              onPermanentDelete={() => handlePermanentDelete(item.welfareBookNo)}
             />
           ))
         ) : (

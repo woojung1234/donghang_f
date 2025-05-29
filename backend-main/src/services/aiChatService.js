@@ -1,6 +1,8 @@
 const consumptionService = require('./ConsumptionService');
 const WelfareService = require('./WelfareService');
 const welfareBookingAiService = require('./welfareBookingAiService');
+const ConversationRoomService = require('./ConversationRoomService');
+const ConversationLogService = require('./ConversationLogService');
 const logger = require('../utils/logger');
 
 class AIChatService {
@@ -281,9 +283,47 @@ class AIChatService {
     return `오늘은 **${selected.name}**은/는 어떠세요?\\n\\n${selected.description}\\n\\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요!`;
   }
 
-  // 복지서비스 예약 요청 감지
+  // 복지서비스 예약 취소 요청 감지
+  analyzeWelfareBookingCancelRequest(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    const cancelKeywords = [
+      '예약 취소', '예약취소', '취소해줘', '취소하고 싶어', '취소해주세요',
+      '예약한거 취소', '예약한 거 취소', '복지서비스 취소', '복지 서비스 취소',
+      '예약 철회', '예약취소하고 싶어', '예약을 취소', '취소하고싶어'
+    ];
+    
+    // 예약 취소 키워드가 포함되어 있는지 확인
+    const hasCancelKeyword = cancelKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    );
+    
+    // "취소할수있어", "취소가능해" 같은 질문형 패턴도 감지
+    const isQuestionAboutCancel = (
+      lowercaseMessage.includes('취소') && 
+      (lowercaseMessage.includes('할수있어') || lowercaseMessage.includes('할 수 있어') || 
+       lowercaseMessage.includes('가능해') || lowercaseMessage.includes('가능한가') ||
+       lowercaseMessage.includes('되나') || lowercaseMessage.includes('돼'))
+    );
+    
+    logger.info('취소 요청 분석:', { 
+      message: lowercaseMessage, 
+      hasCancelKeyword, 
+      isQuestionAboutCancel,
+      result: hasCancelKeyword || isQuestionAboutCancel
+    });
+    
+    return hasCancelKeyword || isQuestionAboutCancel;
+  }
+
+  // 복지서비스 예약 요청 감지 (수정됨)
   analyzeWelfareBookingRequest(message) {
     const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // 먼저 취소 요청인지 확인
+    if (this.analyzeWelfareBookingCancelRequest(message)) {
+      return false; // 취소 요청이면 예약 요청이 아님
+    }
     
     const bookingKeywords = [
       '복지서비스 예약', '복지 서비스 예약', '복지예약', '서비스 예약',
@@ -417,6 +457,71 @@ class AIChatService {
   generateBookingComplete() {
     return "확인 감사합니다! 예약 페이지로 안내해드리겠습니다.\n잠시만 기다려주세요!";
   }
+
+  // 복지서비스 예약 취소 요청 처리
+  async handleWelfareBookingCancelRequest(userId) {
+    try {
+      // WelfareBookService를 사용하여 사용자의 취소 가능한 예약 조회
+      const WelfareBookService = require('./WelfareBookService');
+      const activeBookings = await WelfareBookService.getAllByUserNo(userId);
+      
+      // 취소 가능한 예약 (대기중 상태) 필터링
+      const cancellableBookings = activeBookings.filter(booking => 
+        !booking.welfareBookIsCancel && !booking.welfareBookIsComplete
+      );
+      
+      if (cancellableBookings.length === 0) {
+        return {
+          type: 'booking_cancel_none',
+          content: '현재 취소할 수 있는 복지서비스 예약이 없습니다. 예약 내역은 복지서비스 예약 페이지에서 확인하실 수 있어요!',
+          needsVoice: true
+        };
+      }
+      
+      if (cancellableBookings.length === 1) {
+        const booking = cancellableBookings[0];
+        const serviceName = booking.welfare?.welfareName || '복지서비스';
+        
+        return {
+          type: 'booking_cancel_single',
+          content: `${serviceName} 예약이 있네요! 이 예약을 취소하시겠어요? 복지서비스 예약 페이지에서 취소하실 수 있습니다!`,
+          needsVoice: true,
+          needsNavigation: true,
+          navigationUrl: '/welfare-reserved-list'
+        };
+      }
+      
+      // 여러 개의 예약이 있는 경우
+      let bookingList = '취소 가능한 예약이 여러 개 있네요!\\n\\n';
+      cancellableBookings.slice(0, 3).forEach((booking, index) => {
+        const serviceName = booking.welfare?.welfareName || '복지서비스';
+        const startDate = new Date(booking.welfareBookStartDate).toLocaleDateString('ko-KR');
+        bookingList += `${index + 1}. ${serviceName} (${startDate})\\n`;
+      });
+      
+      if (cancellableBookings.length > 3) {
+        bookingList += `외 ${cancellableBookings.length - 3}개 더...\\n`;
+      }
+      
+      bookingList += '\\n복지서비스 예약 페이지에서 원하는 예약을 선택해서 취소하실 수 있어요!';
+      
+      return {
+        type: 'booking_cancel_multiple',
+        content: bookingList,
+        needsVoice: true,
+        needsNavigation: true,
+        navigationUrl: '/welfare-reserved-list'
+      };
+      
+    } catch (error) {
+      logger.error('예약 취소 요청 처리 오류:', error);
+      return {
+        type: 'booking_cancel_error',
+        content: '예약 내역을 확인하는 중 오류가 발생했습니다. 복지서비스 예약 페이지에서 직접 확인해주세요!',
+        needsVoice: true
+      };
+    }
+  }
   analyzeWelfarePortalRequest(message) {
     const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
     
@@ -445,10 +550,10 @@ class AIChatService {
   // 금복이 역할 소개 응답 생성
   generateCapabilityResponse() {
     const capabilityResponses = [
-      "저는 주로 복지서비스 정보 안내와 금융 서비스 지원을 도와드릴 수 있어요! 혹시 구체적으로 필요한 내용을 알려주시면 더 자세히 도와드릴게요!",
-      "저는 복지서비스 추천, 가계부 관리, 소비 내역 기록 등을 도와드릴 수 있어요! 무엇이 필요하신지 말씀해주세요!",
-      "복지서비스 정보 안내와 가계부 관리가 저의 주요 기능이에요! 어떤 도움이 필요하신지 구체적으로 말씀해주시면 더 좋은 서비스를 제공해드릴게요!",
-      "저는 여러분의 복지 생활과 가계 관리를 도와드리는 AI 도우미예요! 복지서비스 추천부터 소비 내역 관리까지, 필요한 것이 있으시면 언제든 말씀해주세요!"
+      "저는 여러 가지 기능을 도와드릴 수 있어요! 음성이나 텍스트로 가계부를 기록하고, 소비내역을 분석해드려요. 복지서비스 추천과 예약도 가능하고, 복지로 사이트 안내도 해드릴 수 있어요!",
+      "다양한 기능이 있어요! 가계부 관리(소비내역 입력/조회/분석), 복지서비스 추천 및 예약, 알림 관리 등을 도와드릴 수 있습니다. 어떤 기능을 사용해보고 싶으신가요?",
+      "제가 도와드릴 수 있는 기능들을 소개해드릴게요! 음성으로 가계부 기록, 월별 소비내역 분석, 복지서비스 예약, 복지로 사이트 이동 등이 가능해요. 구체적으로 뭘 도와드릴까요?",
+      "저는 금복이 AI 도우미예요! 가계부 자동 기록, 소비 패턴 분석, 복지서비스 맞춤 추천, 음성 대화형 예약, 알림 관리까지 다양하게 도와드려요!"
     ];
     
     return capabilityResponses[Math.floor(Math.random() * capabilityResponses.length)];
@@ -555,8 +660,22 @@ class AIChatService {
       // 기간 분석
       const periodInfo = this.analyzePeriodFromMessage(message);
       
-      // ConsumptionService를 통해 데이터 조회
-      const result = await consumptionService.getExpenseHistory(userId, periodInfo.type);
+      let result;
+      // 구체적인 월인 경우 customMonth 매개변수 전달
+      if (['may', 'april', 'march', 'february', 'january'].includes(periodInfo.type)) {
+        const monthMap = {
+          'january': 1,
+          'february': 2,
+          'march': 3,
+          'april': 4,
+          'may': 5
+        };
+        const monthNumber = monthMap[periodInfo.type];
+        result = await consumptionService.getExpenseHistory(userId, 'custom_month', monthNumber);
+      } else {
+        // ConsumptionService를 통해 데이터 조회
+        result = await consumptionService.getExpenseHistory(userId, periodInfo.type);
+      }
       
       return result;
     } catch (error) {
@@ -591,6 +710,27 @@ class AIChatService {
     
     if (lowercaseMessage.includes('지난달')) {
       return { type: 'last_month' };
+    }
+    
+    // 구체적인 월 처리 추가
+    if (lowercaseMessage.includes('5월')) {
+      return { type: 'may' };
+    }
+    
+    if (lowercaseMessage.includes('4월')) {
+      return { type: 'april' };
+    }
+    
+    if (lowercaseMessage.includes('3월')) {
+      return { type: 'march' };
+    }
+    
+    if (lowercaseMessage.includes('2월')) {
+      return { type: 'february' };
+    }
+    
+    if (lowercaseMessage.includes('1월')) {
+      return { type: 'january' };
     }
     
     // 기본값: 최근
@@ -1047,53 +1187,155 @@ class AIChatService {
     return defaultMerchants[category] || '일반가맹점';
   }
 
-  // 메인 AI 응답 처리 함수 (수정됨)
+  // 간단한 소비내역 파싱 함수 추가
+  simpleParseExpense(input) {
+    const text = input.toLowerCase().replace(/\s+/g, ' ').trim();
+    logger.info('🔍 간단 파싱 - 입력:', input);
+    
+    // 금액 패턴들
+    let amount = 0;
+
+    // 만원 패턴 먼저 확인
+    const millionPattern = /(\d+)\s*만\s*원?/;
+    const millionMatch = text.match(millionPattern);
+    if (millionMatch) {
+      amount = parseInt(millionMatch[1]) * 10000;
+      logger.info('💰 만원 패턴 매치:', millionMatch[1], '→', amount);
+    } else {
+      // 천원 패턴 확인
+      const thousandPattern = /(\d+)\s*천\s*원?/;
+      const thousandMatch = text.match(thousandPattern);
+      if (thousandMatch) {
+        amount = parseInt(thousandMatch[1]) * 1000;
+        logger.info('💰 천원 패턴 매치:', thousandMatch[1], '→', amount);
+      } else {
+        // 일반 원 패턴 확인
+        const wonPattern = /(\d{1,3}(?:,\d{3})*|\d+)\s*원/;
+        const wonMatch = text.match(wonPattern);
+        if (wonMatch) {
+          amount = parseInt(wonMatch[1].replace(/,/g, ''));
+          logger.info('💰 원 패턴 매치:', wonMatch[1], '→', amount);
+        }
+      }
+    }
+
+    if (amount === 0) {
+      logger.info('❌ 금액을 찾을 수 없음');
+      return null;
+    }
+
+    // 소비 관련 키워드 확인
+    const expenseKeywords = [
+      '썼', '먹', '샀', '구매', '지불', '결제', '냈', '마셨', '타고', '갔다', 
+      '사용', '쓰다', '지출', '소비', '소진', '결재', '밥', '식사', '했어', '했다'
+    ];
+    
+    const hasExpenseKeyword = expenseKeywords.some(keyword => text.includes(keyword));
+    logger.info('🔑 키워드 체크:', hasExpenseKeyword, '키워드들:', expenseKeywords.filter(k => text.includes(k)));
+    
+    if (!hasExpenseKeyword) {
+      logger.info('❌ 소비 키워드 없음');
+      return null;
+    }
+
+    const extractedDate = this.extractDateFromText(text);
+    const category = this.inferCategoryFromText(text);
+    const merchantName = this.inferMerchantFromText(text) || this.getDefaultMerchantByCategory(category);
+    
+    const result = {
+      amount: amount,
+      category: category,
+      merchantName: merchantName,
+      originalText: input,
+      transactionDate: extractedDate,
+      needsDateConfirmation: !extractedDate
+    };
+    
+    logger.info('✅ 파싱 성공:', result);
+    return result;
+  }
+
+  // 대화방 생성 또는 조회
+  async getOrCreateConversationRoom(userId, sessionId) {
+    try {
+      // 기존 대화방 조회
+      let conversationRoom = await ConversationRoomService.findByUserAndSession(userId, sessionId);
+      
+      if (!conversationRoom) {
+        // 새 대화방 생성
+        conversationRoom = await ConversationRoomService.createConversationRoom(userId, sessionId);
+      }
+      
+      return conversationRoom.conversationRoomNo;
+    } catch (error) {
+      logger.error('대화방 생성/조회 오류:', error);
+      // 기본값 반환 (로그 저장 실패해도 대화는 계속 진행)
+      return 1;
+    }
+  }
+
+  // 메인 AI 응답 처리 함수 (간소화됨)
   async processMessage(message, userId, sessionId = 'default') {
     try {
       logger.info(`AI 메시지 처리 시작 - 사용자: ${userId}, 세션: ${sessionId}, 메시지: ${message}`);
       
       const sessionState = this.getSessionState(sessionId);
-      
       const lowercaseMessage = message.toLowerCase().trim();
       
-      // 1. 인사 메시지 감지 (우선순위 최상위)
+      // 대화 로그 저장
+      let conversationRoomNo = 1;
+      try {
+        conversationRoomNo = await this.getOrCreateConversationRoom(userId, sessionId);
+        await ConversationLogService.saveConversationLog(conversationRoomNo, message, 'USER', userId);
+      } catch (logError) {
+        logger.error('로그 저장 실패:', logError);
+      }
+      
+      let aiResponse = null;
+
+      // 1. 인사 메시지 감지
       if (lowercaseMessage.includes('안녕')) {
         logger.info('인사 메시지 감지');
-        return {
+        aiResponse = {
           type: 'greeting',
           content: this.generateNaturalGreeting(message),
           needsVoice: true
         };
       }
       
-      // 2. 금복이 역할/기능 문의 감지
-      if ((lowercaseMessage.includes('뭘') && (lowercaseMessage.includes('할수') || lowercaseMessage.includes('할 수'))) || 
-          lowercaseMessage.includes('무엇') || (lowercaseMessage.includes('어떤') && lowercaseMessage.includes('기능')) ||
-          lowercaseMessage.includes('도와') || lowercaseMessage.includes('할일')) {
+      // 2. 기능 문의 감지
+      else if ((lowercaseMessage.includes('뭘') && (lowercaseMessage.includes('할수') || lowercaseMessage.includes('할 수'))) || 
+          lowercaseMessage.includes('무엇') || lowercaseMessage.includes('도와')) {
         logger.info('기능 문의 메시지 감지');
-        return {
+        aiResponse = {
           type: 'capability',
           content: this.generateCapabilityResponse(),
           needsVoice: true
         };
       }
       
-      // 3. 복지서비스 예약 대화 처리
-      const bookingSessionState = welfareBookingAiService.getBookingSessionState(sessionId);
-      if (bookingSessionState.waitingForWelfareBooking && bookingSessionState.welfareBookingState) {
-        return await welfareBookingAiService.handleWelfareBookingFlow(message, sessionId);
+      // 3. 복지서비스 예약 취소 감지 (우선 처리)
+      else if (this.analyzeWelfareBookingCancelRequest(message)) {
+        logger.info('복지서비스 예약 취소 요청 감지');
+        aiResponse = await this.handleWelfareBookingCancelRequest(userId);
       }
-
-      // 4. 복지서비스 예약 요청 감지
-      if (welfareBookingAiService.analyzeWelfareBookingRequest(message)) {
+      
+      // 4. 복지서비스 예약 플로우 처리
+      else if (welfareBookingAiService.getBookingSessionState(sessionId).waitingForWelfareBooking) {
+        logger.info('복지서비스 예약 플로우 처리');
+        aiResponse = await welfareBookingAiService.handleWelfareBookingFlow(message, sessionId);
+      }
+      
+      // 5. 복지서비스 예약 시작 감지
+      else if (welfareBookingAiService.analyzeWelfareBookingRequest(message)) {
         logger.info('복지서비스 예약 요청 감지');
-        return welfareBookingAiService.startWelfareBooking(sessionId);
+        aiResponse = welfareBookingAiService.startWelfareBooking(sessionId);
       }
 
-      // 5. 복지로 사이트 이동 요청 감지
-      if (this.analyzeWelfarePortalRequest(message)) {
+      // 5. 복지로 사이트 이동 요청
+      else if (this.analyzeWelfarePortalRequest(message)) {
         logger.info('복지로 사이트 이동 요청 감지');
-        return {
+        aiResponse = {
           type: 'welfare_portal_request',
           content: this.generateWelfarePortalResponse(),
           needsVoice: true,
@@ -1103,65 +1345,30 @@ class AIChatService {
         };
       }
       
-
-      // 6. 상세정보 요청 확인 (우선순위 최상위)
-      if (this.isDetailRequest(message, sessionState)) {
+      // 6. 상세정보 요청 확인
+      else if (this.isDetailRequest(message, sessionState)) {
         logger.info('복지서비스 상세정보 요청 감지');
         const detailedInfo = this.formatDetailedWelfareRecommendation(sessionState.lastRecommendedServices);
-        
-        // 세션 상태 초기화
-        this.updateSessionState(sessionId, { 
-          lastRecommendedServices: null,
-          waitingForServiceDetail: false 
-        });
-        
-        return {
+        this.updateSessionState(sessionId, { lastRecommendedServices: null, waitingForServiceDetail: false });
+        aiResponse = {
           type: 'welfare_detail',
           content: detailedInfo,
           needsVoice: true
         };
       }
       
-      // 7. 복지서비스/활동 추천 요청 감지
-      const activityAnalysis = this.analyzeActivityInquiry(message);
-      
-      if (activityAnalysis) {
-        logger.info('복지서비스 추천 요청 감지:', activityAnalysis);
-        const recommendation = await this.generateWelfareRecommendation(
-          activityAnalysis.specificCategory, 
-          userId,
-          sessionId
-        );
-        
-        return {
-          type: 'welfare_recommendation',
-          content: recommendation,
-          needsVoice: true
-        };
-      }
-      
-      // 8. 날짜 확인 대기 상태 처리 (우선순위 높음)
-      if (sessionState.waitingForDateConfirmation && sessionState.pendingExpenseData) {
+      // 7. 날짜 확인 대기 상태 처리
+      else if (sessionState.waitingForDateConfirmation && sessionState.pendingExpenseData) {
         logger.info('날짜 확인 응답 처리 중');
         const dateText = this.extractDateFromText(message);
         
         if (dateText) {
-          // 날짜가 인식된 경우
-          const expenseData = {
-            ...sessionState.pendingExpenseData,
-            transactionDate: dateText
-          };
-          
+          const expenseData = { ...sessionState.pendingExpenseData, transactionDate: dateText };
           const saved = await this.saveExpenseData(expenseData, userId);
           const response = this.generateSmartResponse(expenseData, saved, this.formatDateForResponse(dateText));
           
-          // 세션 상태 초기화
-          this.updateSessionState(sessionId, {
-            pendingExpenseData: null,
-            waitingForDateConfirmation: false
-          });
-          
-          return {
+          this.updateSessionState(sessionId, { pendingExpenseData: null, waitingForDateConfirmation: false });
+          aiResponse = {
             type: 'expense_saved',
             content: response,
             expenseData: expenseData,
@@ -1169,146 +1376,23 @@ class AIChatService {
             needsVoice: true
           };
         } else {
-          // 날짜를 인식하지 못한 경우
-          return {
+          aiResponse = {
             type: 'date_request_retry',
             content: '날짜를 정확히 말씀해주세요. 예: "오늘", "어제", "5월 15일"',
             needsVoice: true
           };
         }
       }
-
-      // 9. 소비내역 입력 감지 및 처리 (소비내역 조회보다 먼저)
       
-      // 임시 간단 파싱 함수
-      const simpleParseExpense = (input) => {
-        const text = input.toLowerCase().trim();
-        logger.info('🔍 간단 파싱 - 입력:', text);
-        
-        // 5000원, 5천원, 6만원 등 금액 추출
-        let amount = 0;
-        
-        // 만원 패턴 (6만원, 6만 원)
-        if (text.includes('만원') || text.includes('만 원')) {
-          const match = text.match(/(\d+)\s*만/);
-          if (match) {
-            amount = parseInt(match[1]) * 10000;
-            logger.info('💰 만원 패턴 매치:', match[1], '→', amount);
-          }
-        }
-        // 천원 패턴 (5천원, 5천 원)
-        else if (text.includes('천원') || text.includes('천 원')) {
-          const match = text.match(/(\d+)\s*천/);
-          if (match) {
-            amount = parseInt(match[1]) * 1000;
-            logger.info('💰 천원 패턴 매치:', match[1], '→', amount);
-          }
-        }
-        // 일반 원 패턴 (5000원, 60000원)
-        else if (text.includes('원')) {
-          const match = text.match(/(\d+(?:,\d+)?)\s*원/);
-          if (match) {
-            amount = parseInt(match[1].replace(/,/g, ''));
-            logger.info('💰 원 패턴 매치:', match[1], '→', amount);
-          }
-        }
-        
-        if (amount === 0) {
-          logger.info('❌ 금액을 찾을 수 없음');
-          return null;
-        }
-        
-        // 소비 키워드 확인
-        const keywords = ['먹었', '점심', '저녁', '아침', '썼', '샀', '구매', '쇼핑했', '쇼핑', '지출', '결제', '사용'];
-        const hasKeyword = keywords.some(k => text.includes(k));
-        logger.info('🔑 키워드 체크:', hasKeyword, '키워드들:', keywords.filter(k => text.includes(k)));
-        
-        if (!hasKeyword) {
-          logger.info('❌ 소비 키워드가 없음');
-          return null;
-        }
-        
-        // 카테고리와 가맹점 분류
-        let category = '기타';
-        let merchantName = '일반가맹점';
-        
-        if (text.includes('먹었') || text.includes('점심') || text.includes('저녁') || text.includes('아침')) {
-          category = '식비';
-          merchantName = '일반음식점';
-        } else if (text.includes('쇼핑') || text.includes('구매') || text.includes('샀')) {
-          category = '쇼핑';
-          merchantName = '일반상점';
-        } else if (text.includes('교통') || text.includes('버스') || text.includes('지하철') || text.includes('택시')) {
-          category = '교통비';
-          merchantName = '교통수단';
-        } else if (text.includes('병원') || text.includes('약국') || text.includes('의료')) {
-          category = '의료비';
-          merchantName = '의료기관';
-        }
-        
-        const result = {
-          amount: amount,
-          category: category,
-          merchantName: merchantName,
-          originalText: input,
-          transactionDate: null,
-          needsDateConfirmation: true
-        };
-        
-        logger.info('✅ 파싱 성공:', result);
-        return result;
-      };
-      
-      const expenseData = simpleParseExpense(message);
-      logger.info('▶▶▶ expenseData:', expenseData);
-      
-      if (expenseData) {
-        logger.info('소비 내역 감지:', expenseData);
-        
-        if (expenseData.needsDateConfirmation) {
-          // 날짜 확인이 필요한 경우
-          this.updateSessionState(sessionId, {
-            pendingExpenseData: expenseData,
-            waitingForDateConfirmation: true
-          });
-          
-          const amount = Math.floor(expenseData.amount).toLocaleString();
-          const category = expenseData.category;
-          const merchant = expenseData.merchantName;
-          
-          return {
-            type: 'expense_date_request',
-            content: `${merchant}에서 ${amount}원 ${category} 지출이군요! 언제 사용하셨나요? (예: 오늘, 어제, 5월 15일)`,
-            needsVoice: true,
-            expenseData: expenseData
-          };
-        } else {
-          // 날짜 정보가 이미 있는 경우 바로 저장
-          const saved = await this.saveExpenseData(expenseData, userId);
-          const response = this.generateSmartResponse(expenseData, saved);
-          
-          return {
-            type: 'expense_saved',
-            content: response,
-            expenseData: expenseData,
-            saved: saved,
-            needsVoice: true
-          };
-        }
-      }
-
-      // 10. 소비내역 조회 요청 감지 (개선됨)
-      if (this.isExpenseInquiry(message)) {
+      // 8. 소비내역 조회 감지 (우선 처리)
+      else if (this.isExpenseInquiry(message)) {
         logger.info('소비내역 조회 요청 감지');
         try {
-          // 질문 의도 분석
           const questionAnalysis = this.analyzeExpenseQuestion(message);
-          logger.info('질문 의도 분석 결과:', questionAnalysis);
-          
           const expenseHistory = await this.getExpenseHistory(message, userId);
           const formattedResponse = this.formatExpenseHistory(expenseHistory, message, questionAnalysis);
           
-          return {
+          aiResponse = {
             type: 'expense_inquiry',
             content: formattedResponse,
             needsVoice: true,
@@ -1316,45 +1400,85 @@ class AIChatService {
           };
         } catch (error) {
           logger.error('소비내역 조회 오류:', error);
-          return {
+          aiResponse = {
             type: 'expense_inquiry_error',
             content: '소비내역을 조회하는 중 오류가 발생했습니다. 다시 시도해주세요.',
             needsVoice: true
           };
         }
       }
-
       
-      // 11. 기본 오프라인 응답
-
-      
-      if (expenseData && !expenseData.needsDateConfirmation) {
-        logger.info('일반 소비 내역 감지:', expenseData);
-        const saved = await this.saveExpenseData(expenseData, userId);
-        const response = this.generateSmartResponse(expenseData, saved);
+      // 9. 소비내역 입력 감지  
+      else {
+        const expenseData = this.simpleParseExpense(message);
         
-        return {
-          type: 'expense_saved',
-          content: response,
-          expenseData: expenseData,
-          saved: saved,
-          needsVoice: true
-        };
+        if (expenseData) {
+          logger.info('소비 내역 감지:', expenseData);
+          
+          if (expenseData.needsDateConfirmation) {
+            this.updateSessionState(sessionId, {
+              pendingExpenseData: expenseData,
+              waitingForDateConfirmation: true
+            });
+            
+            const amount = Math.floor(expenseData.amount).toLocaleString();
+            aiResponse = {
+              type: 'expense_date_request',
+              content: `${expenseData.merchantName}에서 ${amount}원 ${expenseData.category} 지출이군요! 언제 사용하셨나요?`,
+              needsVoice: true,
+              expenseData: expenseData
+            };
+          } else {
+            const saved = await this.saveExpenseData(expenseData, userId);
+            aiResponse = {
+              type: 'expense_saved',
+              content: this.generateSmartResponse(expenseData, saved),
+              expenseData: expenseData,
+              saved: saved,
+              needsVoice: true
+            };
+          }
+        }
+        
+        // 10. 복지서비스/활동 추천 요청
+        else {
+          const activityAnalysis = this.analyzeActivityInquiry(message);
+          
+          if (activityAnalysis) {
+            logger.info('복지서비스 추천 요청 감지:', activityAnalysis);
+            const recommendation = await this.generateWelfareRecommendation(activityAnalysis.specificCategory, userId, sessionId);
+            aiResponse = {
+              type: 'welfare_recommendation',
+              content: recommendation,
+              needsVoice: true
+            };
+          } else {
+            // 11. 기본 응답
+            aiResponse = {
+              type: 'general',
+              content: this.getNaturalResponse(message),
+              needsVoice: true
+            };
+          }
+        }
       }
       
-
-      const response = this.getNaturalResponse(message);
-      return {
-        type: 'general',
-        content: response,
-        needsVoice: true
-      };
+      // AI 응답 로그 저장
+      if (aiResponse && aiResponse.content) {
+        try {
+          await ConversationLogService.saveConversationLog(conversationRoomNo, aiResponse.content, 'AI', userId);
+        } catch (logError) {
+          logger.error('AI 응답 로그 저장 실패:', logError);
+        }
+      }
+      
+      return aiResponse;
       
     } catch (error) {
       logger.error('AI 처리 오류:', error);
       return {
         type: 'error',
-        content: this.getNaturalResponse(message),
+        content: '죄송합니다. 처리 중 오류가 발생했습니다. 다시 시도해주세요.',
         needsVoice: true
       };
     }
@@ -1436,9 +1560,10 @@ class AIChatService {
     // 도움 요청
     if (lowercaseMessage.includes("도움") || lowercaseMessage.includes("도와줘") || lowercaseMessage.includes("도와주세요")) {
       const responses = [
-        "네, 어떤 도움이 필요하신가요? 가계부 기록이나 복지서비스 추천을 도와드릴 수 있어요!",
-        "물론이죠! 소비 내역 기록, 가계부 관리, 복지서비스 안내 등 무엇이든 말씀해주세요!",
-        "도움이 필요하시군요! 구체적으로 어떤 것을 도와드릴까요? 가계부? 복지서비스? 아니면 다른 것?"
+        "네, 어떤 도움이 필요하신가요? 가계부 기록, 소비내역 분석, 복지서비스 예약, 복지 정보 안내 등을 도와드릴 수 있어요!",
+        "물론이죠! 음성으로 소비 내역 기록, 월별 가계부 분석, 복지서비스 맞춤 추천 및 예약, 알림 관리 등 무엇이든 말씀해주세요!",
+        "도움이 필요하시군요! 구체적으로 어떤 것을 도와드릴까요? 가계부 관리? 복지서비스 예약? 소비 분석? 아니면 다른 기능?",
+        "언제든 도와드릴게요! '5천원 커피 마셨어', '4월 소비내역 알려줘', '복지서비스 예약해줘' 이런 식으로 편하게 말씀해주세요!"
       ];
       return responses[Math.floor(Math.random() * responses.length)];
     }
@@ -1447,9 +1572,10 @@ class AIChatService {
     if ((lowercaseMessage.includes('뭘') && (lowercaseMessage.includes('할수') || lowercaseMessage.includes('할 수'))) || 
         lowercaseMessage.includes('무엇') || (lowercaseMessage.includes('어떤') && lowercaseMessage.includes('기능'))) {
       const responses = [
-        "제가 할 수 있는 일들을 소개해드릴게요! 가계부 자동 기록, 소비 내역 분석, 복지서비스 추천, 활동 제안 등이 가능해요!",
-        "다양한 것들을 도와드릴 수 있어요! '3만원 마트에서 썼어' 하면 가계부에 기록하고, '오늘 뭐할까?' 하면 복지서비스를 추천해드려요!",
-        "음성으로 쉽게 가계부를 관리하고, 맞춤형 복지서비스도 추천해드릴 수 있어요! 또 소비 패턴 분석도 가능하답니다!"
+        "제가 할 수 있는 일들을 소개해드릴게요! 음성으로 가계부 자동 기록, 월별 소비내역 분석, 복지서비스 맞춤 추천 및 예약, 복지로 사이트 안내 등이 가능해요!",
+        "다양한 것들을 도와드릴 수 있어요! '5만원 마트에서 썼어' 하면 가계부에 기록하고, '4월 소비내역 알려줘' 하면 분석해드리고, '복지서비스 예약해줘' 하면 음성으로 예약도 도와드려요!",
+        "저는 금복이 AI 도우미예요! 가계부 관리(음성 입력/조회/분석), 복지서비스 추천 및 예약, 알림 관리, 복지 정보 안내 등 다양한 기능이 있어요!",
+        "음성과 텍스트로 쉽게 가계부를 관리하고, 맞춤형 복지서비스도 추천해드릴 수 있어요! 또한 대화형 예약 시스템으로 복지서비스 예약도 간편하게 가능하답니다!"
       ];
       return responses[Math.floor(Math.random() * responses.length)];
     }

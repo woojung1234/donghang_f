@@ -10,7 +10,8 @@ function WelfareReservedItem({
   status = 'PENDING',
   paymentStatus = 'UNPAID',
   onCancel,
-  onDetail 
+  onDetail,
+  onPermanentDelete // 새로운 prop 추가
 }) {
 
   function formatDate(dateString) {
@@ -90,9 +91,6 @@ function WelfareReservedItem({
   
   const formattedReservationDate = formatDate(welfareBookReservationDate);
   const formattedStartDate = formatDate(welfareBookStartDate);
-  
-  // 취소 버튼 표시 여부 (취소됨 또는 이용완료 상태가 아닌 경우)
-  const showCancelButton = status !== 'CANCELLED' && status !== 'COMPLETED';
 
   return (
     <div 
@@ -110,7 +108,9 @@ function WelfareReservedItem({
       
       <div className={styles["detailed-reserved-cancel-container"]}>
         <span className={`${styles["main-text"]} ${styles["detailed-reserved-date"]}`}>예약일: {formattedReservationDate}</span>
-        {showCancelButton && (
+        
+        {/* 상태별 버튼 표시 */}
+        {status === 'PENDING' && (
           <span 
             className={`${styles["main-text"]} ${styles["detailed-reserved-cancel"]}`} 
             onClick={(e) => {
@@ -119,6 +119,20 @@ function WelfareReservedItem({
             }}
           >
             예약취소
+          </span>
+        )}
+        
+        {(status === 'CANCELLED' || status === 'COMPLETED') && (
+          <span 
+            className={`${styles["main-text"]} ${styles["detailed-reserved-delete"]}`} 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm('이 예약 내역을 완전히 삭제하시겠습니까? 삭제된 내역은 복구할 수 없습니다.')) {
+                onPermanentDelete();
+              }
+            }}
+          >
+            삭제
           </span>
         )}
       </div>

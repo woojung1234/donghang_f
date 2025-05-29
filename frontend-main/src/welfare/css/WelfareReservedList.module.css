@@ -232,6 +232,24 @@ hr {
   flex-shrink: 0;
 }
 
+.detailed-reserved-delete {
+  text-align: center;
+  padding: 8px 16px;
+  border: 1px none;
+  border-radius: 7px;
+  background-color: #dc3545;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detailed-reserved-delete:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
 .detailed-reserved-text {
   float: right;
   font-size: 18px;

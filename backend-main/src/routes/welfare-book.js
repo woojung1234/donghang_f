@@ -53,4 +53,13 @@ router.delete('/:welfareBookNo', [
     .withMessage('올바른 복지 예약 번호를 입력해주세요.')
 ], WelfareBookController.delete);
 
+/**
+ * 복지 예약 완전 삭제 (취소된 예약만)
+ */
+router.delete('/:welfareBookNo/permanent', [
+  param('welfareBookNo')
+    .isInt({ min: 1 })
+    .withMessage('올바른 복지 예약 번호를 입력해주세요.')
+], WelfareBookController.permanentlyDelete);
+
 module.exports = router;
