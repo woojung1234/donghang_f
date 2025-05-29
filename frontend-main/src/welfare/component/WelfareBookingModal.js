@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { call } from 'login/service/ApiService';
 import styles from 'welfare/css/WelfareBookingModal.module.css';
 
 function WelfareBookingModal({ service, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
-    // 예약자 정보
-    name: '',
-    birthDate: '',
-    gender: '',
+    // 예약 정보
     address: '',
     detailAddress: '',
-    phone: '',
-    height: '',
-    weight: '',
-    medicalInfo: '',
-    // 예약 정보
     startDate: '',
     endDate: '',
     useTime: 1,
@@ -22,7 +14,23 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState(1); // 1: 예약자 정보, 2: 예약 상세
+  const [userInfo, setUserInfo] = useState(null);
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await call('/api/v1/users', 'GET');
+        setUserInfo(response);
+        console.log('사용자 정보 조회:', response);
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+        setError('사용자 정보를 불러올 수 없습니다.');
+      }
+    };
+    
+    fetchUserInfo();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,6 +64,16 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (!userInfo) {
+      setError('사용자 정보를 불러올 수 없습니다. 새로고침 후 다시 시도해주세요.');
+      return;
+    }
+    
+    if (!formData.address) {
+      setError('주소를 입력해주세요.');
+      return;
+    }
+    
     if (!formData.startDate || !formData.endDate) {
       setError('시작일과 종료일을 모두 입력해주세요.');
       return;
@@ -79,16 +97,17 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
     try {
       const bookingData = {
         welfareNo: service.welfareNo,
-        // 예약자 정보
-        userName: formData.name,
-        userBirth: formData.birthDate,
-        userGender: formData.gender,
+        // 사용자 정보에서 가져오기
+        userName: userInfo.userName,
+        userBirth: userInfo.userBirth,
+        userGender: userInfo.userGender,
+        userPhone: userInfo.userPhone,
+        userHeight: userInfo.userHeight || '',
+        userWeight: userInfo.userWeight || '',
+        userMedicalInfo: userInfo.userDisease || '', // 지병 정보 사용
+        // 입력받은 주소 정보
         userAddress: formData.address,
         userDetailAddress: formData.detailAddress,
-        userPhone: formData.phone,
-        userHeight: formData.height,
-        userWeight: formData.weight,
-        userMedicalInfo: formData.medicalInfo,
         // 예약 정보
         welfareBookStartDate: formData.startDate,
         welfareBookEndDate: formData.endDate,
@@ -99,8 +118,8 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
 
       console.log('예약 데이터:', bookingData);
 
-      // 임시로 테스트 엔드포인트 사용
-      await call('/api/v1/test-welfare/test-reserve', 'POST', bookingData);
+      // 정식 복지서비스 예약 API 사용 (알림 생성 포함)
+      await call('/api/v1/welfare-book/reserve', 'POST', bookingData);
       
       alert('복지서비스 예약이 완료되었습니다!');
       onSuccess();
@@ -152,156 +171,34 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
       )}
 
       <form onSubmit={handleSubmit} className={styles.bookingForm}>
-        {step === 1 ? (
-          // Step 1: 예약자 정보
-          <>
-            <h3 className={styles.stepTitle}>예약자 정보 입력</h3>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.label}>이름 *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className={styles.input}
-                placeholder="이름을 입력하세요"
-                required
-              />
-            </div>
+        <h3 className={styles.stepTitle}>예약 정보 입력</h3>
+        
+        {/* 주소 입력 */}
+        <div className={styles.formGroup}>
+          <label className={styles.label}>서비스 이용 주소 *</label>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+            className={styles.input}
+            placeholder="서비스를 이용할 주소를 입력하세요"
+            required
+          />
+        </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>생년월일 *</label>
-              <input
-                type="date"
-                name="birthDate"
-                value={formData.birthDate}
-                onChange={handleInputChange}
-                className={styles.input}
-                required
-              />
-            </div>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>상세주소</label>
+          <input
+            type="text"
+            name="detailAddress"
+            value={formData.detailAddress}
+            onChange={handleInputChange}
+            className={styles.input}
+            placeholder="상세주소를 입력하세요"
+          />
+        </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>성별 *</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className={styles.select}
-                required
-              >
-                <option value="">선택하세요</option>
-                <option value="남성">남성</option>
-                <option value="여성">여성</option>
-              </select>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>주소 *</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                className={styles.input}
-                placeholder="주소를 입력하세요"
-                required
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>상세주소</label>
-              <input
-                type="text"
-                name="detailAddress"
-                value={formData.detailAddress}
-                onChange={handleInputChange}
-                className={styles.input}
-                placeholder="상세주소를 입력하세요"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>연락처 *</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className={styles.input}
-                placeholder="010-0000-0000"
-                required
-              />
-            </div>
-
-            <div className={styles.formGroupRow}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>신장(cm)</label>
-                <input
-                  type="number"
-                  name="height"
-                  value={formData.height}
-                  onChange={handleInputChange}
-                  className={styles.input}
-                  placeholder="170"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>체중(kg)</label>
-                <input
-                  type="number"
-                  name="weight"
-                  value={formData.weight}
-                  onChange={handleInputChange}
-                  className={styles.input}
-                  placeholder="70"
-                />
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>특이사항</label>
-              <textarea
-                name="medicalInfo"
-                value={formData.medicalInfo}
-                onChange={handleInputChange}
-                className={styles.textarea}
-                placeholder="예: 지병, 알레르기, 복용 약물 등"
-                rows="3"
-              />
-            </div>
-
-            <div className={styles.buttonGroup}>
-              <button
-                type="button"
-                onClick={onClose}
-                className={styles.cancelButton}
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // 필수 항목 검증
-                  if (!formData.name || !formData.birthDate || !formData.gender || !formData.address || !formData.phone) {
-                    setError('필수 항목을 모두 입력해주세요.');
-                    return;
-                  }
-                  setError('');
-                  setStep(2);
-                }}
-                className={styles.submitButton}
-              >
-                다음
-              </button>
-            </div>
-          </>
-        ) : (
-          // Step 2: 예약 상세
-          <>
-            <h3 className={styles.stepTitle}>예약 정보 입력</h3>
         <div className={styles.formGroup}>
           <label className={styles.label}>서비스 시작일</label>
           <input
@@ -399,11 +296,11 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
         <div className={styles.buttonGroup}>
           <button
             type="button"
-            onClick={() => setStep(1)}
+            onClick={onClose}
             className={styles.cancelButton}
             disabled={loading}
           >
-            이전
+            취소
           </button>
           <button
             type="submit"
@@ -413,8 +310,6 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
             {loading ? '예약 중...' : '예약하기'}
           </button>
         </div>
-          </>
-        )}
       </form>
     </div>
   );

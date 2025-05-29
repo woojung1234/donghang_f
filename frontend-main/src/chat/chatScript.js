@@ -152,6 +152,33 @@ export function handleAutoSub(
       }
       return;
     }
+
+    // 복지서비스 예약 완료인 경우 예약 페이지로 이동
+    if (result.type === 'booking_confirmed' && result.needsNavigation && result.navigationData) {
+      console.log("📋 복지서비스 예약 완료 - 예약 페이지로 이동");
+      
+      // 음성으로 응답 읽기
+      if ('speechSynthesis' in window && result.needsVoice) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          // 음성 응답 후 예약 페이지로 이동
+          setTimeout(() => {
+            showWelfareBookingPageConfirm(result.navigationData, setShowConfirmModal);
+          }, 500);
+        };
+        speechSynthesis.speak(utterance);
+      } else {
+        setIsSpeaking(false);
+        // 음성 없이 바로 예약 페이지로 이동
+        setTimeout(() => {
+          showWelfareBookingPageConfirm(result.navigationData, setShowConfirmModal);
+        }, 1000);
+      }
+      return;
+    }
     
     // 일반 응답 처리
     // 음성으로 응답 읽기
@@ -270,6 +297,45 @@ function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
       },
       onCancel: () => {
         console.log("❌ 복지로 사이트 이동 취소");
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      }
+    });
+  }
+}
+
+// 복지서비스 예약 페이지 이동 확인 팝업 표시
+function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
+  console.log("📋 복지서비스 예약 페이지 이동 확인 팝업 표시:", navigationData);
+  
+  if (setShowConfirmModal) {
+    setShowConfirmModal({
+      show: true,
+      title: '예약 페이지 이동',
+      message: '복지서비스 예약 페이지로 이동하시겠습니까?',
+      navigationData: navigationData,
+      onConfirm: () => {
+        console.log("✅ 복지서비스 예약 페이지 이동 확인");
+        
+        // 예약 페이지로 이동하면서 데이터 전달
+        const bookingUrl = '/welfare-booking-page';
+        const queryParams = new URLSearchParams({
+          serviceId: navigationData.serviceId,
+          serviceName: navigationData.serviceName,
+          startDate: navigationData.startDate,
+          endDate: navigationData.endDate,
+          timeOption: navigationData.timeOption,
+          address: navigationData.address
+        });
+        
+        window.location.href = `${bookingUrl}?${queryParams.toString()}`;
+        setShowConfirmModal({ show: false });
+      },
+      onCancel: () => {
+        console.log("❌ 복지서비스 예약 페이지 이동 취소");
         setShowConfirmModal({ show: false });
         // 음성 인식 재시작
         setTimeout(() => {

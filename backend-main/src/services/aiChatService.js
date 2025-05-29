@@ -1,5 +1,6 @@
 const consumptionService = require('./ConsumptionService');
 const WelfareService = require('./WelfareService');
+const welfareBookingAiService = require('./welfareBookingAiService');
 const logger = require('../utils/logger');
 
 class AIChatService {
@@ -280,7 +281,142 @@ class AIChatService {
     return `오늘은 **${selected.name}**은/는 어떠세요?\\n\\n${selected.description}\\n\\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요!`;
   }
 
-  // 복지로 사이트 이동 요청 감지
+  // 복지서비스 예약 요청 감지
+  analyzeWelfareBookingRequest(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    const bookingKeywords = [
+      '복지서비스 예약', '복지 서비스 예약', '복지예약', '서비스 예약',
+      '예약하고 싶어', '예약해줘', '예약하고 싶다', '예약 신청',
+      '가정간병 예약', '일상가사 예약', '정서지원 예약',
+      '돌봄 서비스 예약', '돌봄 예약'
+    ];
+    
+    return bookingKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    );
+  }
+
+  // 복지서비스 선택 감지
+  analyzeWelfareServiceSelection(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    const serviceMap = {
+      2: ['가정간병', '간병', '가정 간병', '간병 서비스', '가정간병서비스', '가정간병 서비스'],
+      1: ['일상가사', '가사', '일상 가사', '가사 서비스', '일상가사서비스', '일상가사 서비스', '가사돌봄', '가사 돌봄'],
+      3: ['정서지원', '정서 지원', '정서지원서비스', '정서지원 서비스', '정서 돌봄', '정서돌봄']
+    };
+    
+    for (const [serviceId, keywords] of Object.entries(serviceMap)) {
+      if (keywords.some(keyword => lowercaseMessage.includes(keyword))) {
+        return {
+          serviceId: parseInt(serviceId),
+          serviceName: serviceId === '2' ? '가정간병 돌봄' : 
+                      serviceId === '1' ? '일상가사 돌봄' : '정서지원 돌봄'
+        };
+      }
+    }
+    
+    return null;
+  }
+
+  // 시간대 분석
+  analyzeTimeSelection(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // 시간대 패턴 매칭
+    if (lowercaseMessage.includes('12시') || lowercaseMessage.includes('점심') || 
+        lowercaseMessage.includes('오전') || lowercaseMessage.includes('3시간')) {
+      return { timeOption: 1, timeDisplay: '오전 9시부터 오후 12시', hours: 3 };
+    }
+    
+    if (lowercaseMessage.includes('3시까지') || lowercaseMessage.includes('15시') || 
+        lowercaseMessage.includes('6시간')) {
+      return { timeOption: 2, timeDisplay: '오전 9시부터 오후 3시', hours: 6 };
+    }
+    
+    if (lowercaseMessage.includes('6시까지') || lowercaseMessage.includes('18시') || 
+        lowercaseMessage.includes('저녁') || lowercaseMessage.includes('9시간')) {
+      return { timeOption: 3, timeDisplay: '오전 9시부터 오후 6시', hours: 9 };
+    }
+    
+    return null;
+  }
+
+  // 날짜 분석 (예약용)
+  analyzeDateForBooking(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    if (lowercaseMessage.includes('내일')) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return {
+        startDate: tomorrow.toISOString().split('T')[0],
+        endDate: tomorrow.toISOString().split('T')[0],
+        displayText: '내일'
+      };
+    }
+    
+    if (lowercaseMessage.includes('모레')) {
+      const dayAfterTomorrow = new Date();
+      dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+      return {
+        startDate: dayAfterTomorrow.toISOString().split('T')[0],
+        endDate: dayAfterTomorrow.toISOString().split('T')[0],
+        displayText: '모레'
+      };
+    }
+    
+    // N일 후 패턴
+    const daysLaterMatch = message.match(/(\d+)일?\s*후/);
+    if (daysLaterMatch) {
+      const daysLater = parseInt(daysLaterMatch[1]);
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + daysLater);
+      return {
+        startDate: targetDate.toISOString().split('T')[0],
+        endDate: targetDate.toISOString().split('T')[0],
+        displayText: `${daysLater}일 후`
+      };
+    }
+    
+    return null;
+  }
+
+  // 복지서비스 예약 초기 응답
+  generateWelfareBookingWelcome() {
+    return "안녕하세요! 어떤 복지 서비스를 예약하고 싶으신가요?\n\n" +
+           "📋 선택 가능한 서비스:\n" +
+           "1️⃣ 가정간병 서비스 - 전문적인 간병 돌봄\n" +
+           "2️⃣ 일상가사 서비스 - 집안일 도움\n" +
+           "3️⃣ 정서지원 서비스 - 마음 건강 지원\n\n" +
+           "원하시는 서비스명을 말씀해주세요!";
+  }
+
+  // 시간대 선택 응답
+  generateTimeSelectionResponse(serviceName) {
+    return `좋습니다! ${serviceName}을 예약하실 날짜와 원하는 시간대, 주소를 알려주시겠어요?\n\n` +
+           "⏰ 선택 가능한 시간대:\n" +
+           "• 오전 9시부터 오후 12시 (3시간)\n" +
+           "• 오전 9시부터 오후 3시 (6시간)\n" +
+           "• 오전 9시부터 오후 6시 (9시간)\n\n" +
+           "예: '내일 3시까지 서울시 강남구 테헤란로 123'";
+  }
+
+  // 예약 확인 응답
+  generateBookingConfirmation(bookingData) {
+    const { serviceName, dateText, timeDisplay, address } = bookingData;
+    
+    return `${dateText} ${timeDisplay}까지 ${serviceName}을 예약하시겠군요!\n\n` +
+           `📍 주소: ${address}\n\n` +
+           "해당 주소로 예약을 진행하려고 하는데 맞으신가요?\n" +
+           "확인해주시면 예약 페이지로 안내해드리겠습니다.";
+  }
+
+  // 예약 완료 안내
+  generateBookingComplete() {
+    return "확인 감사합니다! 예약 페이지로 안내해드리겠습니다.\n잠시만 기다려주세요!";
+  }
   analyzeWelfarePortalRequest(message) {
     const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
     
@@ -942,7 +1078,19 @@ class AIChatService {
         };
       }
       
-      // 3. 복지로 사이트 이동 요청 감지
+      // 3. 복지서비스 예약 대화 처리
+      const bookingSessionState = welfareBookingAiService.getBookingSessionState(sessionId);
+      if (bookingSessionState.waitingForWelfareBooking && bookingSessionState.welfareBookingState) {
+        return await welfareBookingAiService.handleWelfareBookingFlow(message, sessionId);
+      }
+
+      // 4. 복지서비스 예약 요청 감지
+      if (welfareBookingAiService.analyzeWelfareBookingRequest(message)) {
+        logger.info('복지서비스 예약 요청 감지');
+        return welfareBookingAiService.startWelfareBooking(sessionId);
+      }
+
+      // 5. 복지로 사이트 이동 요청 감지
       if (this.analyzeWelfarePortalRequest(message)) {
         logger.info('복지로 사이트 이동 요청 감지');
         return {
@@ -956,7 +1104,7 @@ class AIChatService {
       }
       
 
-      // 1. 상세정보 요청 확인 (우선순위 최상위)
+      // 6. 상세정보 요청 확인 (우선순위 최상위)
       if (this.isDetailRequest(message, sessionState)) {
         logger.info('복지서비스 상세정보 요청 감지');
         const detailedInfo = this.formatDetailedWelfareRecommendation(sessionState.lastRecommendedServices);
@@ -974,7 +1122,7 @@ class AIChatService {
         };
       }
       
-      // 2. 복지서비스/활동 추천 요청 감지
+      // 7. 복지서비스/활동 추천 요청 감지
       const activityAnalysis = this.analyzeActivityInquiry(message);
       
       if (activityAnalysis) {
@@ -992,7 +1140,7 @@ class AIChatService {
         };
       }
       
-      // 4. 날짜 확인 대기 상태 처리 (우선순위 높음)
+      // 8. 날짜 확인 대기 상태 처리 (우선순위 높음)
       if (sessionState.waitingForDateConfirmation && sessionState.pendingExpenseData) {
         logger.info('날짜 확인 응답 처리 중');
         const dateText = this.extractDateFromText(message);
@@ -1030,7 +1178,7 @@ class AIChatService {
         }
       }
 
-      // 5. 소비내역 입력 감지 및 처리 (소비내역 조회보다 먼저)
+      // 9. 소비내역 입력 감지 및 처리 (소비내역 조회보다 먼저)
       
       // 임시 간단 파싱 함수
       const simpleParseExpense = (input) => {
@@ -1149,7 +1297,7 @@ class AIChatService {
         }
       }
 
-      // 6. 소비내역 조회 요청 감지 (개선됨)
+      // 10. 소비내역 조회 요청 감지 (개선됨)
       if (this.isExpenseInquiry(message)) {
         logger.info('소비내역 조회 요청 감지');
         try {
@@ -1177,7 +1325,7 @@ class AIChatService {
       }
 
       
-      // 7. 기본 오프라인 응답
+      // 11. 기본 오프라인 응답
 
       
       if (expenseData && !expenseData.needsDateConfirmation) {
@@ -1391,6 +1539,201 @@ class AIChatService {
     }
     
     return this.fallbackResponses[Math.floor(Math.random() * this.fallbackResponses.length)];
+  }
+
+  // 복지서비스 예약 플로우 처리
+  async handleWelfareBookingFlow(message, sessionState, sessionId) {
+    const { step, data } = sessionState.welfareBookingState;
+    
+    try {
+      switch (step) {
+        case 'service_selection':
+          return this.handleServiceSelection(message, sessionId);
+          
+        case 'details_input':
+          return this.handleDetailsInput(message, sessionId);
+          
+        case 'confirmation':
+          return this.handleBookingConfirmation(message, sessionId);
+          
+        default:
+          // 잘못된 상태인 경우 초기화
+          this.resetWelfareBookingState(sessionId);
+          return {
+            type: 'welfare_booking_error',
+            content: '예약 과정에서 오류가 발생했습니다. 다시 시도해주세요.',
+            needsVoice: true
+          };
+      }
+    } catch (error) {
+      logger.error('복지서비스 예약 플로우 오류:', error);
+      this.resetWelfareBookingState(sessionId);
+      return {
+        type: 'welfare_booking_error',
+        content: '예약 처리 중 오류가 발생했습니다. 다시 시도해주세요.',
+        needsVoice: true
+      };
+    }
+  }
+
+  // 서비스 선택 처리
+  handleServiceSelection(message, sessionId) {
+    const serviceSelection = this.analyzeWelfareServiceSelection(message);
+    
+    if (!serviceSelection) {
+      return {
+        type: 'service_selection_retry',
+        content: '어떤 서비스를 원하시는지 정확히 말씀해주세요.\n' +
+                '가정간병 서비스, 일상가사 서비스, 정서지원 서비스 중에서 선택해주세요.',
+        needsVoice: true
+      };
+    }
+    
+    // 다음 단계로 진행
+    this.updateSessionState(sessionId, {
+      welfareBookingState: {
+        step: 'details_input',
+        data: {
+          serviceId: serviceSelection.serviceId,
+          serviceName: serviceSelection.serviceName
+        }
+      }
+    });
+    
+    return {
+      type: 'service_selected',
+      content: this.generateTimeSelectionResponse(serviceSelection.serviceName),
+      needsVoice: true
+    };
+  }
+
+  // 세부사항 입력 처리 (날짜, 시간, 주소)
+  handleDetailsInput(message, sessionId) {
+    const sessionState = this.getSessionState(sessionId);
+    const { data } = sessionState.welfareBookingState;
+    
+    // 시간대 분석
+    const timeSelection = this.analyzeTimeSelection(message);
+    
+    // 날짜 분석
+    const dateSelection = this.analyzeDateForBooking(message);
+    
+    // 주소 추출 (간단한 방식으로)
+    const addressMatch = message.match(/([가-힣\s\d-]+(?:구|동|로|길|아파트|빌딩)[가-힣\s\d-]*)/);
+    const address = addressMatch ? addressMatch[1].trim() : null;
+    
+    // 필요한 정보가 모두 있는지 확인
+    if (!timeSelection) {
+      return {
+        type: 'time_selection_retry',
+        content: '시간대를 명확히 말씀해주세요.\n' +
+                '예: "내일 3시까지", "모레 오후 6시까지"',
+        needsVoice: true
+      };
+    }
+    
+    if (!dateSelection) {
+      return {
+        type: 'date_selection_retry',
+        content: '날짜를 명확히 말씀해주세요.\n' +
+                '예: "내일", "모레", "3일 후"',
+        needsVoice: true
+      };
+    }
+    
+    if (!address) {
+      return {
+        type: 'address_input_retry',
+        content: '주소를 말씀해주세요.\n' +
+                '예: "서울시 강남구 테헤란로 123"',
+        needsVoice: true
+      };
+    }
+    
+    // 모든 정보가 준비되면 확인 단계로
+    const bookingData = {
+      ...data,
+      timeOption: timeSelection.timeOption,
+      timeDisplay: timeSelection.timeDisplay,
+      startDate: dateSelection.startDate,
+      endDate: dateSelection.endDate,
+      dateText: dateSelection.displayText,
+      address: address
+    };
+    
+    this.updateSessionState(sessionId, {
+      welfareBookingState: {
+        step: 'confirmation',
+        data: bookingData
+      }
+    });
+    
+    return {
+      type: 'booking_details_collected',
+      content: this.generateBookingConfirmation(bookingData),
+      needsVoice: true
+    };
+  }
+
+  // 예약 확인 처리
+  handleBookingConfirmation(message, sessionId) {
+    const lowercaseMessage = message.toLowerCase().trim();
+    
+    // 긍정적 응답 확인
+    const positiveResponses = ['응', '네', '예', '맞아', '맞습니다', '좋아', '확인', '진행'];
+    const isPositive = positiveResponses.some(response => lowercaseMessage.includes(response));
+    
+    if (!isPositive) {
+      // 부정적 응답이거나 불확실한 경우
+      const negativeResponses = ['아니', '아니요', '틀려', '다시', '취소'];
+      const isNegative = negativeResponses.some(response => lowercaseMessage.includes(response));
+      
+      if (isNegative) {
+        this.resetWelfareBookingState(sessionId);
+        return {
+          type: 'booking_cancelled',
+          content: '예약을 취소했습니다. 다시 예약하시려면 "복지서비스 예약하고 싶어"라고 말씀해주세요.',
+          needsVoice: true
+        };
+      } else {
+        return {
+          type: 'confirmation_retry',
+          content: '"예" 또는 "아니요"로 답변해주세요.',
+          needsVoice: true
+        };
+      }
+    }
+    
+    // 긍정적 응답인 경우 예약 페이지로 이동
+    const sessionState = this.getSessionState(sessionId);
+    const bookingData = sessionState.welfareBookingState.data;
+    
+    // 세션 상태 초기화
+    this.resetWelfareBookingState(sessionId);
+    
+    return {
+      type: 'booking_confirmed',
+      content: this.generateBookingComplete(),
+      needsVoice: true,
+      needsNavigation: true,
+      navigationData: {
+        type: 'welfare_booking_modal',
+        serviceId: bookingData.serviceId,
+        serviceName: bookingData.serviceName,
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate,
+        timeOption: bookingData.timeOption,
+        address: bookingData.address
+      }
+    };
+  }
+
+  // 복지서비스 예약 상태 초기화
+  resetWelfareBookingState(sessionId) {
+    this.updateSessionState(sessionId, {
+      waitingForWelfareBooking: false,
+      welfareBookingState: null
+    });
   }
 }
 
