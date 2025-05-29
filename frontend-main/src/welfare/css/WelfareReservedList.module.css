@@ -200,6 +200,9 @@ hr {
 
 .detailed-reserved-cancel-container {
   margin-top: -7px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .detailed-reserved-info-container1 {
@@ -217,21 +220,16 @@ hr {
 }
 
 .detailed-reserved-cancel {
-  float: right;
   text-align: center;
-  width: 80px;
-  height: 40px;
+  padding: 8px 16px;
   border: 1px none;
   border-radius: 7px;
   background-color: #FF5959;
-  font-size: 16px;
+  font-size: 14px;
   color: white;
-  position: absolute;
-  top: 7%;
-  right: 6%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .detailed-reserved-text {

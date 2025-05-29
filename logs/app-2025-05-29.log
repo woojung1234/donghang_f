@@ -1,0 +1,36 @@
+[2025-05-29T09:23:53.151Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 100만 원 병원비로 썼어
+[2025-05-29T09:23:53.152Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 100만 원 병원비로 썼어
+[2025-05-29T09:23:53.154Z] [INFO] 🔍 간단 파싱 - 입력: 100만 원 병원비로 썼어
+[2025-05-29T09:23:53.154Z] [INFO] 💰 만원 패턴 매치: 100 → 1000000
+[2025-05-29T09:23:53.155Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "썼"
+]
+[2025-05-29T09:23:53.155Z] [INFO] ✅ 파싱 성공: {
+  "amount": 1000000,
+  "category": "의료비",
+  "merchantName": "의료기관",
+  "originalText": "100만 원 병원비로 썼어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T09:23:53.156Z] [INFO] ▶▶▶ expenseData: {
+  "amount": 1000000,
+  "category": "의료비",
+  "merchantName": "의료기관",
+  "originalText": "100만 원 병원비로 썼어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T09:23:53.157Z] [INFO] 소비 내역 감지: {
+  "amount": 1000000,
+  "category": "의료비",
+  "merchantName": "의료기관",
+  "originalText": "100만 원 병원비로 썼어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T09:24:11.737Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 오늘
+[2025-05-29T09:24:11.738Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 오늘
+[2025-05-29T09:24:11.738Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T09:24:11.739Z] [INFO] 📅 오늘 날짜 (KST): 2025-05-29
+[2025-05-29T09:24:11.778Z] [INFO] 📅 날짜 비교 - 입력: 2025-05-29 오늘(KST): 2025-05-29 어제(KST): 2025-05-28

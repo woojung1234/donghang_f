@@ -99,7 +99,8 @@ function WelfareBookingModal({ service, onClose, onSuccess }) {
 
       console.log('예약 데이터:', bookingData);
 
-      await call('/api/v1/welfare-book/reserve', 'POST', bookingData);
+      // 임시로 테스트 엔드포인트 사용
+      await call('/api/v1/test-welfare/test-reserve', 'POST', bookingData);
       
       alert('복지서비스 예약이 완료되었습니다!');
       onSuccess();

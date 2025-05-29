@@ -116,8 +116,8 @@ class ConsumptionService {
         
         console.log(`🔔 Consumption notification created for UserNo: ${userNo}`);
         
-        // 큰 금액 소비 시 이상 징후 알림 생성 (10만원 이상)
-        if (amount >= 100000) {
+        // 큰 금액 소비 시 이상 징후 알림 생성 (100만원 이상)
+        if (amount >= 1000000) {
           const anomalyTitle = '⚠️ 큰 금액 소비 감지';
           const anomalyContent = `${formattedAmount}원의 큰 금액이 ${merchantName}에서 사용되었습니다. 본인이 사용한 것이 맞는지 확인해주세요.`;
           

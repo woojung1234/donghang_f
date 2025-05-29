@@ -10,7 +10,7 @@ function AlarmList(props) {
     const [alarmList, setAlarmList] = useState([]);
     const [alarmNum, setAlarmNum] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [filter, setFilter] = useState('all'); // 'all', 'card', 'welfare', 'payment', 'system'
+    const [filter, setFilter] = useState('all'); // 'all', 'payment', 'welfare'
 
     // 알람 목록 조회
     useEffect(() => {
@@ -68,6 +68,11 @@ function AlarmList(props) {
     // 필터링된 알림 목록
     const filteredAlarms = alarmList.filter(alarm => {
         if (filter === 'all') return true;
+        if (filter === 'payment') {
+            // 소비 카테고리에는 PAYMENT와 ANOMALY 타입 모두 포함
+            return alarm.notificationType?.toLowerCase() === 'payment' || 
+                   alarm.notificationType?.toLowerCase() === 'anomaly';
+        }
         return alarm.notificationType?.toLowerCase() === filter.toLowerCase();
     });
 
@@ -83,24 +88,14 @@ function AlarmList(props) {
                     전체
                 </button>
                 <button 
-                    className={`filter-button ${filter === 'card' ? 'active' : ''}`} 
-                    onClick={() => filterAlarms('card')}>
-                    카드
-                </button>
-                <button 
                     className={`filter-button ${filter === 'payment' ? 'active' : ''}`} 
                     onClick={() => filterAlarms('payment')}>
-                    결제
+                    소비
                 </button>
                 <button 
                     className={`filter-button ${filter === 'welfare' ? 'active' : ''}`} 
                     onClick={() => filterAlarms('welfare')}>
                     복지
-                </button>
-                <button 
-                    className={`filter-button ${filter === 'system' ? 'active' : ''}`} 
-                    onClick={() => filterAlarms('system')}>
-                    시스템
                 </button>
             </div>
             

@@ -175,7 +175,35 @@ class WelfareBookController {
       }
 
       const userNo = req.user.userNo;
-      const { welfareNo, welfareBookStartDate, welfareBookEndDate, welfareBookUseTime, welfareBookReservationDate } = req.body;
+      const { 
+        welfareNo, 
+        welfareBookStartDate, 
+        welfareBookEndDate, 
+        welfareBookUseTime, 
+        welfareBookReservationDate,
+        // 예약자 개인정보
+        userName,
+        userBirth,
+        userGender,
+        userAddress,
+        userDetailAddress,
+        userPhone,
+        userHeight,
+        userWeight,
+        userMedicalInfo,
+        specialRequest
+      } = req.body;
+
+      console.log('📝 Welfare booking request data:', {
+        userNo,
+        welfareNo,
+        userName,
+        userBirth,
+        userGender,
+        welfareBookStartDate,
+        welfareBookEndDate,
+        welfareBookUseTime
+      });
 
       const welfareBookNo = await WelfareBookService.createWelfareBook({
         welfareNo,
@@ -183,7 +211,18 @@ class WelfareBookController {
         welfareBookEndDate,
         welfareBookUseTime,
         welfareBookReservationDate: welfareBookReservationDate || new Date(),
-        userNo
+        userNo,
+        // 예약자 개인정보
+        userName,
+        userBirth,
+        userGender,
+        userAddress,
+        userDetailAddress,
+        userPhone,
+        userHeight,
+        userWeight,
+        userMedicalInfo,
+        specialRequest
       });
 
       console.log(`✅ Welfare booking created - BookNo: ${welfareBookNo}, UserNo: ${userNo}, WelfareNo: ${welfareNo}`);
@@ -197,7 +236,7 @@ class WelfareBookController {
       console.error('❌ WelfareBookController.createWelfareBooking Error:', error);
       
       if (error.message.includes('존재하지 않습니다')) {
-        return res.status(400).json({ message: '사용자 또는 복지 항목이 존재하지 않습니다.' });
+        return res.status(400).json({ message: error.message });
       }
       
       res.status(500).json({ 

@@ -23,7 +23,7 @@ export function call(api, method, request) {
     method: method,
     mode: 'cors', // CORS 모드 추가
     credentials: 'include', // 쿠키를 포함한 요청 활성화
-    body: method !== 'GET' ? JSON.stringify(request) : null,
+    body: method !== 'GET' && method !== 'DELETE' && request ? JSON.stringify(request) : undefined,
   };
 
   // GET 요청인 경우 쿼리 문자열을 URL에 추가

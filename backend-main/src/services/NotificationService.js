@@ -249,6 +249,14 @@ class NotificationService {
    */
   static async createWelfareBookingNotification({ userNo, welfareBookNo, welfareName, startDate, endDate, totalPrice }) {
     try {
+      console.log(`🔔 [NOTIFICATION] createWelfareBookingNotification 호출됨`);
+      console.log(`   - UserNo: ${userNo}`);
+      console.log(`   - WelfareBookNo: ${welfareBookNo}`);
+      console.log(`   - WelfareName: ${welfareName}`);
+      console.log(`   - StartDate: ${startDate}`);
+      console.log(`   - EndDate: ${endDate}`);
+      console.log(`   - TotalPrice: ${totalPrice}`);
+
       const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('ko-KR', { 
@@ -264,6 +272,10 @@ class NotificationService {
                      `총 비용: ${totalPrice.toLocaleString()}원\n` +
                      `예약번호: ${welfareBookNo}`;
 
+      console.log(`📝 [NOTIFICATION] 알림 내용 생성 완료`);
+      console.log(`   - Title: ${title}`);
+      console.log(`   - Content: ${content.replace(/\n/g, ' | ')}`);
+
       const notificationNo = await this.createNotification({
         userNo,
         title,
@@ -274,12 +286,22 @@ class NotificationService {
         relatedType: 'WELFARE_BOOKING'
       });
 
-      console.log(`🔔 Welfare booking notification created - NotificationNo: ${notificationNo}, BookingNo: ${welfareBookNo}`);
+      console.log(`✅ [NOTIFICATION] 복지서비스 예약 알림 생성 완료`);
+      console.log(`   - NotificationNo: ${notificationNo}`);
+      console.log(`   - BookingNo: ${welfareBookNo}`);
+      console.log(`   - Type: WELFARE`);
 
       return notificationNo;
 
     } catch (error) {
-      console.error('❌ NotificationService.createWelfareBookingNotification Error:', error);
+      console.error('❌ [NOTIFICATION] createWelfareBookingNotification 에러:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        userNo,
+        welfareBookNo,
+        welfareName
+      });
       throw error;
     }
   }

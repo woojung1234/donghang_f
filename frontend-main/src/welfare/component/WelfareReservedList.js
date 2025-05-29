@@ -85,9 +85,9 @@ function WelfareReservedList() {
   const handleDelete = () => {
     if (selectedItemId) {
       console.log("Cancelling reservation:", selectedItemId);
-      call(`/api/v1/welfare-book/${selectedItemId}`, "DELETE", null)
-        .then(() => {
-          console.log("Reservation cancelled successfully");
+      call(`/api/v1/welfare-book/${selectedItemId}`, "DELETE")
+        .then((response) => {
+          console.log("Reservation cancelled successfully:", response);
           closeModal();
           fetchReservations(); // 목록 새로고침
         })
@@ -119,10 +119,18 @@ function WelfareReservedList() {
       zIndex: 100
     },
     content: {
-      height: "250px",
-      margin: "auto",
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '380px',
+      maxHeight: '90vh',
       borderRadius: "15px",
-      padding: "20px",
+      padding: "0px",
+      overflow: 'auto',
+      border: 'none'
     },
   };
 
