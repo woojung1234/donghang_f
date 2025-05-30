@@ -264,7 +264,7 @@ function VoiceChat(props) {
         className="chat-startBtn" 
         onClick={handleStartChat}
         style={{
-          backgroundColor: isOnline ? (isStart ? '#f44336' : '#4CAF50') : '#ff6b6b'
+          backgroundColor: isOnline ? (isStart ? '#f44336' : '#FF961B') : '#ff6b6b'
         }}
       >
         {isStart ? "중지" : "음성입력"}
