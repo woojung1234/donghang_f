@@ -180,29 +180,53 @@ export function handleAutoSub(
       return;
     }
 
-    // 복지서비스 예약 취소 요청인 경우 예약 내역 페이지로 이동
-    if ((result.type === 'booking_cancel_single' || result.type === 'booking_cancel_multiple') && result.needsNavigation) {
-      console.log("🗑️ 복지서비스 예약 취소 요청 - 예약 내역 페이지로 이동");
+    // 복지서비스 예약 취소 요청인 경우 처리
+    if ((result.type === 'booking_cancel_single' || 
+         result.type === 'booking_cancel_multiple' || 
+         result.type === 'booking_cancel_none' ||
+         result.type === 'booking_cancelled_success' ||
+         result.type === 'booking_cancelled_error') && result.needsVoice) {
+      console.log("🗑️ 복지서비스 예약 취소 응답:", result.type);
       
       // 음성으로 응답 읽기
-      if ('speechSynthesis' in window && result.needsVoice) {
+      if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(response);
         utterance.lang = 'ko-KR';
         utterance.rate = 0.9;
         utterance.onend = () => {
           setIsSpeaking(false);
-          // 음성 응답 후 예약 내역 페이지로 이동
-          setTimeout(() => {
-            showWelfareReservedListConfirm(setShowConfirmModal);
-          }, 500);
+          
+          // 예약 취소 관련 응답인 경우 예약 내역 페이지로 이동 모달 표시
+          if (result.type === 'booking_cancel_single' || 
+              result.type === 'booking_cancel_multiple' || 
+              result.type === 'booking_cancel_none') {
+            console.log("🔄 예약 내역 페이지 이동 모달 표시");
+            setTimeout(() => {
+              showWelfareReservedListConfirm(setShowConfirmModal);
+            }, 500);
+          } else {
+            // 취소 완료 또는 에러인 경우 일반적으로 음성 인식 재시작
+            setTimeout(() => {
+              startAutoRecord();
+            }, 1000);
+          }
         };
         speechSynthesis.speak(utterance);
       } else {
         setIsSpeaking(false);
-        // 음성 없이 바로 예약 내역 페이지로 이동
-        setTimeout(() => {
-          showWelfareReservedListConfirm(setShowConfirmModal);
-        }, 1000);
+        
+        // 예약 취소 관련 응답인 경우 예약 내역 페이지로 이동 모달 표시
+        if (result.type === 'booking_cancel_single' || 
+            result.type === 'booking_cancel_multiple' || 
+            result.type === 'booking_cancel_none') {
+          setTimeout(() => {
+            showWelfareReservedListConfirm(setShowConfirmModal);
+          }, 1000);
+        } else {
+          setTimeout(() => {
+            startAutoRecord();
+          }, 1000);
+        }
       }
       return;
     }

@@ -69,7 +69,7 @@ async function fetchRealWelfareData() {
             lastModifiedDate: service.최종수정일 || new Date().toISOString().split('T')[0],
             targetAudience: service.지원대상 || '일반',
             applicationMethod: service.신청방법 || '관련기관 문의',
-            category: this.mapCategory(service.서비스분야 || service.서비스명),
+            category: mapCategory(service.서비스분야 || service.서비스명),
             isActive: true
           });
           

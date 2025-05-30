@@ -8,6 +8,11 @@ class ConversationLogService {
    */
   static async saveConversationLog(conversationRoomNo, messageContent, messageType = 'USER', userNo = null) {
     try {
+      // userNo가 필수이므로 확인
+      if (!userNo) {
+        throw new Error('사용자 정보가 필요합니다.');
+      }
+
       // 대화방 존재 여부 확인
       const room = await ConversationRoom.findOne({
         where: {
@@ -20,9 +25,10 @@ class ConversationLogService {
         throw new Error('대화방을 찾을 수 없습니다.');
       }
 
-      // 대화 로그 저장
+      // 대화 로그 저장 (필드명 수정)
       const conversationLog = await ConversationLog.create({
-        conversationRoomNo: conversationRoomNo,
+        roomNo: conversationRoomNo,  // conversationRoomNo -> roomNo
+        userNo: userNo,              // userNo 추가
         messageContent: messageContent,
         messageType: messageType, // 'USER' 또는 'AI'
         createdAt: new Date()
@@ -33,18 +39,19 @@ class ConversationLogService {
         updatedAt: new Date()
       });
 
-      logger.info(`💬 대화 로그 저장 완료 - RoomNo: ${conversationRoomNo}, Type: ${messageType}`);
+      logger.info(`💬 대화 로그 저장 완료 - RoomNo: ${conversationRoomNo}, Type: ${messageType}, UserNo: ${userNo}`);
 
       return {
-        conversationLogNo: conversationLog.conversationLogNo,
-        conversationRoomNo: conversationLog.conversationRoomNo,
+        logNo: conversationLog.logNo,               // conversationLogNo -> logNo
+        roomNo: conversationLog.roomNo,             // conversationRoomNo -> roomNo
+        userNo: conversationLog.userNo,             // userNo 추가
         messageContent: conversationLog.messageContent,
         messageType: conversationLog.messageType,
         createdAt: conversationLog.createdAt
       };
 
     } catch (error) {
-      logger.error('❌ ConversationLogService.saveConversationLog Error:', error);
+      logger.error('❌ ConversationLogService.saveConversationLog Error:', error.message, error.stack);
       throw error;
     }
   }
@@ -56,7 +63,7 @@ class ConversationLogService {
     try {
       const logs = await ConversationLog.findAll({
         where: {
-          conversationRoomNo: conversationRoomNo
+          roomNo: conversationRoomNo  // conversationRoomNo -> roomNo
         },
         order: [['created_at', 'DESC']],
         limit: limit,
@@ -64,15 +71,16 @@ class ConversationLogService {
       });
 
       return logs.map(log => ({
-        conversationLogNo: log.conversationLogNo,
-        conversationRoomNo: log.conversationRoomNo,
+        logNo: log.logNo,               // conversationLogNo -> logNo
+        roomNo: log.roomNo,             // conversationRoomNo -> roomNo
+        userNo: log.userNo,             // userNo 추가
         messageContent: log.messageContent,
         messageType: log.messageType,
         createdAt: log.createdAt
       }));
 
     } catch (error) {
-      logger.error('❌ ConversationLogService.getConversationLogs Error:', error);
+      logger.error('❌ ConversationLogService.getConversationLogs Error:', error.message, error.stack);
       throw error;
     }
   }
@@ -86,14 +94,15 @@ class ConversationLogService {
       
       const results = await sequelize.query(`
         SELECT 
-          cl.conversation_log_no,
-          cl.conversation_room_no,
+          cl.log_no,
+          cl.room_no,
+          cl.user_no,
           cl.message_content,
           cl.message_type,
           cl.created_at,
           cr.room_name
         FROM conversation_logs cl
-        INNER JOIN conversation_rooms cr ON cl.conversation_room_no = cr.room_no
+        INNER JOIN conversation_rooms cr ON cl.room_no = cr.room_no
         WHERE cr.user_no = ? AND cr.is_active = true
         ORDER BY cl.created_at DESC
         LIMIT ?
@@ -103,8 +112,9 @@ class ConversationLogService {
       });
 
       return results.map(result => ({
-        conversationLogNo: result.conversation_log_no,
-        conversationRoomNo: result.conversation_room_no,
+        logNo: result.log_no,
+        roomNo: result.room_no,
+        userNo: result.user_no,
         messageContent: result.message_content,
         messageType: result.message_type,
         createdAt: result.created_at,
@@ -112,7 +122,7 @@ class ConversationLogService {
       }));
 
     } catch (error) {
-      logger.error('❌ ConversationLogService.getRecentConversationLogs Error:', error);
+      logger.error('❌ ConversationLogService.getRecentConversationLogs Error:', error.message, error.stack);
       return [];
     }
   }
@@ -120,12 +130,12 @@ class ConversationLogService {
   /**
    * 대화 로그 삭제 (소프트 삭제 아님 - 실제 삭제)
    */
-  static async deleteConversationLog(conversationLogNo, userNo = null) {
+  static async deleteConversationLog(logNo, userNo = null) {
     try {
       // 대화 로그 조회 및 권한 확인
       const log = await ConversationLog.findOne({
         where: {
-          conversationLogNo: conversationLogNo
+          logNo: logNo  // conversationLogNo -> logNo
         },
         include: [
           {
@@ -143,12 +153,12 @@ class ConversationLogService {
 
       await log.destroy();
 
-      logger.info(`🗑️ 대화 로그 삭제 완료 - LogNo: ${conversationLogNo}`);
+      logger.info(`🗑️ 대화 로그 삭제 완료 - LogNo: ${logNo}`);
       
       return true;
 
     } catch (error) {
-      logger.error('❌ ConversationLogService.deleteConversationLog Error:', error);
+      logger.error('❌ ConversationLogService.deleteConversationLog Error:', error.message, error.stack);
       throw error;
     }
   }
@@ -174,7 +184,7 @@ class ConversationLogService {
       // 해당 대화방의 모든 로그 삭제
       const deletedCount = await ConversationLog.destroy({
         where: {
-          conversationRoomNo: conversationRoomNo
+          roomNo: conversationRoomNo  // conversationRoomNo -> roomNo
         }
       });
 
@@ -183,7 +193,7 @@ class ConversationLogService {
       return deletedCount;
 
     } catch (error) {
-      logger.error('❌ ConversationLogService.deleteAllLogsInRoom Error:', error);
+      logger.error('❌ ConversationLogService.deleteAllLogsInRoom Error:', error.message, error.stack);
       throw error;
     }
   }

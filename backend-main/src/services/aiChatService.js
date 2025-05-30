@@ -44,7 +44,9 @@ class AIChatService {
         pendingExpenseData: null,
         waitingForDateConfirmation: false,
         lastRecommendedServices: null, // 마지막으로 추천한 서비스들 저장
-        waitingForServiceDetail: false
+        waitingForServiceDetail: false,
+        waitingForCancelSelection: false, // 예약 취소 번호 선택 대기
+        cancellableBookings: null // 취소 가능한 예약 목록
       });
     }
   }
@@ -117,11 +119,11 @@ class AIChatService {
       const userAge = 65; // 기본값
       const interests = specificCategory ? [specificCategory] : [];
 
-      // WelfareService의 AI용 추천 함수 사용
+      // WelfareService의 AI용 추천 함수 사용 (공공 API 데이터)
       const recommendedServices = await WelfareService.getRecommendedWelfareForAI(
         userAge, 
         interests, 
-        3
+        5 // 최대 5개까지 추천
       );
 
       if (!recommendedServices || recommendedServices.length === 0) {
@@ -136,7 +138,7 @@ class AIChatService {
       });
 
       logger.info('추천할 복지서비스 수:', recommendedServices.length);
-      return this.formatSimpleWelfareRecommendation(recommendedServices, specificCategory);
+      return this.formatPublicWelfareRecommendation(recommendedServices, specificCategory);
 
     } catch (error) {
       logger.error('복지서비스 추천 생성 오류:', error);
@@ -144,8 +146,8 @@ class AIChatService {
     }
   }
 
-  // 간소화된 복지서비스 추천 응답 포맷팅 (제목만)
-  formatSimpleWelfareRecommendation(services, specificCategory = null) {
+  // 공공 API 복지서비스 추천 응답 포맷팅
+  formatPublicWelfareRecommendation(services, specificCategory = null) {
     if (!services || services.length === 0) {
       return this.getDefaultActivityRecommendation();
     }
@@ -165,14 +167,20 @@ class AIChatService {
 
     response += greetings[Math.floor(Math.random() * greetings.length)] + '\\n\\n';
 
-    // 서비스 제목만 간단히 나열
+    // 서비스 제목과 간단한 설명
     services.forEach((service, index) => {
-      const emoji = this.getServiceEmoji(service.category);
-      response += `${index + 1}. ${service.serviceName}\\n`;
+      response += `${index + 1}. **${service.serviceName}**\\n`;
       
-      // 카테고리만 간단히 표시
-      if (service.category) {
-        response += `   카테고리: ${service.category}\\n`;
+      if (service.serviceSummary) {
+        // 요약이 길면 줄여서 표시
+        const summary = service.serviceSummary.length > 100 
+          ? service.serviceSummary.substring(0, 100) + '...' 
+          : service.serviceSummary;
+        response += `   ${summary}\\n`;
+      }
+      
+      if (service.organizationName) {
+        response += `   담당기관: ${service.organizationName}\\n`;
       }
       
       if (index < services.length - 1) {
@@ -181,46 +189,45 @@ class AIChatService {
     });
 
     // 상세정보 안내 멘트
-    response += '궁금한 서비스가 있으시면 "자세히 알려줘"라고 말씀해주세요!';
-    response += '복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요!';
+    response += '\\n\\n더 자세한 정보가 필요하시면 "자세히 알려줘"라고 말씀해주세요!';
+    response += '\\n복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요!';
 
     return response;
   }
 
-  // 상세 복지서비스 정보 제공
-  formatDetailedWelfareRecommendation(services) {
+  // 상세 복지서비스 정보 제공 (공공 API 데이터용)
+  formatDetailedPublicWelfareRecommendation(services) {
     if (!services || services.length === 0) {
       return '죄송합니다. 상세 정보를 가져올 수 없습니다.';
     }
 
-    let response = '복지서비스 상세 정보';
+    let response = '**복지서비스 상세 정보**\\n\\n';
 
     services.forEach((service, index) => {
-      const emoji = this.getServiceEmoji(service.category);
-      response += `${service.serviceName}`;
+      response += `**${service.serviceName}**\\n`;
       
       if (service.serviceSummary) {
-        response += `${service.serviceSummary}`;
+        response += `📝 **서비스 내용**: ${service.serviceSummary}\\n`;
       }
 
       if (service.targetAudience) {
-        response += `대상: ${service.targetAudience}`;
+        response += `👥 **대상**: ${service.targetAudience}\\n`;
       }
 
       if (service.applicationMethod) {
-        response += `신청방법: ${service.applicationMethod}`;
+        response += `📋 **신청방법**: ${service.applicationMethod}\\n`;
       }
 
       if (service.organizationName) {
-        response += `담당기관: ${service.organizationName}`;
+        response += `🏢 **담당기관**: ${service.organizationName}\\n`;
       }
 
       if (service.contactInfo) {
-        response += `문의: ${service.contactInfo}`;
+        response += `📞 **문의**: ${service.contactInfo}\\n`;
       }
 
       if (service.website) {
-        response += `웹사이트: ${service.website}`;
+        response += `🌐 **웹사이트**: ${service.website}\\n`;
       }
       
       if (index < services.length - 1) {
@@ -228,7 +235,7 @@ class AIChatService {
       }
     });
 
-    response += '더 많은 복지서비스는 복지서비스 메뉴에서 확인하세요!';
+    response += '\\n\\n더 많은 복지서비스는 복지서비스 메뉴에서 확인하세요!';
 
     return response;
   }
@@ -290,7 +297,7 @@ class AIChatService {
     const cancelKeywords = [
       '예약 취소', '예약취소', '취소해줘', '취소하고 싶어', '취소해주세요',
       '예약한거 취소', '예약한 거 취소', '복지서비스 취소', '복지 서비스 취소',
-      '예약 철회', '예약취소하고 싶어', '예약을 취소', '취소하고싶어'
+      '예약 철회', '예약취소하고 싶어', '예약을 취소', '취소하고싶어', '취소'
     ];
     
     // 예약 취소 키워드가 포함되어 있는지 확인
@@ -459,7 +466,7 @@ class AIChatService {
   }
 
   // 복지서비스 예약 취소 요청 처리
-  async handleWelfareBookingCancelRequest(userId) {
+  async handleWelfareBookingCancelRequest(userId, message = null) {
     try {
       // WelfareBookService를 사용하여 사용자의 취소 가능한 예약 조회
       const WelfareBookService = require('./WelfareBookService');
@@ -474,17 +481,23 @@ class AIChatService {
         return {
           type: 'booking_cancel_none',
           content: '현재 취소할 수 있는 복지서비스 예약이 없습니다. 예약 내역은 복지서비스 예약 페이지에서 확인하실 수 있어요!',
-          needsVoice: true
+          needsVoice: true,
+          needsNavigation: true,
+          navigationUrl: '/welfare-reserved-list'
         };
       }
       
       if (cancellableBookings.length === 1) {
         const booking = cancellableBookings[0];
         const serviceName = booking.welfare?.welfareName || '복지서비스';
+        const startDate = new Date(booking.welfareBookStartDate);
+        const month = startDate.getMonth() + 1;
+        const day = startDate.getDate();
+
         
         return {
           type: 'booking_cancel_single',
-          content: `${serviceName} 예약이 있네요! 이 예약을 취소하시겠어요? 복지서비스 예약 페이지에서 취소하실 수 있습니다!`,
+          content: `${month}월 ${day}일에 예약된 ${serviceName}이 있네요! 이 예약을 취소하시겠어요? "네 취소해줘" 또는 "취소하고 싶어"라고 말씀해주시면 바로 취소해드릴게요!`,
           needsVoice: true,
           needsNavigation: true,
           navigationUrl: '/welfare-reserved-list'
@@ -492,18 +505,21 @@ class AIChatService {
       }
       
       // 여러 개의 예약이 있는 경우
-      let bookingList = '취소 가능한 예약이 여러 개 있네요!\\n\\n';
+      let bookingList = '취소 가능한 예약이 여러 개 있네요!\n\n';
       cancellableBookings.slice(0, 3).forEach((booking, index) => {
         const serviceName = booking.welfare?.welfareName || '복지서비스';
-        const startDate = new Date(booking.welfareBookStartDate).toLocaleDateString('ko-KR');
-        bookingList += `${index + 1}. ${serviceName} (${startDate})\\n`;
+        const startDate = new Date(booking.welfareBookStartDate);
+        const month = startDate.getMonth() + 1;
+        const day = startDate.getDate();
+        bookingList += `${index + 1}. ${serviceName} ${month}월 ${day}일\n`;
       });
       
       if (cancellableBookings.length > 3) {
-        bookingList += `외 ${cancellableBookings.length - 3}개 더...\\n`;
+        bookingList += `외 ${cancellableBookings.length - 3}개 더 있어요.\n`;
       }
       
-      bookingList += '\\n복지서비스 예약 페이지에서 원하는 예약을 선택해서 취소하실 수 있어요!';
+      bookingList += '\n원하는 예약을 말씀해주세요!\n';
+      bookingList += '예: "1번 취소해줘", "가정간병 돌봄 취소해줘", "6월 1일 예약 취소해줘"';
       
       return {
         type: 'booking_cancel_multiple',
@@ -572,7 +588,17 @@ class AIChatService {
 
   // 소비내역 조회 요청 감지 (개선됨)
   isExpenseInquiry(message) {
-    const lowercaseMessage = message.toLowerCase().replace(/\\s+/g, ' ').trim();
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // 복지서비스 관련 키워드가 있으면 소비내역 조회가 아님
+    const welfareKeywords = ['복지', '복지서비스', '복지 서비스', '서비스'];
+    const hasWelfareKeyword = welfareKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword.toLowerCase())
+    );
+    
+    if (hasWelfareKeyword) {
+      return false; // 복지서비스 관련 메시지는 소비내역 조회가 아님
+    }
     
     const expenseInquiryKeywords = [
       '소비내역', '소비 내역', '가계부', '지출내역', '지출 내역', '내역',
@@ -1266,9 +1292,18 @@ class AIChatService {
         conversationRoom = await ConversationRoomService.createConversationRoom(userId, sessionId);
       }
       
-      return conversationRoom.conversationRoomNo;
+      // roomNo 또는 conversationRoomNo 속성 확인
+      const roomNo = conversationRoom.roomNo || conversationRoom.conversationRoomNo;
+      
+      if (roomNo) {
+        return roomNo;
+      } else {
+        logger.error('대화방 ID를 찾을 수 없음:', conversationRoom);
+        return 1; // 기본값
+      }
+      
     } catch (error) {
-      logger.error('대화방 생성/조회 오류:', error);
+      logger.error('대화방 생성/조회 오류:', error.message, error.stack);
       // 기본값 반환 (로그 저장 실패해도 대화는 계속 진행)
       return 1;
     }
@@ -1315,9 +1350,15 @@ class AIChatService {
       }
       
       // 3. 복지서비스 예약 취소 감지 (우선 처리)
-      else if (this.analyzeWelfareBookingCancelRequest(message)) {
+      else if (this.analyzeWelfareBookingCancelRequest(message) || this.isSpecificWelfareCancelRequest(message)) {
         logger.info('복지서비스 예약 취소 요청 감지');
-        aiResponse = await this.handleWelfareBookingCancelRequest(userId);
+        // 구체적 취소 요청인 경우 별도 처리
+        if (this.isSpecificWelfareCancelRequest(message)) {
+          logger.info('🎯 구체적 복지서비스 예약 취소 요청으로 분기');
+          aiResponse = await this.handleSpecificWelfareCancelRequest(userId, message);
+        } else {
+          aiResponse = await this.handleWelfareBookingCancelRequest(userId, message);
+        }
       }
       
       // 4. 복지서비스 예약 플로우 처리
@@ -1348,7 +1389,7 @@ class AIChatService {
       // 6. 상세정보 요청 확인
       else if (this.isDetailRequest(message, sessionState)) {
         logger.info('복지서비스 상세정보 요청 감지');
-        const detailedInfo = this.formatDetailedWelfareRecommendation(sessionState.lastRecommendedServices);
+        const detailedInfo = this.formatDetailedPublicWelfareRecommendation(sessionState.lastRecommendedServices);
         this.updateSessionState(sessionId, { lastRecommendedServices: null, waitingForServiceDetail: false });
         aiResponse = {
           type: 'welfare_detail',
@@ -1357,7 +1398,24 @@ class AIChatService {
         };
       }
       
-      // 7. 날짜 확인 대기 상태 처리
+      // 7. 예약 취소 번호 선택 대기 상태 처리
+      else if (sessionState.waitingForCancelSelection && sessionState.cancellableBookings) {
+        logger.info('예약 취소 번호 선택 처리 중');
+        const selectedNumber = this.extractNumberFromMessage(message);
+        
+        if (selectedNumber && selectedNumber >= 1 && selectedNumber <= sessionState.cancellableBookings.length) {
+          const selectedBooking = sessionState.cancellableBookings[selectedNumber - 1];
+          aiResponse = await this.handleDirectCancelBooking(selectedBooking, userId, sessionId);
+        } else {
+          aiResponse = {
+            type: 'cancel_selection_retry',
+            content: `1번부터 ${sessionState.cancellableBookings.length}번 중에서 취소할 예약 번호를 말씀해주세요.`,
+            needsVoice: true
+          };
+        }
+      }
+      
+      // 8. 날짜 확인 대기 상태 처리
       else if (sessionState.waitingForDateConfirmation && sessionState.pendingExpenseData) {
         logger.info('날짜 확인 응답 처리 중');
         const dateText = this.extractDateFromText(message);
@@ -1384,7 +1442,7 @@ class AIChatService {
         }
       }
       
-      // 8. 소비내역 조회 감지 (우선 처리)
+      // 9. 소비내역 조회 감지 (우선 처리)
       else if (this.isExpenseInquiry(message)) {
         logger.info('소비내역 조회 요청 감지');
         try {
@@ -1408,7 +1466,7 @@ class AIChatService {
         }
       }
       
-      // 9. 소비내역 입력 감지  
+      // 10. 소비내역 입력 감지  
       else {
         const expenseData = this.simpleParseExpense(message);
         
@@ -1440,7 +1498,7 @@ class AIChatService {
           }
         }
         
-        // 10. 복지서비스/활동 추천 요청
+        // 11. 복지서비스/활동 추천 요청
         else {
           const activityAnalysis = this.analyzeActivityInquiry(message);
           
@@ -1453,7 +1511,7 @@ class AIChatService {
               needsVoice: true
             };
           } else {
-            // 11. 기본 응답
+            // 12. 기본 응답
             aiResponse = {
               type: 'general',
               content: this.getNaturalResponse(message),
@@ -1861,6 +1919,260 @@ class AIChatService {
       welfareBookingState: null
     });
   }
+  
+  // 메시지에서 숫자 추출
+  extractNumberFromMessage(message) {
+    const numberMatch = message.match(/(\d+)/);
+    return numberMatch ? parseInt(numberMatch[1]) : null;
+  }
+  
+  // 직접 예약 취소 처리
+  async handleDirectCancelBooking(booking, userId, sessionId) {
+    try {
+      logger.info('직접 예약 취소 처리:', booking);
+      
+      const WelfareBookService = require('./WelfareBookService');
+      const result = await WelfareBookService.deleteWelfareBook(booking.welfareBookNo, userId);
+      
+      // 세션 상태 초기화
+      this.updateSessionState(sessionId, {
+        waitingForCancelSelection: false,
+        cancellableBookings: null
+      });
+      
+      if (result) {
+        const serviceName = booking.welfare?.welfareName || '복지서비스';
+        const startDate = new Date(booking.welfareBookStartDate);
+        const month = startDate.getMonth() + 1;
+        const day = startDate.getDate();
+        
+        return {
+          type: 'booking_cancelled_success',
+          content: `${month}월 ${day}일 ${serviceName} 예약이 성공적으로 취소되었습니다!`,
+          needsVoice: true
+        };
+      } else {
+        return {
+          type: 'booking_cancelled_error',
+          content: '예약 취소 중 오류가 발생했습니다. 다시 시도해주세요.',
+          needsVoice: true
+        };
+      }
+      
+    } catch (error) {
+      logger.error('직접 예약 취소 오류:', error);
+      
+      // 세션 상태 초기화
+      this.updateSessionState(sessionId, {
+        waitingForCancelSelection: false,
+        cancellableBookings: null
+      });
+      
+      return {
+        type: 'booking_cancelled_error',
+        content: '예약 취소 중 오류가 발생했습니다. 다시 시도해주세요.',
+        needsVoice: true
+      };
+    }
+  }
+
+  // 구체적인 예약 취소 요청 분석
+  analyzeSpecificCancelRequest(message, cancellableBookings) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    logger.info('🔍 구체적 예약 취소 분석:', { 
+      message: lowercaseMessage, 
+      bookings: cancellableBookings.length,
+      originalMessage: message
+    });
+    
+    // 1. 번호로 선택 (1번, 첫번째 등)
+    const numberMatch = message.match(/(\d+)번|(\d+)번째|첫\s*번째|첫번째/);
+    if (numberMatch) {
+      const number = numberMatch[1] || numberMatch[2] || 1;
+      const index = parseInt(number) - 1;
+      if (index >= 0 && index < cancellableBookings.length) {
+        logger.info('📌 번호로 예약 선택:', number, '→ 인덱스:', index);
+        return cancellableBookings[index];
+      }
+    }
+    
+    // 2. 서비스명으로 선택
+    for (const booking of cancellableBookings) {
+      const serviceName = booking.welfare?.welfareName || '';
+      logger.info('🔎 서비스명 확인:', serviceName);
+      
+      // 서비스명 키워드 매칭
+      const serviceKeywords = {
+        '가정간병': ['가정간병', '간병', '간병서비스', '간병 서비스'],
+        '일상가사': ['일상가사', '가사', '가사서비스', '가사 서비스', '가사돌봄'],
+        '정서지원': ['정서지원', '정서', '정서지원서비스', '정서 지원']
+      };
+      
+      for (const [category, keywords] of Object.entries(serviceKeywords)) {
+        if (serviceName.includes(category)) {
+          logger.info('💡 카테고리 매칭 시도:', category, '키워드:', keywords);
+          const hasKeyword = keywords.some(keyword => {
+            const match = lowercaseMessage.includes(keyword.toLowerCase());
+            logger.info(`🔍 키워드 "${keyword}" 매칭:`, match);
+            return match;
+          });
+          if (hasKeyword) {
+            logger.info('🏥 서비스명으로 예약 선택:', category, '→', serviceName);
+            return booking;
+          }
+        }
+      }
+    }
+    
+    // 3. 날짜로 선택
+    for (const booking of cancellableBookings) {
+      const startDate = new Date(booking.welfareBookStartDate);
+      const month = startDate.getMonth() + 1;
+      const day = startDate.getDate();
+      
+      // 월일 패턴 매칭
+      const monthDayPattern = new RegExp(`${month}월\\s*${day}일|${month}월${day}일|${month}\\/${day}`);
+      if (monthDayPattern.test(lowercaseMessage)) {
+        logger.info('📅 날짜로 예약 선택:', `${month}월 ${day}일`);
+        return booking;
+      }
+      
+      // 상대적 날짜 ("내일", "모레" 등)
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const dayAfterTomorrow = new Date(today);
+      dayAfterTomorrow.setDate(today.getDate() + 2);
+      
+      if (lowercaseMessage.includes('내일') && 
+          startDate.getDate() === tomorrow.getDate() && 
+          startDate.getMonth() === tomorrow.getMonth()) {
+        logger.info('🌅 내일 예약 선택');
+        return booking;
+      }
+      
+      if (lowercaseMessage.includes('모레') && 
+          startDate.getDate() === dayAfterTomorrow.getDate() && 
+          startDate.getMonth() === dayAfterTomorrow.getMonth()) {
+        logger.info('🌄 모레 예약 선택');
+        return booking;
+      }
+    }
+    
+    logger.info('❌ 구체적 예약을 찾을 수 없음');
+    return null;
+  }
+  
+  // 직접 예약 취소 확인 처리
+  async handleDirectCancelConfirmation(message, booking, userId) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // 취소 확인 키워드
+    const confirmKeywords = ['네', '예', '응', '좋아', '맞아', '확인', '취소해줘', '취소하고 싶어', '취소해주세요'];
+    const isConfirmed = confirmKeywords.some(keyword => lowercaseMessage.includes(keyword));
+    
+    if (isConfirmed) {
+      logger.info('✅ 예약 취소 확인됨, 실제 취소 진행');
+      return await this.handleDirectCancelBooking(booking, userId);
+    } else {
+      return {
+        type: 'cancel_confirmation_declined',
+        content: '예약 취소를 중단했습니다. 다시 취소하고 싶으시면 언제든 말씀해주세요!',
+        needsVoice: true
+      };
+    }
+  }
+
+  // 구체적인 복지서비스 취소 요청 감지 (서비스명 + 취소 패턴)
+  isSpecificWelfareCancelRequest(message) {
+    const lowercaseMessage = message.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // 서비스명 키워드
+    const serviceKeywords = ['일상가사', '가정간병', '정서지원', '가사', '간병'];
+    const hasServiceKeyword = serviceKeywords.some(keyword => 
+      lowercaseMessage.includes(keyword)
+    );
+    
+    // 날짜 패턴
+    const datePatterns = [
+      /\d{1,2}월\s*\d{1,2}일/,
+      /\d{1,2}일/,
+      /내일|모레|오늘/
+    ];
+    const hasDatePattern = datePatterns.some(pattern => 
+      pattern.test(lowercaseMessage)
+    );
+    
+    // 번호 패턴
+    const numberPatterns = [
+      /\d+번/,
+      /\d+번째/,
+      /첫\s*번째|첫번째/
+    ];
+    const hasNumberPattern = numberPatterns.some(pattern => 
+      pattern.test(lowercaseMessage)
+    );
+    
+    // 취소 키워드
+    const hasCancelKeyword = lowercaseMessage.includes('취소');
+    
+    // 개선된 조건: (서비스명 OR 날짜 OR 번호) AND 취소
+    const result = (hasServiceKeyword || hasDatePattern || hasNumberPattern) && hasCancelKeyword;
+    
+    logger.info('🔍 구체적 복지서비스 취소 요청 분석:', {
+      message: lowercaseMessage,
+      hasServiceKeyword,
+      hasDatePattern,
+      hasNumberPattern,
+      hasCancelKeyword,
+      result
+    });
+    
+    return result;
+  }
+
+  // 구체적 복지서비스 취소 처리 (임시 함수)
+  async handleSpecificWelfareCancelRequest(userId, message) {
+    try {
+      logger.info('🎯 구체적 복지서비스 취소 처리 시작:', message);
+      
+      // WelfareBookService를 사용하여 사용자의 취소 가능한 예약 조회
+      const WelfareBookService = require('./WelfareBookService');
+      const activeBookings = await WelfareBookService.getAllByUserNo(userId);
+      
+      // 취소 가능한 예약 (대기중 상태) 필터링
+      const cancellableBookings = activeBookings.filter(booking => 
+        !booking.welfareBookIsCancel && !booking.welfareBookIsComplete
+      );
+      
+      if (cancellableBookings.length === 0) {
+        return {
+          type: 'booking_cancel_none',
+          content: '현재 취소할 수 있는 복지서비스 예약이 없습니다.',
+          needsVoice: true
+        };
+      }
+      
+      // 구체적인 예약 찾기
+      const specificBooking = this.analyzeSpecificCancelRequest(message, cancellableBookings);
+      if (specificBooking) {
+        logger.info('🎯 구체적 예약 발견, 즉시 취소 처리:', specificBooking);
+        return await this.handleDirectCancelBooking(specificBooking, userId);
+      } else {
+        // 구체적 예약을 찾지 못한 경우 일반 처리로 돌아감
+        return await this.handleWelfareBookingCancelRequest(userId, null);
+      }
+      
+    } catch (error) {
+      logger.error('구체적 복지서비스 취소 처리 오류:', error);
+      return {
+        type: 'booking_cancel_error',
+        content: '예약 취소 처리 중 오류가 발생했습니다.',
+        needsVoice: true
+      };
+    }
+  }
+
 }
 
 module.exports = new AIChatService();

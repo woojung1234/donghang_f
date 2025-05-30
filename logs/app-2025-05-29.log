@@ -618,3 +618,75 @@
 [2025-05-29T18:35:35.013Z] [INFO] 복지서비스 예약 취소 요청 감지
 [2025-05-29T18:35:35.035Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
 [2025-05-29T18:35:35.036Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:54:43.581Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 취소하고 싶어
+[2025-05-30T00:54:43.582Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 취소하고 싶어
+[2025-05-30T00:54:43.583Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:54:43.600Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:54:43.601Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:54:43.602Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 취소하고 싶어",
+  "hasCancelKeyword": true,
+  "isQuestionAboutCancel": false,
+  "result": true
+}
+[2025-05-30T00:54:43.602Z] [INFO] 복지서비스 예약 취소 요청 감지
+[2025-05-30T00:54:43.610Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:54:43.611Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:56:42.479Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:56:42.480Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:56:42.481Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:56:42.495Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:56:42.496Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:56:42.497Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:56:42.497Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T00:56:42.498Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T00:56:42.499Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T00:56:42.500Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T00:56:42.502Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-30T00:56:42.546Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:56:42.547Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:58:11.007Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:58:11.008Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:58:11.009Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:58:11.026Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:11.026Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:58:11.027Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:58:11.028Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T00:58:11.028Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T00:58:11.029Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T00:58:11.029Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T00:58:11.030Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-30T00:58:11.066Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:11.067Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:58:19.923Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.923Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.924Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:58:19.927Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:19.928Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:58:19.929Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 예약해줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:58:19.930Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.930Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.931Z] [INFO] 🔍 매칭된 키워드들: [
+  "복지 서비스 예약",
+  "서비스 예약",
+  "예약해줘"
+]
+[2025-05-30T00:58:19.931Z] [INFO] 🔍 예약 요청 감지 결과: true
+[2025-05-30T00:58:19.932Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-30T00:58:19.936Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:19.937Z] [ERROR] AI 응답 로그 저장 실패: {}
