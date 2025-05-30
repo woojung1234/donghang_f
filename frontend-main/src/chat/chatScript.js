@@ -1,4 +1,6 @@
 import { call } from "login/service/ApiService";
+// 🚀 새로 추가
+import offlineStorage from '../services/offlineStorage';
 
 var roomNo = 1; // 기본값 설정
 var recognition;
@@ -50,9 +52,36 @@ export function endRecord() {
   }
 }
 
-// AI 서비스 처리 (백엔드 API 호출)
+// AI 서비스 처리 (백엔드 API 호출) - 🚀 오프라인 기능 추가
 async function processAIResponse(message, sessionId = 'default') {
   try {
+    // 🚀 오프라인 상태 확인
+    if (!navigator.onLine) {
+      console.log('🔌 오프라인 상태 - 로컬 처리');
+      
+      // 가계부 입력 패턴 확인
+      const expensePattern = /(\d+)\s*원.*?(먹|샀|썼|지출|결제|마셨|타고|갔다|사용)/;
+      if (expensePattern.test(message)) {
+        // 오프라인 가계부 저장
+        const expenseData = parseExpenseFromMessage(message);
+        await offlineStorage.saveExpenseOffline(expenseData);
+        
+        return {
+          type: 'expense_offline',
+          content: `오프라인 상태에서 "${expenseData.amount}원 ${expenseData.category}" 지출을 임시 저장했어요. 인터넷 연결 후 자동으로 동기화됩니다.`,
+          needsVoice: true
+        };
+      }
+      
+      // 일반 오프라인 응답
+      return {
+        type: 'offline',
+        content: '현재 오프라인 상태입니다. 인터넷 연결 후 다시 시도해주세요.',
+        needsVoice: true
+      };
+    }
+    
+    // 기존 온라인 처리 로직
     console.log("🔄 백엔드 AI 서비스 호출:", message);
     
     // 로그인 토큰 확인
@@ -97,7 +126,7 @@ function getOfflineResponse() {
   return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
 }
 
-// 음성 끝났을 때 자동 답변 실행 (단순화된 버전)
+// 🚀 기존 handleAutoSub 함수 (그대로 유지)
 export function handleAutoSub(
   message,
   setChatResponse,
@@ -125,6 +154,8 @@ export function handleAutoSub(
     setIsLoading(false);
     setIsSpeaking(true);
     
+    // 🚀 대화 저장 (오프라인 대응)
+    saveConversationOffline(message, response);
     
     // 복지로 사이트 이동 요청인 경우 확인 팝업 표시
     if (result.type === 'welfare_portal_request' && result.needsConfirmation) {
@@ -261,7 +292,7 @@ export function handleAutoSub(
   });
 }
 
-// 음성 인식의 자동 시작 상태를 제어하는 함수
+// 🚀 기존 함수들 (그대로 유지)
 export function availabilityFunc(sendMessage, setIsListening) {
   const newRecognition = new (window.SpeechRecognition ||
     window.webkitSpeechRecognition)();
@@ -293,13 +324,11 @@ export function availabilityFunc(sendMessage, setIsListening) {
   }
 }
 
-// 채팅 방을 설정하는 함수 (단순화)
 export function handleChatRoom(userInfo) {
   console.log("💬 대화방 생성 함수 호출됨");
   return Promise.resolve({ conversationRoomNo: 1 });
 }
 
-// 채팅 세션 리셋 함수 (새로 추가)
 export async function resetChatSession(sessionId = 'default') {
   try {
     const response = await call('/api/v1/ai-chat/reset-session', 'POST', {
@@ -314,7 +343,6 @@ export async function resetChatSession(sessionId = 'default') {
   }
 }
 
-// 채팅 세션 상태 조회 함수 (새로 추가)
 export async function getChatSessionStatus(sessionId = 'default') {
   try {
     const response = await call(`/api/v1/ai-chat/session/${sessionId}`, 'GET');
@@ -327,7 +355,6 @@ export async function getChatSessionStatus(sessionId = 'default') {
   }
 }
 
-// 복지로 사이트 이동 확인 팝업 표시
 function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
   console.log("🌐 복지로 사이트 이동 확인 팝업 표시");
   
@@ -358,7 +385,6 @@ function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
   }
 }
 
-// 복지서비스 예약 페이지 이동 확인 팝업 표시
 function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
   console.log("📋 복지서비스 예약 페이지 이동 확인 팝업 표시:", navigationData);
   
@@ -397,7 +423,6 @@ function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
   }
 }
 
-// 복지서비스 예약 내역 페이지로 이동 확인 팝업 표시
 function showWelfareReservedListConfirm(setShowConfirmModal) {
   console.log("🗑️ 복지서비스 예약 내역 페이지 이동 확인 팝업 표시");
   
@@ -421,5 +446,70 @@ function showWelfareReservedListConfirm(setShowConfirmModal) {
         }, 1000);
       }
     });
+  }
+}
+
+// 🚀 새로 추가할 함수들
+
+// 간단한 가계부 파싱 함수
+function parseExpenseFromMessage(message) {
+  const amountMatch = message.match(/(\d+)\s*원/);
+  const amount = amountMatch ? parseInt(amountMatch[1]) : 0;
+  
+  // 간단한 카테고리 추론
+  let category = '기타';
+  if (message.includes('밥') || message.includes('먹') || message.includes('식사')) category = '식비';
+  else if (message.includes('교통') || message.includes('버스') || message.includes('지하철')) category = '교통비';
+  else if (message.includes('쇼핑') || message.includes('옷') || message.includes('샀')) category = '쇼핑';
+  else if (message.includes('병원') || message.includes('약')) category = '의료비';
+  else if (message.includes('마트') || message.includes('편의점')) category = '생활용품';
+  
+  return {
+    amount,
+    category,
+    merchantName: '일반가맹점',
+    originalMessage: message,
+    date: new Date().toISOString().split('T')[0]
+  };
+}
+
+// 온라인 복구시 동기화 함수
+export async function syncOfflineData() {
+  if (!navigator.onLine) return;
+  
+  try {
+    const unsyncedExpenses = await offlineStorage.getUnsyncedExpenses();
+    
+    for (const expense of unsyncedExpenses) {
+      try {
+        // 백엔드로 전송
+        await call('/api/v1/consumption', 'POST', {
+          merchantName: expense.merchantName,
+          amount: expense.amount,
+          category: expense.category,
+          memo: `오프라인 저장: ${expense.originalMessage}`,
+          transactionDate: expense.date
+        });
+        
+        // 동기화 완료 표시
+        await offlineStorage.markAsSynced(expense.id);
+        console.log('💾 오프라인 데이터 동기화 완료:', expense);
+        
+      } catch (error) {
+        console.error('동기화 실패:', error);
+      }
+    }
+  } catch (error) {
+    console.error('동기화 프로세스 오류:', error);
+  }
+}
+
+// 대화 저장 함수 (오프라인용)
+export async function saveConversationOffline(userMessage, aiResponse) {
+  try {
+    await offlineStorage.saveConversation(userMessage, aiResponse);
+    console.log('💬 대화 오프라인 저장 완료');
+  } catch (error) {
+    console.error('대화 저장 오류:', error);
   }
 }
