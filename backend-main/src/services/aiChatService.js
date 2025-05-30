@@ -181,8 +181,8 @@ class AIChatService {
     });
 
     // 상세정보 안내 멘트
-    response += '\\n\\n💡 궁금한 서비스가 있으시면 "자세히 알려줘"라고 말씀해주세요!';
-    response += '\\n복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요! 📋';
+    response += '궁금한 서비스가 있으시면 "자세히 알려줘"라고 말씀해주세요!';
+    response += '복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요!';
 
     return response;
   }
@@ -193,34 +193,34 @@ class AIChatService {
       return '죄송합니다. 상세 정보를 가져올 수 없습니다.';
     }
 
-    let response = '📋 **복지서비스 상세 정보**\\n\\n';
+    let response = '복지서비스 상세 정보';
 
     services.forEach((service, index) => {
       const emoji = this.getServiceEmoji(service.category);
-      response += `${emoji} **${service.serviceName}**\\n`;
+      response += `${service.serviceName}`;
       
       if (service.serviceSummary) {
-        response += `📝 **내용**: ${service.serviceSummary}\\n`;
+        response += `${service.serviceSummary}`;
       }
 
       if (service.targetAudience) {
-        response += `👥 **대상**: ${service.targetAudience}\\n`;
+        response += `대상: ${service.targetAudience}`;
       }
 
       if (service.applicationMethod) {
-        response += `📋 **신청방법**: ${service.applicationMethod}\\n`;
+        response += `신청방법: ${service.applicationMethod}`;
       }
 
       if (service.organizationName) {
-        response += `🏢 **담당기관**: ${service.organizationName}\\n`;
+        response += `담당기관: ${service.organizationName}`;
       }
 
       if (service.contactInfo) {
-        response += `📞 **문의**: ${service.contactInfo}\\n`;
+        response += `문의: ${service.contactInfo}`;
       }
 
       if (service.website) {
-        response += `🌐 **웹사이트**: ${service.website}\\n`;
+        response += `웹사이트: ${service.website}`;
       }
       
       if (index < services.length - 1) {
@@ -228,11 +228,11 @@ class AIChatService {
       }
     });
 
-    response += '\\n\\n📱 더 많은 복지서비스는 복지서비스 메뉴에서 확인하세요!';
+    response += '더 많은 복지서비스는 복지서비스 메뉴에서 확인하세요!';
 
     return response;
   }
-
+/*
   // 서비스 카테고리별 이모지 반환
   getServiceEmoji(category) {
     if (!category) return '📝';
@@ -252,7 +252,7 @@ class AIChatService {
     
     return '📝';
   }
-
+*/
   // 기본 활동 추천 (복지서비스 데이터가 없을 때)
   getDefaultActivityRecommendation() {
     const defaultActivities = [
@@ -280,7 +280,7 @@ class AIChatService {
 
     const selected = defaultActivities[Math.floor(Math.random() * defaultActivities.length)];
     
-    return `오늘은 **${selected.name}**은/는 어떠세요?\\n\\n${selected.description}\\n\\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요!`;
+    return `오늘은 ${selected.name}은/는 어떠세요?\\n\\n${selected.description}\\n\\n복지서비스 페이지에서 더 많은 프로그램을 확인하실 수 있어요!`;
   }
 
   // 복지서비스 예약 취소 요청 감지
@@ -426,7 +426,7 @@ class AIChatService {
   // 복지서비스 예약 초기 응답
   generateWelfareBookingWelcome() {
     return "안녕하세요! 어떤 복지 서비스를 예약하고 싶으신가요?\n\n" +
-           "📋 선택 가능한 서비스:\n" +
+           "선택 가능한 서비스:\n" +
            "1️⃣ 가정간병 서비스 - 전문적인 간병 돌봄\n" +
            "2️⃣ 일상가사 서비스 - 집안일 도움\n" +
            "3️⃣ 정서지원 서비스 - 마음 건강 지원\n\n" +
@@ -436,7 +436,7 @@ class AIChatService {
   // 시간대 선택 응답
   generateTimeSelectionResponse(serviceName) {
     return `좋습니다! ${serviceName}을 예약하실 날짜와 원하는 시간대, 주소를 알려주시겠어요?\n\n` +
-           "⏰ 선택 가능한 시간대:\n" +
+           " 선택 가능한 시간대:\n" +
            "• 오전 9시부터 오후 12시 (3시간)\n" +
            "• 오전 9시부터 오후 3시 (6시간)\n" +
            "• 오전 9시부터 오후 6시 (9시간)\n\n" +
@@ -448,7 +448,7 @@ class AIChatService {
     const { serviceName, dateText, timeDisplay, address } = bookingData;
     
     return `${dateText} ${timeDisplay}까지 ${serviceName}을 예약하시겠군요!\n\n` +
-           `📍 주소: ${address}\n\n` +
+           ` 주소: ${address}\n\n` +
            "해당 주소로 예약을 진행하려고 하는데 맞으신가요?\n" +
            "확인해주시면 예약 페이지로 안내해드리겠습니다.";
   }
@@ -946,7 +946,7 @@ class AIChatService {
     return Array.from(merchantMap.values())
       .sort((a, b) => b.totalAmount - a.totalAmount);
   }
-
+/*
   // 카테고리별 이모지
   getCategoryEmoji(category) {
     if (!category) return '📝';
@@ -964,7 +964,7 @@ class AIChatService {
     
     return '💰';
   }
-
+*/
   // 날짜를 사용자 친화적 형태로 포맷팅 (KST 기준)
   formatDateForResponse(dateString) {
     if (!dateString) return '오늘';
@@ -1530,7 +1530,7 @@ class AIChatService {
     // 가계부 관련 질문
     if (lowercaseMessage.includes('가계부')) {
       const responses = [
-        '가계부 기능이 궁금하시군요! "5000원 점심 먹었어" 이런 식으로 말씀해주시면 자동으로 가계부에 기록해드려요 📝',
+        '가계부 기능이 궁금하시군요! "5000원 점심 먹었어" 이런 식으로 말씀해주시면 자동으로 가계부에 기록해드려요',
         '가계부는 음성으로 쉽게 등록할 수 있어요! 예를 들어 "만원 커피숍에서 썼어"라고 말씀해주시면 됩니다!',
         '가계부 관리가 필요하시군요! 간단히 "얼마 어디서 썼어" 형태로 말씀해주시면 자동으로 기록해드려요!'
       ];
@@ -1540,7 +1540,7 @@ class AIChatService {
     // 인사말
     if (lowercaseMessage.includes("안녕") || lowercaseMessage.includes("반가")) {
       const responses = [
-        "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시거나 '오늘 뭐할까?'라고 물어보시면 복지서비스를 추천해드려요! 💰",
+        "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시거나 '오늘 뭐할까?'라고 물어보시면 복지서비스를 추천해드려요!",
         "안녕하세요! 오늘 하루 어떻게 보내고 계신가요? 가계부 정리나 복지서비스 안내가 필요하시면 언제든 말씀해주세요!",
         "반가워요! 좋은 하루 보내고 계신가요? 무엇이든 편하게 말씀해주세요!"
       ];
@@ -1653,11 +1653,11 @@ class AIChatService {
     const lowercaseMessage = message.toLowerCase();
     
     if (lowercaseMessage.includes('가계부')) {
-      return '가계부 기능이 궁금하시군요! "5000원 점심 먹었어" 이런 식으로 말씀해주시면 자동으로 가계부에 기록해드려요 📝';
+      return '가계부 기능이 궁금하시군요! "5000원 점심 먹었어" 이런 식으로 말씀해주시면 자동으로 가계부에 기록해드려요';
     }
     
     if (lowercaseMessage.includes("안녕") || lowercaseMessage.includes("반가")) {
-      return "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시거나 '오늘 뭐할까?'라고 물어보시면 복지서비스를 추천해드려요! 💰";
+      return "안녕하세요! 무엇을 도와드릴까요? 소비 내역을 말씀해주시거나 '오늘 뭐할까?'라고 물어보시면 복지서비스를 추천해드려요!";
     } else if (lowercaseMessage.includes("이름") || lowercaseMessage.includes("누구")) {
       return "저는 금복이라고 합니다. 가계부 관리와 복지서비스 추천을 도와드릴 수 있어요!";
     } else if (lowercaseMessage.includes("도움") || lowercaseMessage.includes("도와줘")) {
