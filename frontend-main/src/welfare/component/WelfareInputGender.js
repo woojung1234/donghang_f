@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import styles from 'welfare/css/WelfareInputGender.module.css'; // CSS 모듈 import
-import male from 'image/male.png';
-import female from 'image/female.png';
 import { useNavigate } from 'react-router-dom';
 import Header from 'header/Header.js';
 import { useSpecHook } from 'welfare/component/WelfareInputTotal';
@@ -44,20 +42,22 @@ function WelfareInputGender() {
                         className={`${styles["gender-section"]}`}
                         onClick={() => handleGenderClick('남성')}
                         style={{
-                            border: selectedGender === '남성' ? '4px solid #80BAFF' : '4px solid transparent'
+                            border: selectedGender === '남성' ? '4px solid #80BAFF' : '4px solid transparent',
+                            backgroundColor: selectedGender === '남성' ? '#E6F3FF' : '#F8F9FA'
                         }}
                     >
-                        <img src={male} alt="남성" className={styles["image-gender"]} />
+                        <div className={styles["gender-icon"]}>👨</div>
                         <p className={styles["gender-text"]}>남성</p>
                     </div>
                     <div
                         className={`${styles["gender-section"]}`}
                         onClick={() => handleGenderClick('여성')}
                         style={{
-                            border: selectedGender === '여성' ? '4px solid #FF5959' : '4px solid transparent'
+                            border: selectedGender === '여성' ? '4px solid #FF5959' : '4px solid transparent',
+                            backgroundColor: selectedGender === '여성' ? '#FFE6E6' : '#F8F9FA'
                         }}
                     >
-                        <img src={female} alt="여성" className={styles["image-gender"]} />
+                        <div className={styles["gender-icon"]}>👩</div>
                         <p className={styles["gender-text"]}>여성</p>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ const WelfareService = require('./WelfareService');
 const welfareBookingAiService = require('./welfareBookingAiService');
 const ConversationRoomService = require('./ConversationRoomService');
 const ConversationLogService = require('./ConversationLogService');
+const OpenAIService = require('./OpenAIService');
 const logger = require('../utils/logger');
 
 class AIChatService {
@@ -546,8 +547,18 @@ class AIChatService {
     );
   }
 
-  // 자연스러운 인사 응답 생성
-  generateNaturalGreeting(message) {
+  // 자연스러운 인사 응답 생성 (GPT 연동)
+  async generateNaturalGreeting(message) {
+    try {
+      if (OpenAIService.isAvailable()) {
+        const gptResponse = await OpenAIService.generateFeatureResponse('greeting', message);
+        return OpenAIService.removeEmojisForVoice(gptResponse);
+      }
+    } catch (error) {
+      logger.error('GPT 인사 응답 생성 실패:', error);
+    }
+    
+    // Fallback: 기존 하드코딩 응답
     const greetingResponses = [
       "안녕하세요! 오늘 기분은 어떠신가요? 필요한 정보가 있으시면 언제든 말씀해주세요!",
       "안녕하세요! 좋은 하루 보내고 계신가요? 무엇을 도와드릴까요?",
@@ -558,8 +569,28 @@ class AIChatService {
     return greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
   }
 
-  // 금복이 역할 소개 응답 생성
-  generateCapabilityResponse() {
+  // 금복이 역할 소개 응답 생성 (GPT 연동)
+  async generateCapabilityResponse(message) {
+    try {
+      if (OpenAIService.isAvailable()) {
+        const context = {
+          featurePrompt: `사용자가 금복이의 기능에 대해 질문했습니다. 
+          주요 기능: 
+          1. 가계부 관리 (음성/텍스트로 소비내역 입력, 월별 분석, 카테고리별 통계)
+          2. 복지서비스 추천 및 예약 (맞춤형 추천, 음성 대화형 예약)  
+          3. 복지로 사이트 안내
+          4. 알림 관리
+          
+          이 기능들을 자연스럽고 친근하게 소개해주세요.`
+        };
+        const gptResponse = await OpenAIService.generateResponse(message, context);
+        return OpenAIService.removeEmojisForVoice(gptResponse);
+      }
+    } catch (error) {
+      logger.error('GPT 기능 소개 응답 생성 실패:', error);
+    }
+    
+    // Fallback: 기존 하드코딩 응답
     const capabilityResponses = [
       "저는 여러 가지 기능을 도와드릴 수 있어요! 음성이나 텍스트로 가계부를 기록하고, 소비내역을 분석해드려요. 복지서비스 추천과 예약도 가능하고, 복지로 사이트 안내도 해드릴 수 있어요!",
       "다양한 기능이 있어요! 가계부 관리(소비내역 입력/조회/분석), 복지서비스 추천 및 예약, 알림 관리 등을 도와드릴 수 있습니다. 어떤 기능을 사용해보고 싶으신가요?",
@@ -758,13 +789,38 @@ class AIChatService {
     return { type: 'recent' };
   }
 
-  // 소비내역 응답 포맷팅 (개선됨)
-  formatExpenseHistory(expenseData, originalMessage, questionAnalysis = null) {
+  // 소비내역 응답 포맷팅 (GPT 연동)
+  async formatExpenseHistory(expenseData, originalMessage, questionAnalysis = null) {
     if (!expenseData || !expenseData.consumptions || expenseData.consumptions.length === 0) {
       return "조회하신 기간에는 소비내역이 없습니다.";
     }
     
     const { consumptions, summary } = expenseData;
+    
+    // GPT로 자연스러운 응답 생성 시도
+    try {
+      if (OpenAIService.isAvailable()) {
+        const context = {
+          featurePrompt: `사용자가 소비내역을 조회했습니다.
+          
+          조회 결과:
+          - 총 소비금액: ${Math.floor(summary.totalAmount).toLocaleString()}원
+          - 거래 건수: ${summary.totalCount}건
+          - 주요 카테고리: ${summary.categoryStats?.slice(0, 3).map(cat => `${cat.category} ${Math.floor(cat.totalAmount).toLocaleString()}원(${cat.percentage}%)`).join(', ')}
+          
+          사용자 질문: "${originalMessage}"
+          
+          이 정보를 바탕으로 친근하고 유용한 소비내역 분석을 제공해주세요. 구체적인 숫자와 카테고리를 언급하되, 음성으로 전환될 수 있으니 자연스럽게 설명해주세요.`
+        };
+        
+        const gptResponse = await OpenAIService.generateResponse(originalMessage, context);
+        return OpenAIService.removeEmojisForVoice(gptResponse);
+      }
+    } catch (error) {
+      logger.error('GPT 소비내역 응답 생성 실패:', error);
+    }
+    
+    // Fallback: 기존 로직
     
     // 질문 의도에 따른 맞춤형 응답
     if (questionAnalysis) {
@@ -1328,7 +1384,7 @@ class AIChatService {
         logger.info('인사 메시지 감지');
         aiResponse = {
           type: 'greeting',
-          content: this.generateNaturalGreeting(message),
+          content: await this.generateNaturalGreeting(message),
           needsVoice: true
         };
       }
@@ -1339,7 +1395,7 @@ class AIChatService {
         logger.info('기능 문의 메시지 감지');
         aiResponse = {
           type: 'capability',
-          content: this.generateCapabilityResponse(),
+          content: await this.generateCapabilityResponse(message),
           needsVoice: true
         };
       }
@@ -1362,13 +1418,7 @@ class AIChatService {
         aiResponse = await welfareBookingAiService.handleWelfareBookingFlow(message, sessionId);
       }
       
-      // 5. 복지서비스 예약 시작 감지
-      else if (welfareBookingAiService.analyzeWelfareBookingRequest(message)) {
-        logger.info('복지서비스 예약 요청 감지');
-        aiResponse = welfareBookingAiService.startWelfareBooking(sessionId);
-      }
-
-      // 5. 복지로 사이트 이동 요청
+      // 5. 복지로 사이트 이동 요청 (우선 처리)
       else if (this.analyzeWelfarePortalRequest(message)) {
         logger.info('복지로 사이트 이동 요청 감지');
         aiResponse = {
@@ -1381,7 +1431,13 @@ class AIChatService {
         };
       }
       
-      // 6. 상세정보 요청 확인
+      // 6. 복지서비스 예약 시작 감지
+      else if (welfareBookingAiService.analyzeWelfareBookingRequest(message)) {
+        logger.info('복지서비스 예약 요청 감지');
+        aiResponse = welfareBookingAiService.startWelfareBooking(sessionId);
+      }
+      
+      // 7. 상세정보 요청 확인
       else if (this.isDetailRequest(message, sessionState)) {
         logger.info('복지서비스 상세정보 요청 감지');
         const detailedInfo = this.formatDetailedPublicWelfareRecommendation(sessionState.lastRecommendedServices);
@@ -1393,7 +1449,7 @@ class AIChatService {
         };
       }
       
-      // 7. 예약 취소 번호 선택 대기 상태 처리
+      // 8. 예약 취소 번호 선택 대기 상태 처리
       else if (sessionState.waitingForCancelSelection && sessionState.cancellableBookings) {
         logger.info('예약 취소 번호 선택 처리 중');
         const selectedNumber = this.extractNumberFromMessage(message);
@@ -1410,7 +1466,7 @@ class AIChatService {
         }
       }
       
-      // 8. 날짜 확인 대기 상태 처리
+      // 9. 날짜 확인 대기 상태 처리
       else if (sessionState.waitingForDateConfirmation && sessionState.pendingExpenseData) {
         logger.info('날짜 확인 응답 처리 중');
         const dateText = this.extractDateFromText(message);
@@ -1437,13 +1493,13 @@ class AIChatService {
         }
       }
       
-      // 9. 소비내역 조회 감지 (우선 처리)
+      // 10. 소비내역 조회 감지 (우선 처리)
       else if (this.isExpenseInquiry(message)) {
         logger.info('소비내역 조회 요청 감지');
         try {
           const questionAnalysis = this.analyzeExpenseQuestion(message);
           const expenseHistory = await this.getExpenseHistory(message, userId);
-          const formattedResponse = this.formatExpenseHistory(expenseHistory, message, questionAnalysis);
+          const formattedResponse = await this.formatExpenseHistory(expenseHistory, message, questionAnalysis);
           
           aiResponse = {
             type: 'expense_inquiry',
@@ -1461,7 +1517,7 @@ class AIChatService {
         }
       }
       
-      // 10. 소비내역 입력 감지  
+      // 11. 소비내역 입력 감지  
       else {
         const expenseData = this.simpleParseExpense(message);
         
@@ -1493,7 +1549,7 @@ class AIChatService {
           }
         }
         
-        // 11. 복지서비스/활동 추천 요청
+        // 12. 복지서비스/활동 추천 요청
         else {
           const activityAnalysis = this.analyzeActivityInquiry(message);
           
@@ -1506,10 +1562,10 @@ class AIChatService {
               needsVoice: true
             };
           } else {
-            // 12. 기본 응답
+            // 13. 기본 응답
             aiResponse = {
               type: 'general',
-              content: this.getNaturalResponse(message),
+              content: await this.getNaturalResponse(message),
               needsVoice: true
             };
           }
@@ -1575,7 +1631,18 @@ class AIChatService {
     return null;
   }
 
-  getNaturalResponse(message) {
+  // 자연스러운 응답 생성 (GPT 연동)
+  async getNaturalResponse(message) {
+    try {
+      if (OpenAIService.isAvailable()) {
+        const gptResponse = await OpenAIService.generateFeatureResponse('general', message);
+        return OpenAIService.removeEmojisForVoice(gptResponse);
+      }
+    } catch (error) {
+      logger.error('GPT 일반 응답 생성 실패:', error);
+    }
+    
+    // Fallback: 기존 하드코딩 응답 로직
     if (!message) return this.fallbackResponses[0];
 
     const lowercaseMessage = message.toLowerCase();

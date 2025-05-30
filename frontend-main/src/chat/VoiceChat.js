@@ -5,6 +5,8 @@ import {
   handleChatRoom,
   startAutoRecord,
   syncOfflineData, // 🚀 새로 추가
+  stopSpeaking, // 🚀 음성 중지 기능
+  resetSpeechState, // 🚀 음성 상태 초기화
 } from "chat/chatScript";
 import "chat/VoiceChat.css";
 import VoiceHeader from "chat/VoiceHeader";
@@ -90,11 +92,22 @@ function VoiceChat(props) {
 
     initializeChat();
 
+    // 🚀 speechSynthesis 상태 모니터링 추가
+    const speechMonitor = setInterval(() => {
+      // speechSynthesis가 말하고 있지 않은데 isSpeaking이 true인 경우 동기화
+      if (!speechSynthesis.speaking && isSpeaking) {
+        console.log("🔄 speechSynthesis 상태 동기화: speaking 상태 해제");
+        setIsSpeaking(false);
+        resetSpeechState();
+      }
+    }, 500); // 0.5초마다 체크
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      clearInterval(speechMonitor); // 🚀 모니터링 정리
     };
-  }, [userInfo]);
+  }, [userInfo, isSpeaking]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function sendMessage(recognizedText) {
     setChatResponse("");
@@ -139,6 +152,29 @@ function VoiceChat(props) {
       sendMessage(textInput);
       setTextInput("");
     }
+  };
+
+  // 🚀 음성 중지 함수
+  const handleStopSpeaking = () => {
+    console.log("🔇 사용자가 음성 중지 버튼 클릭");
+    
+    // 즉시 UI 상태 업데이트
+    setIsSpeaking(false);
+    
+    // 음성 중지 실행
+    const stopped = stopSpeaking();
+    
+    console.log("🔇 음성 중지 결과:", stopped);
+    
+    // 상태 초기화 및 음성 인식 재시작
+    setTimeout(() => {
+      resetSpeechState();
+      console.log("🔄 음성 인식 재시작 준비");
+      if (isStart) {
+        console.log("🔄 음성 인식 재시작");
+        startAutoRecord();
+      }
+    }, 500); // 1초에서 0.5초로 단축
   };
 
   const handleKeyPress = (e) => {
@@ -270,6 +306,43 @@ function VoiceChat(props) {
         {isStart ? "중지" : "음성입력"}
         {!isOnline && " (오프라인)"}
       </button>
+
+      {/* 🚀 음성 중지 버튼 - 음성 응답 중일 때만 표시 */}
+      {isSpeaking && (
+        <button 
+          className="voice-stop-btn" 
+          onClick={handleStopSpeaking}
+          onMouseDown={(e) => {
+            e.target.style.transform = 'translateX(-50%) scale(0.95)';
+            e.target.style.backgroundColor = '#cc3333';
+          }}
+          onMouseUp={(e) => {
+            e.target.style.transform = 'translateX(-50%) scale(1)';
+            e.target.style.backgroundColor = '#ff4444';
+          }}
+          style={{
+            backgroundColor: '#ff4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '25px',
+            padding: '15px 25px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            margin: '10px',
+            cursor: 'pointer',
+            boxShadow: '0 6px 12px rgba(255, 68, 68, 0.5)',
+            animation: 'pulse 1.5s infinite',
+            position: 'fixed',
+            bottom: '60px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1001,
+            transition: 'all 0.1s ease'
+          }}
+        >
+          🔇 음성 중지
+        </button>
+      )}
 
       <button className="consumption-btn" onClick={goToConsumptionPage}>
         💰 소비내역 보기

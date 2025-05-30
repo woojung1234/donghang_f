@@ -21,6 +21,13 @@ function WelfareReservedItem({
   }
 
   function displayTime(duration) {
+    // 🚨 디버깅: 실제 저장된 duration 값 확인
+    console.log('🕐 displayTime 호출됨:', {
+      duration: duration,
+      type: typeof duration,
+      title: title // 어떤 예약인지 확인
+    });
+    
     if (typeof duration === 'string' && duration.includes(':')) {
       return duration; // 이미 시간 형식으로 제공된 경우
     }
@@ -37,7 +44,7 @@ function WelfareReservedItem({
       case 5:
         return '2개월';
       case 6:
-        return '3개월';
+        return '6시간 (09:00 ~ 15:00)';
       case 7:
         return '4개월';
       case 8:
@@ -45,6 +52,7 @@ function WelfareReservedItem({
       case 9:
         return '6개월';
       default:
+        console.log('⚠️ 예상치 못한 duration 값:', duration);
         return duration || '시간 정보 없음';
     }
   }

@@ -19,9 +19,14 @@ function WelfareBookingPage() {
 
   useEffect(() => {
     fetchWelfareServices();
-    // URL 파라미터에서 음성 예약 데이터 추출
-    checkForVoiceBookingData();
   }, []);
+
+  // welfareServices가 로드된 후 음성 예약 데이터 처리
+  useEffect(() => {
+    if (welfareServices.length > 0) {
+      checkForVoiceBookingData();
+    }
+  }, [welfareServices]); // welfareServices가 변경될 때 실행
 
   const checkForVoiceBookingData = () => {
     const params = new URLSearchParams(location.search);
@@ -32,9 +37,32 @@ function WelfareBookingPage() {
     const timeOption = params.get('timeOption');
     const address = params.get('address');
 
+    console.log('🔍 URL 매개변수 원본 값들:');
+    console.log('  serviceId:', serviceId, '타입:', typeof serviceId);
+    console.log('  serviceName:', serviceName, '타입:', typeof serviceName);
+    console.log('  timeOption:', timeOption, '타입:', typeof timeOption);
+    console.log('  startDate:', startDate);
+    console.log('  endDate:', endDate);
+    console.log('  address:', address);
+
     if (serviceId && serviceName) {
+      const parsedTimeOption = parseInt(timeOption);
+      
+      // 🚨 임시 수정: 서비스명 기반으로 올바른 serviceId 매핑
+      let correctedServiceId = parseInt(serviceId);
+      if (serviceName && serviceName.includes('가정간병')) {
+        correctedServiceId = 2; // 가정간병 = 2번
+        console.log('🔧 가정간병 서비스 감지 - serviceId를 2로 수정');
+      } else if (serviceName && serviceName.includes('일상가사')) {
+        correctedServiceId = 1; // 일상가사 = 1번
+        console.log('🔧 일상가사 서비스 감지 - serviceId를 1로 수정');
+      } else if (serviceName && serviceName.includes('정서지원')) {
+        correctedServiceId = 3; // 정서지원 = 3번
+        console.log('🔧 정서지원 서비스 감지 - serviceId를 3으로 수정');
+      }
+      
       console.log('🎙️ 음성 예약 데이터 감지:', {
-        serviceId,
+        serviceId: correctedServiceId, // 수정된 값 사용
         serviceName,
         startDate,
         endDate,
@@ -42,14 +70,27 @@ function WelfareBookingPage() {
         address
       });
       
-      setVoiceBookingData({
-        serviceId: parseInt(serviceId),
+      console.log('🔢 timeOption 변환: 원본:', timeOption, '→ 파싱됨:', parsedTimeOption);
+      
+      const voiceData = {
+        serviceId: correctedServiceId, // 수정된 값 사용
         serviceName: decodeURIComponent(serviceName),
         startDate,
         endDate,
-        timeOption: parseInt(timeOption),
-        address: decodeURIComponent(address)
-      });
+        timeOption: parsedTimeOption,
+        address: address ? decodeURIComponent(address) : ''
+      };
+      
+      console.log('🎙️ 최종 voiceBookingData:', voiceData);
+      
+      setVoiceBookingData(voiceData);
+      
+      // 해당 서비스에 대한 모달을 자동으로 열기
+      const targetService = welfareServices.find(service => service.welfareNo === parseInt(serviceId));
+      if (targetService) {
+        setSelectedService(targetService);
+        setIsModalOpen(true);
+      }
     }
   };
 

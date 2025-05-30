@@ -34,14 +34,30 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
     // 음성 예약 데이터가 있으면 폼에 자동 입력
     if (voiceBookingData) {
       console.log('🎙️ 음성 예약 데이터를 폼에 적용:', voiceBookingData);
+      console.log('🎙️ 원본 timeOption 값:', voiceBookingData.timeOption, '타입:', typeof voiceBookingData.timeOption);
       
-      setFormData(prev => ({
-        ...prev,
-        address: voiceBookingData.address || '',
-        startDate: voiceBookingData.startDate || '',
-        endDate: voiceBookingData.endDate || '',
-        useTime: voiceBookingData.timeOption || 1
-      }));
+      // timeOption 값 검증 및 변환
+      let timeOptionValue = voiceBookingData.timeOption;
+      if (typeof timeOptionValue === 'string') {
+        timeOptionValue = parseInt(timeOptionValue);
+      }
+      
+      console.log('🎙️ 변환된 timeOption 값:', timeOptionValue, '타입:', typeof timeOptionValue);
+      
+      setFormData(prev => {
+        const newFormData = {
+          ...prev,
+          address: voiceBookingData.address || '',
+          startDate: voiceBookingData.startDate || '',
+          endDate: voiceBookingData.endDate || '',
+          useTime: timeOptionValue || 1
+        };
+        
+        console.log('🎙️ 설정될 폼 데이터:', newFormData);
+        console.log('🎙️ useTime 최종 값:', newFormData.useTime, '타입:', typeof newFormData.useTime);
+        
+        return newFormData;
+      });
     }
     
   }, [voiceBookingData]);
@@ -130,7 +146,10 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
         specialRequest: formData.specialRequest
       };
 
-      console.log('예약 데이터:', bookingData);
+      console.log('📋 예약 저장 시작');
+      console.log('📋 formData.useTime 원본:', formData.useTime, '타입:', typeof formData.useTime);
+      console.log('📋 parseInt(formData.useTime):', parseInt(formData.useTime), '타입:', typeof parseInt(formData.useTime));
+      console.log('📋 최종 bookingData:', bookingData);
 
       // 정식 복지서비스 예약 API 사용 (알림 생성 포함)
       await call('/api/v1/welfare-book/reserve', 'POST', bookingData);
@@ -153,7 +172,7 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
       case 3: return '9시간 (09:00 ~ 18:00)';
       case 4: return '1개월';
       case 5: return '2개월';
-      case 6: return '3개월';
+      case 6: return '6시간 (09:00 ~ 15:00)';
       case 7: return '4개월';
       case 8: return '5개월';
       case 9: return '6개월';

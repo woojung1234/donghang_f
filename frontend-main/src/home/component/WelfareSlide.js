@@ -1,6 +1,6 @@
 import "home/component/WelfareSlide.css";
 import slide01 from "image/home_img01.png";
-import slide02 from "image/home-img02.png";
+// import slide02 from "image/home-img02.png"; // 누락된 파일
 import { useNavigate } from "react-router-dom";
 
 function WelfareSlide({isProtege}) {
@@ -26,7 +26,7 @@ function WelfareSlide({isProtege}) {
 
       {isProtege?
       <img src={slide01} alt="복지서비스" className="slide" />:
-      <img src={slide02} alt="복지서비스" className="slide" />}
+      <img src={slide01} alt="복지서비스" className="slide" />}
     </div>
     );
 }

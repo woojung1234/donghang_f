@@ -2,8 +2,12 @@ import { call } from "login/service/ApiService";
 // 🚀 새로 추가
 import offlineStorage from '../services/offlineStorage';
 
-var roomNo = 1; // 기본값 설정
+// var roomNo = 1; // 기본값 설정 - 현재 사용하지 않음
 var recognition;
+
+// 🚀 음성 중지 기능을 위한 전역 변수들
+var currentUtterance = null; // 현재 재생 중인 음성
+var isSpeechCancelled = false; // 음성이 사용자에 의해 중지되었는지 확인
 
 // 오프라인 모드용 응답 (백엔드에서 처리되지 못한 경우 fallback)
 const fallbackResponses = [
@@ -50,6 +54,70 @@ export function endRecord() {
   } else {
     console.error("Recognition 객체가 없거나 stop 메소드가 없습니다.");
   }
+}
+
+// 🚀 음성 중지 기능 함수들
+export function stopSpeaking() {
+  console.log("🔇 음성 중지 시도...");
+  
+  // speechSynthesis가 말하고 있는지 확인
+  if (speechSynthesis.speaking) {
+    console.log("🔇 음성 응답 중지됨");
+    isSpeechCancelled = true;
+    
+    // 모든 음성을 즉시 중지
+    speechSynthesis.cancel();
+    
+    // 약간의 지연 후 다시 한번 cancel 호출 (브라우저 호환성)
+    setTimeout(() => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+    }, 100);
+    
+    currentUtterance = null;
+    return true;
+  }
+  
+  console.log("🔇 음성이 재생 중이 아닙니다");
+  return false;
+}
+
+// 현재 음성이 재생 중인지 확인하는 함수
+export function isSpeakingNow() {
+  return speechSynthesis.speaking && currentUtterance !== null;
+}
+
+// 음성 중지 상태 초기화 함수
+export function resetSpeechState() {
+  isSpeechCancelled = false;
+  currentUtterance = null;
+}
+
+// 🚀 음성 재생 헬퍼 함수 (중지 기능 포함)
+function speakWithStopSupport(text, onEndCallback, setIsSpeaking) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 0.9;
+    utterance.onend = () => {
+      // 🚀 음성 중지 기능: 사용자가 중지한 경우 콜백 실행하지 않음
+      if (!isSpeechCancelled && onEndCallback) {
+        onEndCallback();
+      }
+      if (setIsSpeaking) {
+        setIsSpeaking(false);
+      }
+      currentUtterance = null;
+    };
+    
+    // 🚀 현재 음성 추적
+    currentUtterance = utterance;
+    isSpeechCancelled = false;
+    speechSynthesis.speak(utterance);
+    return true;
+  }
+  return false;
 }
 
 // AI 서비스 처리 (백엔드 API 호출) - 🚀 오프라인 기능 추가
@@ -173,6 +241,9 @@ export function handleAutoSub(
             showWelfarePortalConfirm(result.actionUrl, setShowConfirmModal);
           }, 500);
         };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
         speechSynthesis.speak(utterance);
       } else {
         setIsSpeaking(false);
@@ -200,6 +271,9 @@ export function handleAutoSub(
             showWelfareBookingPageConfirm(result.navigationData, setShowConfirmModal);
           }, 500);
         };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
         speechSynthesis.speak(utterance);
       } else {
         setIsSpeaking(false);
@@ -242,6 +316,9 @@ export function handleAutoSub(
             }, 1000);
           }
         };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
         speechSynthesis.speak(utterance);
       } else {
         setIsSpeaking(false);
@@ -274,6 +351,9 @@ export function handleAutoSub(
           startAutoRecord();
         }, 1000);
       };
+       // 🚀 현재 음성 추적 설정
+       currentUtterance = utterance;
+       isSpeechCancelled = false;
       speechSynthesis.speak(utterance);
     } else {
       setTimeout(() => {

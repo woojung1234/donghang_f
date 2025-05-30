@@ -113,7 +113,7 @@ const welfareTime = () => {
     case 5:
       return "2개월";
     case 6:
-      return "3개월";
+      return "6시간 (09:00 ~ 15:00)";
     case 7:
       return "4개월";
     case 8:
