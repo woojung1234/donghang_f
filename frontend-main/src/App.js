@@ -5,6 +5,7 @@ import { createContext, useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import PrivateRoute from 'PrivateRoute';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 // 온보딩 및 메인
 import OnboardingNew from 'onboarding/OnboardingNew';
@@ -216,6 +217,7 @@ function App() {
           </div>
         } />
       </Routes>
+       <PWAInstallPrompt />
     </CommonContext.Provider>
   );
 }
