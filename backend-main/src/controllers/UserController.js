@@ -10,8 +10,8 @@ class UserController {
   constructor() {
     // CoolSMS 초기화
     this.messageService = new coolsms(
-      process.env.COOLSMS_API_KEY,
-      process.env.COOLSMS_API_SECRET
+      process.env.SMS_API_KEY,
+      process.env.SMS_API_SECRET
     );
     this.validationMap = new Map(); // SMS 인증번호 저장
     
@@ -60,13 +60,21 @@ class UserController {
       // 6자리 랜덤 숫자 생성 (메서드 호출 방식 수정)
       const validationNum = this.generateRandomNumber();
 
+      console.log('=== SMS 전송 시작 ===');
+      console.log('전화번호:', phone);
+      console.log('생성된 인증번호:', validationNum);
+      console.log('SMS_API_KEY 존재 여부:', !!process.env.SMS_API_KEY);
+      console.log('SMS_SENDER:', process.env.SMS_SENDER);
+
       try {
         // CoolSMS API 호출 시도
-        if (this.messageService && process.env.COOLSMS_API_KEY) {
-          const response = await this.messageService.sendMessage({
+        if (this.messageService && process.env.SMS_API_KEY) {
+          console.log('실제 SMS 전송 시도 중...');
+          const response = await this.messageService.sendOne({
             to: phone,
-            from: process.env.COOLSMS_SENDER_NUMBER,
-            text: `[금복이] 인증번호는 ${validationNum}입니다.`
+            from: process.env.SMS_SENDER,
+            text: `[금복이] 인증번호는 ${validationNum}입니다.`,
+            type: 'SMS'
           });
         } else {
           // 개발 환경에서 CoolSMS 설정이 없는 경우 콘솔에 출력
@@ -127,6 +135,11 @@ class UserController {
 
       const { phone, validationNum } = req.body;
       const storedValidationNum = this.validationMap.get(phone);
+
+      console.log('=== 인증번호 검증 ===');
+      console.log('전화번호:', phone);
+      console.log('입력된 인증번호:', validationNum);
+      console.log('저장된 인증번호:', storedValidationNum);
 
       let message = '';
       let result = false;
@@ -373,7 +386,7 @@ class UserController {
   // 6자리 랜덤 숫자 생성 (메서드 정의 위치 확인)
   generateRandomNumber() {
     if (process.env.NODE_ENV === 'development') {
-        return '123456';
+        return Math.floor(100000 + Math.random() * 900000).toString();
     }
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
