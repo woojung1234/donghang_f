@@ -165,32 +165,27 @@ class AIChatService {
       `안녕하세요! 오늘 ${todayName}에 이용하실 수 있는 서비스예요!`
     ];
 
-    response += greetings[Math.floor(Math.random() * greetings.length)] + '\\n\\n';
+    response += greetings[Math.floor(Math.random() * greetings.length)] + '\n\n';
 
     // 서비스 제목과 간단한 설명
-    services.forEach((service, index) => {
-      response += `${index + 1}. **${service.serviceName}**\\n`;
-      
+    const top2 = services.slice(0, 2);
+    top2.forEach((service, index) => {
+      response += `${index + 1}. ${service.serviceName}\n`;
       if (service.serviceSummary) {
-        // 요약이 길면 줄여서 표시
-        const summary = service.serviceSummary.length > 100 
-          ? service.serviceSummary.substring(0, 100) + '...' 
+        const summary = service.serviceSummary.length > 100
+          ? service.serviceSummary.substring(0, 100) + '...'
           : service.serviceSummary;
-        response += `   ${summary}\\n`;
+        response += `   ${summary}\n`;
       }
-      
       if (service.organizationName) {
-        response += `   담당기관: ${service.organizationName}\\n`;
+        response += `   담당기관: ${service.organizationName}\n`;
       }
-      
-      if (index < services.length - 1) {
-        response += '\\n';
-      }
+      response += '\n';
     });
 
     // 상세정보 안내 멘트
-    response += '\\n\\n더 자세한 정보가 필요하시면 "자세히 알려줘"라고 말씀해주세요!';
-    response += '\\n복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요!';
+    response += '더 자세한 정보가 필요하시면 "자세히 알려줘"라고 말씀해주세요!\n';
+    response += '복지서비스 페이지에서도 더 많은 정보를 확인하실 수 있어요!';
 
     return response;
   }

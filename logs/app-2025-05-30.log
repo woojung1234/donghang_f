@@ -1074,3 +1074,178 @@
 }
 [2025-05-30T03:02:12.487Z] [INFO] 추천할 복지서비스 수: 5
 [2025-05-30T03:02:12.507Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:16:08.727Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:16:08.730Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:16:08.891Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:16:08.894Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T03:16:08.901Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-30T03:16:08.905Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:16:08.907Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T03:16:08.910Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T03:16:08.913Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T03:16:08.918Z] [INFO] 🔍 간단 파싱 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:16:08.922Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-30T03:16:08.929Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지 서비스 알려줘"
+}
+[2025-05-30T03:16:08.934Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-30T03:16:08.977Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-30T03:16:09.043Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:25:21.537Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:25:21.538Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:25:21.590Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:25:21.592Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T03:25:21.593Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-30T03:25:21.594Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:25:21.595Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T03:25:21.596Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T03:25:21.596Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T03:25:21.598Z] [INFO] 🔍 간단 파싱 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:25:21.599Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-30T03:25:21.600Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지 서비스 알려줘"
+}
+[2025-05-30T03:25:21.602Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-30T03:25:21.614Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-30T03:25:21.626Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:32:45.293Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:32:45.294Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:32:45.359Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:32:45.360Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T03:32:45.362Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-30T03:32:45.363Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:32:45.363Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T03:32:45.364Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T03:32:45.365Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T03:32:45.368Z] [INFO] 🔍 간단 파싱 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:32:45.369Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-30T03:32:45.370Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지 서비스 알려줘"
+}
+[2025-05-30T03:32:45.371Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-30T03:32:45.388Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-30T03:32:45.401Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:33:47.750Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:33:47.751Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:33:47.779Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:33:47.780Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T03:33:47.780Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-30T03:33:47.781Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:33:47.782Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T03:33:47.782Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T03:33:47.782Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T03:33:47.783Z] [INFO] 🔍 간단 파싱 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:33:47.784Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-30T03:33:47.784Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지 서비스 알려줘"
+}
+[2025-05-30T03:33:47.785Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-30T03:33:47.794Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-30T03:33:47.803Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:33:53.224Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 안녕하세요 오늘 금요일에 이용하실 수 있는 서비스예요
+[2025-05-30T03:33:53.224Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 안녕하세요 오늘 금요일에 이용하실 수 있는 서비스예요
+[2025-05-30T03:33:53.241Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:33:53.242Z] [INFO] 인사 메시지 감지
+[2025-05-30T03:33:53.253Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-30T03:34:01.277Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:34:01.277Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T03:34:01.291Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-30T03:34:01.292Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T03:34:01.292Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-30T03:34:01.293Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:34:01.293Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T03:34:01.294Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T03:34:01.294Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T03:34:01.295Z] [INFO] 🔍 간단 파싱 - 입력: 복지 서비스 알려줘
+[2025-05-30T03:34:01.295Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-30T03:34:01.296Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지 서비스 알려줘"
+}
+[2025-05-30T03:34:01.296Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-30T03:34:01.304Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-30T03:34:01.315Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
