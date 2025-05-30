@@ -222,3 +222,98 @@
 .confirm-confirm-btn:hover {
   background-color: #e8851a;
 }
+/* PWA 모바일 최적화 */
+@media (max-width: 768px) {
+  .voicechat-section {
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .chatbot {
+    width: 120px !important;
+    height: 120px !important;
+    margin: 20px 0;
+  }
+
+  .chat-startBtn {
+    min-height: 70px !important;
+    min-width: 200px !important;
+    font-size: 20px !important;
+    margin: 15px 0 !important;
+    border-radius: 35px !important;
+    touch-action: manipulation; /* 터치 최적화 */
+  }
+
+  .text-input-container {
+    width: 100% !important;
+    max-width: 350px;
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .text-input {
+    flex: 1;
+    padding: 15px !important;
+    font-size: 16px !important;
+    border-radius: 25px !important;
+    border: 2px solid #ddd;
+    outline: none;
+  }
+
+  .text-submit-btn {
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    border-radius: 25px !important;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    min-width: 80px;
+    touch-action: manipulation;
+  }
+
+  .consumption-btn {
+    min-height: 50px !important;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    margin-top: 15px !important;
+    border-radius: 25px !important;
+    background: #28a745;
+    color: white;
+    border: none;
+    touch-action: manipulation;
+  }
+
+  .listening-text {
+    font-size: 18px !important;
+    color: #4A90E2;
+    font-weight: bold;
+    margin: 10px 0;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+}
+
+/* PWA 전용 스타일 */
+@media (display-mode: standalone) {
+  .voicechat-section {
+    padding-top: 20px; /* 상태바 공간 확보 */
+  }
+}
+
+/* 터치 친화적 버튼 */
+.chat-startBtn:active,
+.text-submit-btn:active,
+.consumption-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}

@@ -1,6 +1,7 @@
 {
-  "short_name": "Knock_Knock",
-  "name": "Knock_Knock",
+  "short_name": "동행",
+  "name": "동행 - AI 도우미 금복이",
+  "description": "노인분들을 위한 AI 가계부 및 복지서비스 도우미",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,22 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512", 
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#4A90E2",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "lang": "ko-KR",
+  "scope": "/"
 }

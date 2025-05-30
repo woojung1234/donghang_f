@@ -4,6 +4,7 @@ import {
   handleAutoSub,
   handleChatRoom,
   startAutoRecord,
+  syncOfflineData, // 🚀 새로 추가
 } from "chat/chatScript";
 import "chat/VoiceChat.css";
 import VoiceHeader from "chat/VoiceHeader";
@@ -14,54 +15,97 @@ import { useNavigate } from "react-router-dom";
 import Loading from "./Loading";
 import SpeakLoading from "./SpeakLoading";
 import VoiceChatMovePageModal from "./VoiceChatMovePageModal";
+// 🚀 새로 추가
+import offlineStorage from "services/offlineStorage";
 
 function VoiceChat(props) {
   const [userInfo, setUserInfo] = useState("");
-  // const [recognition, setRecognition] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  // const [roomNo, setRoomNo] = useState(null);
   const [chatResponse, setChatResponse] = useState("");
   const [visible, setVisible] = useState(false);
   const [isStart, setIsStart] = useState(false);
-  //예약확인 모달
   const [isOpen, setIsOpen] = useState(false);
   const [serviceUrl, setServiceUrl] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [welfareNo, setWelfareNo] = useState("");
   const [welfareBookStartDate, setWelfareBookStartDate] = useState("");
   const [welfareBookUseTime, setWelfareBookUseTime] = useState("");
-
-  // 텍스트 입력 관련 상태 추가
   const [textInput, setTextInput] = useState("");
-
-  // 확인 팝업 모달 상태 추가
   const [showConfirmModal, setShowConfirmModal] = useState({ show: false });
+
+  // 🚀 새로 추가할 state
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [syncStatus, setSyncStatus] = useState("");
 
   const navi = useNavigate();
   
   useEffect(() => {
     async function initializeChat() {
-      // await handleChatRoom(userInfo);
-      // handleAutoSub(
-      //   "Greeting",
-      //   setChatResponse,
-      //   setIsLoading,
-      //   setIsSpeaking,
-      //   setIsOpen,
-      //   setServiceUrl
-      // );
       await handleChatRoom(userInfo);
       availabilityFunc(sendMessage, setIsListening);
+      
+      // 🚀 오프라인 저장소 초기화
+      try {
+        await offlineStorage.init();
+        console.log('📱 오프라인 저장소 초기화 완료');
+      } catch (error) {
+        console.error('오프라인 저장소 초기화 실패:', error);
+      }
     }
 
+    // 🚀 온라인/오프라인 상태 감지
+    const handleOnline = async () => {
+      setIsOnline(true);
+      setSyncStatus("동기화 중...");
+      console.log('📶 온라인 상태 복구');
+      
+      // 오프라인 데이터 동기화
+      try {
+        await syncOfflineData();
+        setSyncStatus("동기화 완료!");
+        console.log('✅ 오프라인 데이터 동기화 완료');
+        
+        // 3초 후 상태 메시지 제거
+        setTimeout(() => {
+          setSyncStatus("");
+        }, 3000);
+      } catch (error) {
+        console.error('❌ 동기화 실패:', error);
+        setSyncStatus("동기화 실패");
+        setTimeout(() => {
+          setSyncStatus("");
+        }, 3000);
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setSyncStatus("");
+      console.log('📱 오프라인 상태');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     initializeChat();
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, [userInfo]);
 
   function sendMessage(recognizedText) {
     setChatResponse("");
     setIsLoading(true);
     setIsListening(false);
+    
+    // 🚀 오프라인 상태 로깅
+    if (!isOnline) {
+      console.log('🔌 오프라인 모드로 메시지 처리:', recognizedText);
+    }
+    
     handleAutoSub(
       recognizedText,
       setChatResponse,
@@ -89,7 +133,6 @@ function VoiceChat(props) {
     }
   };
 
-  // 텍스트 입력 처리 함수
   const handleTextSubmit = () => {
     if (textInput.trim()) {
       console.log("텍스트 입력:", textInput);
@@ -98,7 +141,6 @@ function VoiceChat(props) {
     }
   };
 
-  // 엔터키 처리
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleTextSubmit();
@@ -137,7 +179,6 @@ function VoiceChat(props) {
       endRecord();
   };
 
-  // 소비내역 페이지로 이동하는 함수
   const goToConsumptionPage = () => {
     navi("/consumption");
   };
@@ -145,22 +186,73 @@ function VoiceChat(props) {
   return (
     <div className="voicechat-section">
       <VoiceHeader />
+      
+      {/* 🚀 온라인 상태 표시 */}
+      {!isOnline && (
+        <div style={{
+          background: 'linear-gradient(135deg, #ff6b6b, #ee5a52)',
+          color: 'white',
+          padding: '12px 20px',
+          textAlign: 'center',
+          borderRadius: '10px',
+          margin: '10px 20px',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 10px rgba(255, 107, 107, 0.3)'
+        }}>
+          🔌 오프라인 상태 - 가계부는 임시 저장됩니다
+        </div>
+      )}
+      
+      {/* 🚀 동기화 상태 표시 */}
+      {syncStatus && (
+        <div style={{
+          background: syncStatus.includes('완료') ? 'linear-gradient(135deg, #4CAF50, #45a049)' :
+                     syncStatus.includes('실패') ? 'linear-gradient(135deg, #f44336, #d32f2f)' :
+                     'linear-gradient(135deg, #2196F3, #1976D2)',
+          color: 'white',
+          padding: '10px 20px',
+          textAlign: 'center',
+          borderRadius: '8px',
+          margin: '10px 20px',
+          fontSize: '13px',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+        }}>
+          {syncStatus.includes('중') && '🔄'} 
+          {syncStatus.includes('완료') && '✅'} 
+          {syncStatus.includes('실패') && '❌'} 
+          {syncStatus}
+        </div>
+      )}
+
       {isSpeaking && <SpeakLoading />}
       {isLoading && <Loading />}
       <img src={chatbot} alt="챗봇" className="chatbot" />
       {isListening && <p className="listening-text">금복이가 듣고 있어요</p>}
       
-      {/* 텍스트 입력창 추가 */}
+      {/* 텍스트 입력창 */}
       <div className="text-input-container">
         <input
           type="text"
           className="text-input"
-          placeholder="예: 5000원 점심 먹었어"
+          placeholder={isOnline ? "예: 5000원 점심 먹었어" : "오프라인: 가계부만 기록 가능"}
           value={textInput}
           onChange={(e) => setTextInput(e.target.value)}
           onKeyPress={handleKeyPress}
+          style={{
+            borderColor: isOnline ? '#ddd' : '#ff6b6b',
+            backgroundColor: isOnline ? 'white' : '#fff5f5'
+          }}
         />
-        <button className="text-submit-btn" onClick={handleTextSubmit}>
+        <button 
+          className="text-submit-btn" 
+          onClick={handleTextSubmit}
+          style={{
+            backgroundColor: isOnline ? '#4A90E2' : '#ff6b6b',
+            opacity: textInput.trim() ? 1 : 0.6
+          }}
+        >
           전송
         </button>
       </div>
@@ -168,11 +260,17 @@ function VoiceChat(props) {
       <button className="hiddenBtn" onClick={toggleModal}>
         {visible ? "닫기" : "답변보이기"}
       </button>
-      <button className="chat-startBtn" onClick={handleStartChat}>
+      <button 
+        className="chat-startBtn" 
+        onClick={handleStartChat}
+        style={{
+          backgroundColor: isOnline ? (isStart ? '#f44336' : '#4CAF50') : '#ff6b6b'
+        }}
+      >
         {isStart ? "중지" : "음성입력"}
+        {!isOnline && " (오프라인)"}
       </button>
 
-      {/* 소비내역 보기 버튼 */}
       <button className="consumption-btn" onClick={goToConsumptionPage}>
         💰 소비내역 보기
       </button>

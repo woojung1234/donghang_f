@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동행 - 오프라인</title>
+    <style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            padding: 40px 20px;
+        }
+        .icon { font-size: 80px; margin-bottom: 20px; }
+        .title { font-size: 28px; margin-bottom: 16px; }
+        .message { font-size: 16px; margin-bottom: 30px; opacity: 0.9; }
+        .retry-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🤖</div>
+        <h1 class="title">금복이와 연결할 수 없어요</h1>
+        <p class="message">인터넷 연결을 확인해주세요.</p>
+        <button class="retry-btn" onclick="window.location.reload()">다시 시도</button>
+    </div>
+    <script>
+        window.addEventListener('online', () => window.location.href = '/');
+    </script>
+</body>
+</html>
