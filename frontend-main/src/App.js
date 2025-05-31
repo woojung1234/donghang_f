@@ -43,7 +43,7 @@ import ConsumeReport from 'consumeReport/component/ConsumeReport';
 // 알림
 import AlarmList from 'alarm/AlarmList';
 
-// 복지 서비스 (카드 결제 → 간편 결제로 변경됨)
+// 복지 서비스 (예약 시스템)
 import WelfareList from 'welfare/component/WelfareList';
 import WelfareMain from 'welfare/component/WelfareMain';
 import WelfareServices from 'welfare/component/WelfareServices';
@@ -58,9 +58,9 @@ import WelfareInputDisease from 'welfare/component/WelfareInputDisease';
 import WelfareInputGender from 'welfare/component/WelfareInputGender';
 import WelfareInputHeight from 'welfare/component/WelfareInputHeight';
 import WelfareCheckSpec from 'welfare/component/WelfareCheckSpec';
-import WelfarePay from 'welfare/component/WelfarePay';
-import WelfareSetPW from 'welfare/component/WelfareSetPW';
-import WelfareCheckPW from 'welfare/component/WelfareCheckPW';
+
+
+
 import WelfarePayComplete from 'welfare/component/WelfarePayCompl';
 import DolbomMain from 'welfare/component/DolbomMain';
 import WelfareNursingModal from 'welfare/component/WelfareNursingModal';
@@ -172,11 +172,11 @@ function App() {
           <Route path="height" element={<PrivateRoute><WelfareInputHeight /></PrivateRoute>} />
           <Route path="check-spec" element={<PrivateRoute><WelfareCheckSpec /></PrivateRoute>} />
           
-          {/* 결제 단계 (카드 선택 → 간편 결제로 변경됨) */}
-          <Route path="pay" element={<PrivateRoute><WelfarePay /></PrivateRoute>} />
-          <Route path="welfare-set-pw" element={<PrivateRoute><WelfareSetPW /></PrivateRoute>} />
-          <Route path="welfare-check-pw" element={<PrivateRoute><WelfareCheckPW /></PrivateRoute>} />
-          <Route path="paycomplete" element={<PrivateRoute><WelfarePayComplete /></PrivateRoute>} />
+          {/* 예약 완료 단계 */}
+
+
+
+          <Route path="reservation-complete" element={<PrivateRoute><WelfarePayComplete /></PrivateRoute>} />
           
           {/* 돌봄 서비스 */}
           <Route path="dolbom-main" element={<PrivateRoute><DolbomMain /></PrivateRoute>} />
