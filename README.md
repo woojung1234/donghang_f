@@ -1,4 +1,4 @@
-# 🤖 금복이 (KumBoki) - 고령층을 위한 음성 기반 생활 관리 플랫폼
+# 🤖 동행 (donghang) - 고령층을 위한 음성 기반 생활 관리 플랫폼
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
@@ -10,7 +10,7 @@
 
 ## 📋 프로젝트 개요
 
-**금복이**는 디지털 소외계층인 고령층을 위한 **음성 우선 인터페이스** 기반의 종합 생활 관리 플랫폼입니다.
+**동행**는 디지털 소외계층인 고령층을 위한 **음성 우선 인터페이스** 기반의 종합 생활 관리 플랫폼입니다.
 
 ### 🎯 주요 기능
 - 🎤 **음성 기반 소비 관리**: 말로 간편하게 가계부 작성
@@ -60,7 +60,6 @@ graph TD
 
 #### Database
 - **PostgreSQL 15**: 메인 데이터베이스
-- **Redis** (예정): 캐싱 및 세션 관리
 
 #### AI Service
 - **Python 3.9+**: AI 서비스 개발
@@ -528,15 +527,5 @@ jobs:
 - **PostgreSQL**: 데이터베이스
 - **FastAPI**: AI 서비스 API
 - **Transformers**: 자연어 처리 모델
-
-
----
-
-<div align="center">
-  <h3>🌟 함께 만들어가는 디지털 포용 사회 🌟</h3>
-  <p>금복이와 함께 모든 세대가 디지털 혜택을 누릴 수 있는 세상을 만들어갑니다.</p>
-</div>
-
----
 
 
