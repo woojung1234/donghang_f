@@ -222,3 +222,138 @@
 .confirm-confirm-btn:hover {
   background-color: #e8851a;
 }
+
+/* 🚀 음성 중지 버튼 스타일 */
+.voice-stop-btn {
+  position: fixed !important;
+  bottom: 60px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1000 !important;
+  width: 200px !important;
+  touch-action: manipulation;
+}
+
+.voice-stop-btn:hover {
+  background-color: #dd3333 !important;
+  transform: translateX(-50%) translateY(-2px) !important;
+  box-shadow: 0 6px 12px rgba(255, 68, 68, 0.4) !important;
+}
+
+.voice-stop-btn:active {
+  transform: translateX(-50%) scale(0.95) !important;
+}
+
+/* 🚀 Pulse 애니메이션 */
+@keyframes pulse {
+  0% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: translateX(-50%) scale(1.05);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* PWA 모바일 최적화 */
+@media (max-width: 768px) {
+  .voicechat-section {
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .chatbot {
+    width: 120px !important;
+    height: 120px !important;
+    margin: 20px 0;
+  }
+
+  .chat-startBtn {
+    min-height: 70px !important;
+    min-width: 200px !important;
+    font-size: 20px !important;
+    margin: 15px 0 !important;
+    border-radius: 35px !important;
+    touch-action: manipulation; /* 터치 최적화 */
+  }
+
+  .text-input-container {
+    width: 100% !important;
+    max-width: 350px;
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .text-input {
+    flex: 1;
+    padding: 15px !important;
+    font-size: 16px !important;
+    border-radius: 25px !important;
+    border: 2px solid #ddd;
+    outline: none;
+  }
+
+  .text-submit-btn {
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    border-radius: 25px !important;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    min-width: 80px;
+    touch-action: manipulation;
+  }
+
+  .consumption-btn {
+    min-height: 50px !important;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    margin-top: 15px !important;
+    border-radius: 25px !important;
+    background: #4ECDC4;
+    color: white;
+    border: none;
+    touch-action: manipulation;
+  }
+
+  .listening-text {
+    font-size: 18px !important;
+    color: #4A90E2;
+    font-weight: bold;
+    margin: 10px 0;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* 🚀 모바일에서 음성 중지 버튼 스타일 */
+  .voice-stop-btn {
+    width: 180px !important;
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    bottom: 80px !important;
+  }
+}
+
+/* PWA 전용 스타일 */
+@media (display-mode: standalone) {
+  .voicechat-section {
+    padding-top: 20px; /* 상태바 공간 확보 */
+  }
+}
+
+/* 터치 친화적 버튼 */
+.chat-startBtn:active,
+.text-submit-btn:active,
+.consumption-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}

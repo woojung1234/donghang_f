@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-globals */
+/* eslint-disable no-undef */
 
 // This service worker can be customized!
 // See https://developers.google.com/web/tools/workbox/modules
@@ -11,7 +12,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies';
 
 clientsClaim();
 
@@ -46,11 +47,73 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
+// 🚀 동행 앱 특화 캐싱 전략 추가
+
+// AI 채팅 API 캐싱 (네트워크 우선, 오프라인시 캐시)
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/v1/ai-chat'),
+  new NetworkFirst({
+    cacheName: 'ai-chat-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 60 * 60 * 24, // 24시간
+      }),
+    ],
+  })
+);
+
+// 가계부 API 캐싱 (네트워크 우선)
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/v1/consumption'),
+  new NetworkFirst({
+    cacheName: 'consumption-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 60 * 60 * 24 * 7, // 7일
+      }),
+    ],
+  })
+);
+
+// 복지서비스 API 캐싱 (네트워크 우선)
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/v1/welfare'),
+  new NetworkFirst({
+    cacheName: 'welfare-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 200,
+        maxAgeSeconds: 60 * 60 * 24 * 3, // 3일
+      }),
+    ],
+  })
+);
+
+// 정적 리소스 캐싱 (CSS, JS, 폰트)
+registerRoute(
+  ({ request }) => 
+    request.destination === 'script' ||
+    request.destination === 'style' ||
+    request.destination === 'font',
+  new StaleWhileRevalidate({
+    cacheName: 'static-resources',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 60 * 60 * 24 * 30, // 30일
+      }),
+    ],
+  })
+);
+
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), 
+  // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
@@ -61,6 +124,54 @@ registerRoute(
   })
 );
 
+// 🚀 추가된 이미지 캐싱 (모든 이미지 타입)
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'images-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 60 * 60 * 24 * 30, // 30일
+      }),
+    ],
+  })
+);
+
+// 🚀 오프라인 fallback 페이지 설정
+const FALLBACK_HTML_URL = '/offline.html';
+const OFFLINE_CACHE_NAME = 'offline-html';
+
+// 오프라인 페이지 미리 캐시
+self.addEventListener('install', event => {
+  console.log('🔧 Service Worker 설치 중...');
+  event.waitUntil(
+    caches.open(OFFLINE_CACHE_NAME)
+      .then(cache => {
+        console.log('📄 오프라인 페이지 캐시 중...');
+        return cache.add(FALLBACK_HTML_URL);
+      })
+      .catch(error => {
+        console.error('오프라인 페이지 캐시 실패:', error);
+      })
+  );
+});
+
+// 🚀 네트워크 요청 실패시 오프라인 페이지 제공
+self.addEventListener('fetch', event => {
+  // 네비게이션 요청에 대해서만 오프라인 페이지 제공
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          console.log('📱 오프라인 상태 - 오프라인 페이지 제공');
+          return caches.open(OFFLINE_CACHE_NAME)
+            .then(cache => cache.match(FALLBACK_HTML_URL));
+        })
+    );
+  }
+});
+
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener('message', (event) => {
@@ -69,4 +180,116 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// 🚀 백그라운드 동기화 (추후 구현 대비)
+self.addEventListener('sync', event => {
+  console.log('🔄 백그라운드 동기화 이벤트:', event.tag);
+  
+  if (event.tag === 'background-sync') {
+    event.waitUntil(
+      // 오프라인 데이터 동기화 로직
+      syncOfflineData()
+    );
+  }
+});
+
+// 🚀 푸시 알림 처리 (추후 구현 대비)
+self.addEventListener('push', event => {
+  console.log('🔔 푸시 알림 수신:', event);
+  
+  if (event.data) {
+    const data = event.data.json();
+    const options = {
+      body: data.body || '새로운 알림이 있습니다.',
+      icon: '/logo192.png',
+      badge: '/logo192.png',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: data.id || 1,
+        url: data.url || '/'
+      },
+      actions: [
+        {
+          action: 'open',
+          title: '열기',
+          icon: '/logo192.png'
+        },
+        {
+          action: 'close',
+          title: '닫기'
+        }
+      ]
+    };
+    
+    event.waitUntil(
+      self.registration.showNotification(
+        data.title || '동행 - 금복이', 
+        options
+      )
+    );
+  }
+});
+
+// 🚀 알림 클릭 처리 (수정됨)
+self.addEventListener('notificationclick', event => {
+  console.log('🔔 알림 클릭:', event.action);
+  
+  event.notification.close();
+  
+  if (event.action === 'open' || !event.action) {
+    const url = event.notification.data?.url || '/';
+    event.waitUntil(
+      self.clients.matchAll().then(clientsList => {
+        // 이미 열린 탭이 있으면 포커스
+        for (const client of clientsList) {
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // 새 탭 열기
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(url);
+        }
+      })
+    );
+  }
+});
+
+// 🚀 오프라인 데이터 동기화 함수 (백그라운드 동기화용)
+async function syncOfflineData() {
+  try {
+    console.log('🔄 백그라운드 동기화 시작');
+    
+    // IndexedDB에서 동기화할 데이터 조회
+    // 실제 구현에서는 offlineStorage를 사용
+    
+    console.log('✅ 백그라운드 동기화 완료');
+    return Promise.resolve();
+  } catch (error) {
+    console.error('❌ 백그라운드 동기화 실패:', error);
+    return Promise.reject(error);
+  }
+}
+
+// 🚀 서비스 워커 업데이트 감지
+self.addEventListener('activate', event => {
+  console.log('🚀 Service Worker 활성화');
+  
+  // 이전 버전 캐시 정리
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          // 오래된 캐시 삭제 로직
+          if (cacheName.includes('old-')) {
+            console.log('🗑️ 오래된 캐시 삭제:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
 // Any other custom service worker logic can go here.
+console.log('🤖 동행 금복이 Service Worker 로드 완료');

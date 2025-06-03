@@ -10,7 +10,8 @@ function WelfareReservedItem({
   status = 'PENDING',
   paymentStatus = 'UNPAID',
   onCancel,
-  onDetail 
+  onDetail,
+  onPermanentDelete // 새로운 prop 추가
 }) {
 
   function formatDate(dateString) {
@@ -20,6 +21,13 @@ function WelfareReservedItem({
   }
 
   function displayTime(duration) {
+    // 🚨 디버깅: 실제 저장된 duration 값 확인
+    console.log('🕐 displayTime 호출됨:', {
+      duration: duration,
+      type: typeof duration,
+      title: title // 어떤 예약인지 확인
+    });
+    
     if (typeof duration === 'string' && duration.includes(':')) {
       return duration; // 이미 시간 형식으로 제공된 경우
     }
@@ -36,7 +44,7 @@ function WelfareReservedItem({
       case 5:
         return '2개월';
       case 6:
-        return '3개월';
+        return '6시간 (09:00 ~ 15:00)';
       case 7:
         return '4개월';
       case 8:
@@ -44,6 +52,7 @@ function WelfareReservedItem({
       case 9:
         return '6개월';
       default:
+        console.log('⚠️ 예상치 못한 duration 값:', duration);
         return duration || '시간 정보 없음';
     }
   }
@@ -90,9 +99,6 @@ function WelfareReservedItem({
   
   const formattedReservationDate = formatDate(welfareBookReservationDate);
   const formattedStartDate = formatDate(welfareBookStartDate);
-  
-  // 취소 버튼 표시 여부 (취소됨 또는 이용완료 상태가 아닌 경우)
-  const showCancelButton = status !== 'CANCELLED' && status !== 'COMPLETED';
 
   return (
     <div 
@@ -110,7 +116,9 @@ function WelfareReservedItem({
       
       <div className={styles["detailed-reserved-cancel-container"]}>
         <span className={`${styles["main-text"]} ${styles["detailed-reserved-date"]}`}>예약일: {formattedReservationDate}</span>
-        {showCancelButton && (
+        
+        {/* 상태별 버튼 표시 */}
+        {status === 'PENDING' && (
           <span 
             className={`${styles["main-text"]} ${styles["detailed-reserved-cancel"]}`} 
             onClick={(e) => {
@@ -119,6 +127,20 @@ function WelfareReservedItem({
             }}
           >
             예약취소
+          </span>
+        )}
+        
+        {(status === 'CANCELLED' || status === 'COMPLETED') && (
+          <span 
+            className={`${styles["main-text"]} ${styles["detailed-reserved-delete"]}`} 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm('이 예약 내역을 완전히 삭제하시겠습니까? 삭제된 내역은 복구할 수 없습니다.')) {
+                onPermanentDelete();
+              }
+            }}
+          >
+            삭제
           </span>
         )}
       </div>

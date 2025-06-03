@@ -1,7 +1,13 @@
 import { call } from "login/service/ApiService";
+// 🚀 새로 추가
+import offlineStorage from '../services/offlineStorage';
 
-var roomNo = 1; // 기본값 설정
+// var roomNo = 1; // 기본값 설정 - 현재 사용하지 않음
 var recognition;
+
+// 🚀 음성 중지 기능을 위한 전역 변수들
+var currentUtterance = null; // 현재 재생 중인 음성
+var isSpeechCancelled = false; // 음성이 사용자에 의해 중지되었는지 확인
 
 // 오프라인 모드용 응답 (백엔드에서 처리되지 못한 경우 fallback)
 const fallbackResponses = [
@@ -50,9 +56,100 @@ export function endRecord() {
   }
 }
 
-// AI 서비스 처리 (백엔드 API 호출)
+// 🚀 음성 중지 기능 함수들
+export function stopSpeaking() {
+  console.log("🔇 음성 중지 시도...");
+  
+  // speechSynthesis가 말하고 있는지 확인
+  if (speechSynthesis.speaking) {
+    console.log("🔇 음성 응답 중지됨");
+    isSpeechCancelled = true;
+    
+    // 모든 음성을 즉시 중지
+    speechSynthesis.cancel();
+    
+    // 약간의 지연 후 다시 한번 cancel 호출 (브라우저 호환성)
+    setTimeout(() => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+    }, 100);
+    
+    currentUtterance = null;
+    return true;
+  }
+  
+  console.log("🔇 음성이 재생 중이 아닙니다");
+  return false;
+}
+
+// 현재 음성이 재생 중인지 확인하는 함수
+export function isSpeakingNow() {
+  return speechSynthesis.speaking && currentUtterance !== null;
+}
+
+// 음성 중지 상태 초기화 함수
+export function resetSpeechState() {
+  isSpeechCancelled = false;
+  currentUtterance = null;
+}
+
+// 🚀 음성 재생 헬퍼 함수 (중지 기능 포함)
+function speakWithStopSupport(text, onEndCallback, setIsSpeaking) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 0.9;
+    utterance.onend = () => {
+      // 🚀 음성 중지 기능: 사용자가 중지한 경우 콜백 실행하지 않음
+      if (!isSpeechCancelled && onEndCallback) {
+        onEndCallback();
+      }
+      if (setIsSpeaking) {
+        setIsSpeaking(false);
+      }
+      currentUtterance = null;
+    };
+    
+    // 🚀 현재 음성 추적
+    currentUtterance = utterance;
+    isSpeechCancelled = false;
+    speechSynthesis.speak(utterance);
+    return true;
+  }
+  return false;
+}
+
+// AI 서비스 처리 (백엔드 API 호출) - 🚀 오프라인 기능 추가
 async function processAIResponse(message, sessionId = 'default') {
   try {
+    // 🚀 오프라인 상태 확인
+    if (!navigator.onLine) {
+      console.log('🔌 오프라인 상태 - 로컬 처리');
+      
+      // 가계부 입력 패턴 확인
+      const expensePattern = /(\d+)\s*원.*?(먹|샀|썼|지출|결제|마셨|타고|갔다|사용)/;
+      if (expensePattern.test(message)) {
+        // 오프라인 가계부 저장
+        const expenseData = parseExpenseFromMessage(message);
+        await offlineStorage.saveExpenseOffline(expenseData);
+        
+        return {
+          type: 'expense_offline',
+          content: `오프라인 상태에서 "${expenseData.amount}원 ${expenseData.category}" 지출을 임시 저장했어요. 인터넷 연결 후 자동으로 동기화됩니다.`,
+          needsVoice: true
+        };
+      }
+      
+      // 일반 오프라인 응답
+      return {
+        type: 'offline',
+        content: '현재 오프라인 상태입니다. 인터넷 연결 후 다시 시도해주세요.',
+        needsVoice: true
+      };
+    }
+    
+    // 기존 온라인 처리 로직
     console.log("🔄 백엔드 AI 서비스 호출:", message);
     
     // 로그인 토큰 확인
@@ -97,7 +194,7 @@ function getOfflineResponse() {
   return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
 }
 
-// 음성 끝났을 때 자동 답변 실행 (단순화된 버전)
+// 🚀 기존 handleAutoSub 함수 (그대로 유지)
 export function handleAutoSub(
   message,
   setChatResponse,
@@ -125,6 +222,8 @@ export function handleAutoSub(
     setIsLoading(false);
     setIsSpeaking(true);
     
+    // 🚀 대화 저장 (오프라인 대응)
+    saveConversationOffline(message, response);
     
     // 복지로 사이트 이동 요청인 경우 확인 팝업 표시
     if (result.type === 'welfare_portal_request' && result.needsConfirmation) {
@@ -142,6 +241,9 @@ export function handleAutoSub(
             showWelfarePortalConfirm(result.actionUrl, setShowConfirmModal);
           }, 500);
         };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
         speechSynthesis.speak(utterance);
       } else {
         setIsSpeaking(false);
@@ -149,6 +251,90 @@ export function handleAutoSub(
         setTimeout(() => {
           showWelfarePortalConfirm(result.actionUrl, setShowConfirmModal);
         }, 1000);
+      }
+      return;
+    }
+
+    // 복지서비스 예약 완료인 경우 예약 페이지로 이동
+    if (result.type === 'booking_confirmed' && result.needsNavigation && result.navigationData) {
+      console.log("📋 복지서비스 예약 완료 - 예약 페이지로 이동");
+      
+      // 음성으로 응답 읽기
+      if ('speechSynthesis' in window && result.needsVoice) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          // 음성 응답 후 예약 페이지로 이동
+          setTimeout(() => {
+            showWelfareBookingPageConfirm(result.navigationData, setShowConfirmModal);
+          }, 500);
+        };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
+        speechSynthesis.speak(utterance);
+      } else {
+        setIsSpeaking(false);
+        // 음성 없이 바로 예약 페이지로 이동
+        setTimeout(() => {
+          showWelfareBookingPageConfirm(result.navigationData, setShowConfirmModal);
+        }, 1000);
+      }
+      return;
+    }
+
+    // 복지서비스 예약 취소 요청인 경우 처리
+    if ((result.type === 'booking_cancel_single' || 
+         result.type === 'booking_cancel_multiple' || 
+         result.type === 'booking_cancel_none' ||
+         result.type === 'booking_cancelled_success' ||
+         result.type === 'booking_cancelled_error') && result.needsVoice) {
+      console.log("🗑️ 복지서비스 예약 취소 응답:", result.type);
+      
+      // 음성으로 응답 읽기
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          
+          // 예약 취소 관련 응답인 경우 예약 내역 페이지로 이동 모달 표시
+          if (result.type === 'booking_cancel_single' || 
+              result.type === 'booking_cancel_multiple' || 
+              result.type === 'booking_cancel_none') {
+            console.log("🔄 예약 내역 페이지 이동 모달 표시");
+            setTimeout(() => {
+              showWelfareReservedListConfirm(setShowConfirmModal);
+            }, 500);
+          } else {
+            // 취소 완료 또는 에러인 경우 일반적으로 음성 인식 재시작
+            setTimeout(() => {
+              startAutoRecord();
+            }, 1000);
+          }
+        };
+         // 🚀 현재 음성 추적 설정
+         currentUtterance = utterance;
+         isSpeechCancelled = false;
+        speechSynthesis.speak(utterance);
+      } else {
+        setIsSpeaking(false);
+        
+        // 예약 취소 관련 응답인 경우 예약 내역 페이지로 이동 모달 표시
+        if (result.type === 'booking_cancel_single' || 
+            result.type === 'booking_cancel_multiple' || 
+            result.type === 'booking_cancel_none') {
+          setTimeout(() => {
+            showWelfareReservedListConfirm(setShowConfirmModal);
+          }, 1000);
+        } else {
+          setTimeout(() => {
+            startAutoRecord();
+          }, 1000);
+        }
       }
       return;
     }
@@ -165,6 +351,9 @@ export function handleAutoSub(
           startAutoRecord();
         }, 1000);
       };
+       // 🚀 현재 음성 추적 설정
+       currentUtterance = utterance;
+       isSpeechCancelled = false;
       speechSynthesis.speak(utterance);
     } else {
       setTimeout(() => {
@@ -183,7 +372,7 @@ export function handleAutoSub(
   });
 }
 
-// 음성 인식의 자동 시작 상태를 제어하는 함수
+// 🚀 기존 함수들 (그대로 유지)
 export function availabilityFunc(sendMessage, setIsListening) {
   const newRecognition = new (window.SpeechRecognition ||
     window.webkitSpeechRecognition)();
@@ -215,13 +404,11 @@ export function availabilityFunc(sendMessage, setIsListening) {
   }
 }
 
-// 채팅 방을 설정하는 함수 (단순화)
 export function handleChatRoom(userInfo) {
   console.log("💬 대화방 생성 함수 호출됨");
   return Promise.resolve({ conversationRoomNo: 1 });
 }
 
-// 채팅 세션 리셋 함수 (새로 추가)
 export async function resetChatSession(sessionId = 'default') {
   try {
     const response = await call('/api/v1/ai-chat/reset-session', 'POST', {
@@ -236,7 +423,6 @@ export async function resetChatSession(sessionId = 'default') {
   }
 }
 
-// 채팅 세션 상태 조회 함수 (새로 추가)
 export async function getChatSessionStatus(sessionId = 'default') {
   try {
     const response = await call(`/api/v1/ai-chat/session/${sessionId}`, 'GET');
@@ -249,7 +435,6 @@ export async function getChatSessionStatus(sessionId = 'default') {
   }
 }
 
-// 복지로 사이트 이동 확인 팝업 표시
 function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
   console.log("🌐 복지로 사이트 이동 확인 팝업 표시");
   
@@ -277,5 +462,134 @@ function showWelfarePortalConfirm(actionUrl, setShowConfirmModal) {
         }, 1000);
       }
     });
+  }
+}
+
+function showWelfareBookingPageConfirm(navigationData, setShowConfirmModal) {
+  console.log("📋 복지서비스 예약 페이지 이동 확인 팝업 표시:", navigationData);
+  
+  if (setShowConfirmModal) {
+    setShowConfirmModal({
+      show: true,
+      title: '예약 페이지 이동',
+      message: '복지서비스 예약 페이지로 이동하시겠습니까?',
+      navigationData: navigationData,
+      onConfirm: () => {
+        console.log("✅ 복지서비스 예약 페이지 이동 확인");
+        
+        // 예약 페이지로 이동하면서 데이터 전달
+        const bookingUrl = '/welfare-booking';
+        const queryParams = new URLSearchParams({
+          serviceId: navigationData.serviceId,
+          serviceName: navigationData.serviceName,
+          startDate: navigationData.startDate,
+          endDate: navigationData.endDate,
+          timeOption: navigationData.timeOption,
+          address: navigationData.address
+        });
+        
+        window.location.href = `${bookingUrl}?${queryParams.toString()}`;
+        setShowConfirmModal({ show: false });
+      },
+      onCancel: () => {
+        console.log("❌ 복지서비스 예약 페이지 이동 취소");
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      }
+    });
+  }
+}
+
+function showWelfareReservedListConfirm(setShowConfirmModal) {
+  console.log("🗑️ 복지서비스 예약 내역 페이지 이동 확인 팝업 표시");
+  
+  if (setShowConfirmModal) {
+    setShowConfirmModal({
+      show: true,
+      title: '예약 내역',
+      message: '복지서비스 예약 내역 페이지로 이동하시겠습니까?',
+      onConfirm: () => {
+        console.log("✅ 복지서비스 예약 내역 페이지 이동 확인");
+        // 예약 내역 페이지로 이동
+        window.location.href = '/welfare-reserved-list';
+        setShowConfirmModal({ show: false });
+      },
+      onCancel: () => {
+        console.log("❌ 복지서비스 예약 내역 페이지 이동 취소");
+        setShowConfirmModal({ show: false });
+        // 음성 인식 재시작
+        setTimeout(() => {
+          startAutoRecord();
+        }, 1000);
+      }
+    });
+  }
+}
+
+// 🚀 새로 추가할 함수들
+
+// 간단한 가계부 파싱 함수
+function parseExpenseFromMessage(message) {
+  const amountMatch = message.match(/(\d+)\s*원/);
+  const amount = amountMatch ? parseInt(amountMatch[1]) : 0;
+  
+  // 간단한 카테고리 추론
+  let category = '기타';
+  if (message.includes('밥') || message.includes('먹') || message.includes('식사')) category = '식비';
+  else if (message.includes('교통') || message.includes('버스') || message.includes('지하철')) category = '교통비';
+  else if (message.includes('쇼핑') || message.includes('옷') || message.includes('샀')) category = '쇼핑';
+  else if (message.includes('병원') || message.includes('약')) category = '의료비';
+  else if (message.includes('마트') || message.includes('편의점')) category = '생활용품';
+  
+  return {
+    amount,
+    category,
+    merchantName: '일반가맹점',
+    originalMessage: message,
+    date: new Date().toISOString().split('T')[0]
+  };
+}
+
+// 온라인 복구시 동기화 함수
+export async function syncOfflineData() {
+  if (!navigator.onLine) return;
+  
+  try {
+    const unsyncedExpenses = await offlineStorage.getUnsyncedExpenses();
+    
+    for (const expense of unsyncedExpenses) {
+      try {
+        // 백엔드로 전송
+        await call('/api/v1/consumption', 'POST', {
+          merchantName: expense.merchantName,
+          amount: expense.amount,
+          category: expense.category,
+          memo: `오프라인 저장: ${expense.originalMessage}`,
+          transactionDate: expense.date
+        });
+        
+        // 동기화 완료 표시
+        await offlineStorage.markAsSynced(expense.id);
+        console.log('💾 오프라인 데이터 동기화 완료:', expense);
+        
+      } catch (error) {
+        console.error('동기화 실패:', error);
+      }
+    }
+  } catch (error) {
+    console.error('동기화 프로세스 오류:', error);
+  }
+}
+
+// 대화 저장 함수 (오프라인용)
+export async function saveConversationOffline(userMessage, aiResponse) {
+  try {
+    await offlineStorage.saveConversation(userMessage, aiResponse);
+    console.log('💬 대화 오프라인 저장 완료');
+  } catch (error) {
+    console.error('대화 저장 오류:', error);
   }
 }

@@ -377,8 +377,41 @@ class WelfareBookService {
   }
 
   /**
-   * 사용자의 예약 통계 조회
+   * 복지 예약 완전 삭제 (하드 삭제) - 취소되거나 완료된 예약만 가능
    */
+  static async permanentlyDeleteWelfareBook(welfareBookNo, userNo) {
+    try {
+      console.log(`🔍 Attempting to permanently delete welfare book - BookNo: ${welfareBookNo}, UserNo: ${userNo}`);
+      
+      const welfareBook = await WelfareBook.findOne({
+        where: { 
+          welfareBookNo,
+          userNo // 소유권 확인
+        }
+      });
+
+      if (!welfareBook) {
+        console.log(`❌ Welfare book not found - BookNo: ${welfareBookNo}, UserNo: ${userNo}`);
+        throw new Error('복지 예약 내역을 찾을 수 없습니다.');
+      }
+
+      // 취소되거나 완료된 예약만 완전 삭제 가능
+      if (!welfareBook.welfareBookIsCancel && !welfareBook.welfareBookIsComplete) {
+        console.log(`⚠️ Only cancelled or completed bookings can be permanently deleted - BookNo: ${welfareBookNo}`);
+        throw new Error('취소되거나 완료된 예약만 삭제할 수 있습니다.');
+      }
+
+      // 데이터베이스에서 완전 삭제
+      await welfareBook.destroy();
+
+      console.log(`🗑️ Welfare booking permanently deleted - BookNo: ${welfareBookNo}, UserNo: ${userNo}`);
+      return true;
+
+    } catch (error) {
+      console.error('❌ WelfareBookService.permanentlyDeleteWelfareBook Error:', error);
+      throw error;
+    }
+  }
   static async getBookingStats(userNo) {
     try {
       const { Op } = require('sequelize');

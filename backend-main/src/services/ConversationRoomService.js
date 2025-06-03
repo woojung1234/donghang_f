@@ -192,7 +192,7 @@ class ConversationRoomService {
       const results = await sequelize.query(`
         SELECT cl.created_at
         FROM conversation_logs cl
-        INNER JOIN conversation_rooms cr ON cl.conversation_room_no = cr.room_no
+        INNER JOIN conversation_rooms cr ON cl.room_no = cr.room_no
         WHERE cr.user_no = ? AND cr.is_active = true
         ORDER BY cl.created_at DESC
         LIMIT 1
@@ -208,6 +208,52 @@ class ConversationRoomService {
       console.error('❌ ConversationRoomService.getLastConversationTime Error:', error);
       // 오류가 발생해도 null 반환 (서비스 중단 방지)
       return null;
+    }
+  }
+
+  /**
+   * 사용자와 세션으로 대화방 찾기
+   */
+  static async findByUserAndSession(userNo, sessionId) {
+    try {
+      const room = await ConversationRoom.findOne({
+        where: {
+          userNo,
+          roomName: sessionId || 'default',
+          isActive: true
+        }
+      });
+
+      return room;
+
+    } catch (error) {
+      console.error('❌ ConversationRoomService.findByUserAndSession Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 새 대화방 생성 (AI용)
+   */
+  static async createConversationRoom(userNo, sessionId) {
+    try {
+      const room = await ConversationRoom.create({
+        userNo,
+        roomName: sessionId || 'default',
+        roomDescription: 'AI 대화방',
+        isActive: true
+      });
+
+      console.log(`🤖 AI 대화방 생성 - UserNo: ${userNo}, SessionId: ${sessionId}, RoomNo: ${room.roomNo}`);
+
+      return {
+        conversationRoomNo: room.roomNo,
+        roomName: room.roomName
+      };
+
+    } catch (error) {
+      console.error('❌ ConversationRoomService.createConversationRoom Error:', error);
+      throw error;
     }
   }
 }

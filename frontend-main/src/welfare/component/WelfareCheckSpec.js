@@ -113,7 +113,7 @@ const welfareTime = () => {
     case 5:
       return "2개월";
     case 6:
-      return "3개월";
+      return "6시간 (09:00 ~ 15:00)";
     case 7:
       return "4개월";
     case 8:
@@ -124,8 +124,46 @@ const welfareTime = () => {
       return null;
   }
 };
-  const goSetPW = () => {
-    navigate("/welfare-input/pay");
+  const goReservationComplete = async () => {
+    try {
+      console.log("예약 정보 저장 중...", userSpec);
+      
+      // 예약 정보를 백엔드에 저장하는 API 호출
+      const reservationData = {
+        welfareNo: userSpec.welfareNo,
+        welfareBookStartDate: userSpec.welfareBookStartDate,
+        welfareBookUseTime: userSpec.welfareBookUseTime,
+        userNo: userSpec.userNo,
+        userName: userSpec.userName,
+        userBirth: userSpec.userBirth,
+        userAddress: userSpec.userAddress,
+        userAddressDetail: userSpec.userAddressDetail,
+        userGender: userSpec.userGender,
+        userHeight: userSpec.userHeight,
+        userWeight: userSpec.userWeight,
+        userDisease: userSpec.userDisease,
+        reservationStatus: 'CONFIRMED', // 예약 확정 상태
+        reservationDate: new Date().toISOString() // 예약 신청 일시
+      };
+      
+      const response = await call('/api/v1/welfare/reservation', "POST", reservationData);
+      
+      if (response) {
+        console.log("예약이 성공적으로 저장되었습니다:", response);
+        navigate("/welfare-input/reservation-complete", { 
+          state: { 
+            ...userSpec,
+            reservationId: response.reservationId 
+          } 
+        });
+      } else {
+        console.error("예약 저장 실패");
+        alert("예약 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      }
+    } catch (error) {
+      console.error("예약 저장 중 오류:", error);
+      alert("예약 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
   };
 
   function calculatePrice(welfareBookUseTime) {
@@ -254,10 +292,10 @@ const welfareTime = () => {
         </div>
         <div
           className={`${styles["main-section"]} ${styles["go-password"]} ${!isKnockInfo ? styles["disabled-btn"] : ""}`}
-          onClick={isKnockInfo ? goSetPW : undefined} // Use `undefined` instead of an empty string
+          onClick={isKnockInfo ? goReservationComplete : undefined} // Use `undefined` instead of an empty string
         >
           <p className={`${styles["main-text"]} ${styles["go-password-text"]} `}>
-          {isKnockInfo ?"다음":"마이페이지에서 정보 입력 후 이용 가능"}
+          {isKnockInfo ?"예약 신청":"마이페이지에서 정보 입력 후 이용 가능"}
           </p>
         </div>
       </div>

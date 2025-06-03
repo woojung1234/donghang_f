@@ -34,6 +34,7 @@
 [2025-05-29T09:24:11.738Z] [INFO] 날짜 확인 응답 처리 중
 [2025-05-29T09:24:11.739Z] [INFO] 📅 오늘 날짜 (KST): 2025-05-29
 [2025-05-29T09:24:11.778Z] [INFO] 📅 날짜 비교 - 입력: 2025-05-29 오늘(KST): 2025-05-29 어제(KST): 2025-05-28
+<<<<<<< HEAD
 [2025-05-29T13:14:20.984Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 안녕 금복아
 [2025-05-29T13:14:20.987Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 안녕 금복아
 [2025-05-29T13:14:20.988Z] [INFO] 인사 메시지 감지
@@ -98,3 +99,661 @@
 [2025-05-29T13:20:11.300Z] [INFO] 날짜 확인 응답 처리 중
 [2025-05-29T13:20:11.301Z] [INFO] 📅 오늘 날짜 (KST): 2025-05-29
 [2025-05-29T13:20:11.332Z] [INFO] 📅 날짜 비교 - 입력: 2025-05-29 오늘(KST): 2025-05-29 어제(KST): 2025-05-28
+=======
+[2025-05-29T11:49:13.607Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 소비내역 알려줘
+[2025-05-29T11:49:13.610Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 소비내역 알려줘
+[2025-05-29T11:49:13.613Z] [INFO] 🔍 간단 파싱 - 입력: 5월 소비내역 알려줘
+[2025-05-29T11:49:13.614Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T11:49:13.614Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T11:49:13.615Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T11:49:13.616Z] [INFO] 질문 의도 분석 결과: {
+  "type": "general_inquiry",
+  "intent": "expense_overview"
+}
+[2025-05-29T11:49:25.646Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T11:49:25.648Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T11:49:25.650Z] [INFO] 🔍 간단 파싱 - 입력: 4월 소비내역 알려줘
+[2025-05-29T11:49:25.652Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T11:49:25.655Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T11:49:25.658Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T11:49:25.661Z] [INFO] 질문 의도 분석 결과: {
+  "type": "general_inquiry",
+  "intent": "expense_overview"
+}
+[2025-05-29T11:49:42.728Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 안내해줄래?
+[2025-05-29T11:49:42.731Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 안내해줄래?
+[2025-05-29T11:49:42.734Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "복지서비스 안내해줄래?"
+}
+[2025-05-29T11:49:42.737Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-29T11:49:42.800Z] [INFO] 추천할 복지서비스가 없습니다.
+[2025-05-29T13:31:09.614Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T13:31:09.616Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T13:31:09.618Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T13:31:22.256Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T13:31:22.258Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T13:31:27.988Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 실시간으로 풀어 보라고
+[2025-05-29T13:31:27.989Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 실시간으로 풀어 보라고
+[2025-05-29T13:31:44.375Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 3시까지
+[2025-05-29T13:31:44.376Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 3시까지
+[2025-05-29T13:31:55.867Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 그래서 뭐라 했어
+[2025-05-29T13:31:55.868Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 그래서 뭐라 했어
+[2025-05-29T13:32:05.683Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:32:05.684Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:32:11.974Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 예
+[2025-05-29T13:32:11.975Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 예
+[2025-05-29T13:33:40.345Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T13:33:40.346Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T13:33:40.347Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T13:33:47.852Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병서비스
+[2025-05-29T13:33:47.853Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병서비스
+[2025-05-29T13:33:54.775Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 3시까지
+[2025-05-29T13:33:54.776Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 3시까지
+[2025-05-29T13:33:57.508Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 전공도 근데 그렇게 말했다고
+[2025-05-29T13:33:57.512Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 전공도 근데 그렇게 말했다고
+[2025-05-29T13:34:06.410Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:34:06.411Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:34:08.953Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 예
+[2025-05-29T13:34:08.953Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 예
+[2025-05-29T13:34:25.275Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 애매하네
+[2025-05-29T13:34:25.277Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 애매하네
+[2025-05-29T13:34:25.281Z] [INFO] 🔍 간단 파싱 - 입력: 애매하네
+[2025-05-29T13:34:25.285Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T13:34:25.287Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T13:34:37.812Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 디지스트에서 보자고
+[2025-05-29T13:34:37.813Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 디지스트에서 보자고
+[2025-05-29T13:34:37.814Z] [INFO] 🔍 간단 파싱 - 입력: 디지스트에서 보자고
+[2025-05-29T13:34:37.817Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T13:34:37.818Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T13:34:52.118Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 좀 그런 것도 있을걸
+[2025-05-29T13:34:52.119Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 좀 그런 것도 있을걸
+[2025-05-29T13:34:52.120Z] [INFO] 🔍 간단 파싱 - 입력: 좀 그런 것도 있을걸
+[2025-05-29T13:34:52.121Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T13:34:52.121Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T13:35:03.302Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 아 그렇네
+[2025-05-29T13:35:03.303Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 아 그렇네
+[2025-05-29T13:35:03.304Z] [INFO] 🔍 간단 파싱 - 입력: 아 그렇네
+[2025-05-29T13:35:03.304Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T13:35:03.305Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T13:35:20.959Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 지금 뭐 할 건지
+[2025-05-29T13:35:20.959Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 지금 뭐 할 건지
+[2025-05-29T13:35:20.960Z] [INFO] 🔍 간단 파싱 - 입력: 지금 뭐 할 건지
+[2025-05-29T13:35:20.961Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T13:35:20.961Z] [INFO] ▶▶▶ expenseData: null
+[2025-05-29T13:43:47.751Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T13:43:47.752Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T13:43:47.753Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T13:43:51.202Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T13:43:51.203Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T13:43:56.046Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 오후 3시
+[2025-05-29T13:43:56.047Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 오후 3시
+[2025-05-29T13:44:05.598Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로73
+[2025-05-29T13:44:05.599Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로73
+[2025-05-29T13:44:11.564Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 응
+[2025-05-29T13:44:11.565Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 응
+[2025-05-29T13:44:59.344Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해 줘
+[2025-05-29T13:44:59.347Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해 줘
+[2025-05-29T13:44:59.350Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T13:45:20.834Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정 간병 서비스
+[2025-05-29T13:45:20.835Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정 간병 서비스
+[2025-05-29T13:45:48.320Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 오후 3시까지는
+[2025-05-29T13:45:48.321Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 오후 3시까지는
+[2025-05-29T13:45:59.730Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 루트 13
+[2025-05-29T13:45:59.731Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 루트 13
+[2025-05-29T13:46:15.853Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 응 맞아
+[2025-05-29T13:46:15.854Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 응 맞아
+[2025-05-29T13:48:18.785Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T13:48:18.786Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T13:48:18.787Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T13:48:23.227Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 일상가사 서비스
+[2025-05-29T13:48:23.228Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 일상가사 서비스
+[2025-05-29T13:48:29.346Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 오후 6시까지
+[2025-05-29T13:48:29.347Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 오후 6시까지
+[2025-05-29T13:48:58.840Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:48:58.841Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 서울시 강남구 테헤란로 73
+[2025-05-29T13:49:07.097Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 응 맞아
+[2025-05-29T13:49:07.098Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 응 맞아
+[2025-05-29T17:36:15.178Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:36:15.179Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:36:15.179Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:36:28.716Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 추천해줘
+[2025-05-29T17:36:28.717Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 추천해줘
+[2025-05-29T17:36:28.718Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:36:34.706Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:36:34.707Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:36:34.708Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:36:38.615Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 다양한 복지 서비스를 안내해 드릴 수 있어요
+[2025-05-29T17:36:38.616Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 다양한 복지 서비스를 안내해 드릴 수 있어요
+[2025-05-29T17:36:38.616Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:36:45.651Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T17:36:45.651Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T17:36:45.652Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:36:57.399Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스 예약해줘
+[2025-05-29T17:36:57.400Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스 예약해줘
+[2025-05-29T17:36:57.400Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:37:28.794Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스 예약해줘
+[2025-05-29T17:37:28.795Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스 예약해줘
+[2025-05-29T17:37:28.797Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:37:33.406Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약할래
+[2025-05-29T17:37:33.407Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약할래
+[2025-05-29T17:37:33.408Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:37:40.005Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 추천해줘
+[2025-05-29T17:37:40.006Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 추천해줘
+[2025-05-29T17:37:40.007Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:37:44.049Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 관심이 있으시군요
+[2025-05-29T17:37:44.049Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 관심이 있으시군요
+[2025-05-29T17:37:44.050Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:38:07.686Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해 줘
+[2025-05-29T17:38:07.687Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해 줘
+[2025-05-29T17:38:07.688Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:40:22.267Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:40:22.269Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:40:22.270Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:40:37.212Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:40:37.214Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약해줘
+[2025-05-29T17:40:37.214Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:40:42.691Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정 간병 서비스
+[2025-05-29T17:40:42.691Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정 간병 서비스
+[2025-05-29T17:40:42.692Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:41:44.220Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:41:44.221Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:41:44.221Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:42:28.496Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:42:28.497Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:42:28.498Z] [ERROR] AI 처리 오류: {}
+[2025-05-29T17:50:15.849Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:50:15.850Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-29T17:50:15.851Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:50:15.873Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:15.874Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:50:15.878Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T17:50:15.881Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:15.882Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:50:23.428Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T17:50:23.429Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T17:50:23.432Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:50:23.438Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:23.439Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:50:23.441Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T17:50:23.446Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:23.447Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:50:43.846Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 내일 오전9시부터 오후 6시까지
+[2025-05-29T17:50:43.846Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 내일 오전9시부터 오후 6시까지
+[2025-05-29T17:50:43.848Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:50:43.878Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:43.879Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:50:43.881Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T17:50:43.886Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:50:43.887Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:51:02.177Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 서울시 테헤란로 73
+[2025-05-29T17:51:02.178Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 서울시 테헤란로 73
+[2025-05-29T17:51:02.179Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:51:02.198Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:02.200Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:51:02.200Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T17:51:02.211Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:02.214Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:51:10.570Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 응
+[2025-05-29T17:51:10.571Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 응
+[2025-05-29T17:51:10.573Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:51:10.578Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:10.579Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:51:10.580Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T17:51:10.587Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:10.588Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:51:14.675Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 예약 페이지로 안내해 드리겠습니다
+[2025-05-29T17:51:14.676Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 예약 페이지로 안내해 드리겠습니다
+[2025-05-29T17:51:14.677Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:51:14.680Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:14.681Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:51:14.683Z] [INFO] 🔍 간단 파싱 - 입력: 예약 페이지로 안내해 드리겠습니다
+[2025-05-29T17:51:14.684Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-29T17:51:14.690Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:51:14.691Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:23.282Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5000원 저녁 먹었어
+[2025-05-29T17:53:23.283Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5000원 저녁 먹었어
+[2025-05-29T17:53:23.284Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:23.287Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:23.287Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:23.289Z] [INFO] 🔍 간단 파싱 - 입력: 5000원 저녁 먹었어
+[2025-05-29T17:53:23.289Z] [INFO] 💰 원 패턴 매치: 5000 → 5000
+[2025-05-29T17:53:23.290Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "먹"
+]
+[2025-05-29T17:53:23.291Z] [INFO] ✅ 파싱 성공: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 저녁 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:53:23.291Z] [INFO] 소비 내역 감지: {
+  "amount": 5000,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5000원 저녁 먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:53:23.294Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:23.295Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:33.805Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 2일
+[2025-05-29T17:53:33.806Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 2일
+[2025-05-29T17:53:33.806Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:33.819Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:33.819Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:33.820Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:53:33.821Z] [INFO] 📅 4월 2일 날짜: 2025-04-02
+[2025-05-29T17:53:33.842Z] [INFO] 📅 날짜 비교 - 입력: 2025-04-02 오늘(KST): 2025-05-30 어제(KST): 2025-05-29
+[2025-05-29T17:53:33.845Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:33.846Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:38.127Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 2일 식비로 5천 원 지출 기록 완료
+[2025-05-29T17:53:38.128Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 2일 식비로 5천 원 지출 기록 완료
+[2025-05-29T17:53:38.130Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:38.138Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:38.140Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:38.144Z] [INFO] 🔍 간단 파싱 - 입력: 4월 2일 식비로 5천 원 지출 기록 완료
+[2025-05-29T17:53:38.144Z] [INFO] 💰 천원 패턴 매치: 5 → 5000
+[2025-05-29T17:53:38.146Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "지출"
+]
+[2025-05-29T17:53:38.147Z] [INFO] 📅 4월 2일 날짜: 2025-04-02
+[2025-05-29T17:53:38.149Z] [INFO] ✅ 파싱 성공: {
+  "amount": 5000,
+  "category": "기타",
+  "merchantName": "일반가맹점",
+  "originalText": "4월 2일 식비로 5천 원 지출 기록 완료",
+  "transactionDate": "2025-04-02",
+  "needsDateConfirmation": false
+}
+[2025-05-29T17:53:38.150Z] [INFO] 소비 내역 감지: {
+  "amount": 5000,
+  "category": "기타",
+  "merchantName": "일반가맹점",
+  "originalText": "4월 2일 식비로 5천 원 지출 기록 완료",
+  "transactionDate": "2025-04-02",
+  "needsDateConfirmation": false
+}
+[2025-05-29T17:53:38.177Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:38.178Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:41.738Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5,000원 지출 기록 완료
+[2025-05-29T17:53:41.739Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5,000원 지출 기록 완료
+[2025-05-29T17:53:41.739Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:41.741Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:41.743Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:41.745Z] [INFO] 🔍 간단 파싱 - 입력: 5,000원 지출 기록 완료
+[2025-05-29T17:53:41.746Z] [INFO] 💰 원 패턴 매치: 5,000 → 5000
+[2025-05-29T17:53:41.746Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "지출"
+]
+[2025-05-29T17:53:41.747Z] [INFO] ✅ 파싱 성공: {
+  "amount": 5000,
+  "category": "기타",
+  "merchantName": "일반가맹점",
+  "originalText": "5,000원 지출 기록 완료",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:53:41.748Z] [INFO] 소비 내역 감지: {
+  "amount": 5000,
+  "category": "기타",
+  "merchantName": "일반가맹점",
+  "originalText": "5,000원 지출 기록 완료",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:53:41.751Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:41.752Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:56.097Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:53:56.098Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:53:56.099Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:56.116Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:56.117Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:56.119Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:53:56.123Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:56.124Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:53:59.382Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 날짜를 정확히 말씀해 주세요
+[2025-05-29T17:53:59.383Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 날짜를 정확히 말씀해 주세요
+[2025-05-29T17:53:59.384Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:53:59.390Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:59.391Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:53:59.395Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:53:59.401Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:53:59.402Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:54:05.629Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 소비내역 알려줘
+[2025-05-29T17:54:05.630Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 소비내역 알려줘
+[2025-05-29T17:54:05.631Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:54:05.636Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:05.637Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:54:05.640Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:54:05.644Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:05.646Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:54:06.973Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:06.975Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:06.976Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:54:06.980Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:06.981Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:54:06.984Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:54:06.989Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:06.990Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:54:14.487Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:14.489Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:14.491Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:54:14.498Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:14.499Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:54:14.503Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:54:14.509Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:14.512Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:54:18.596Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:54:18.598Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:54:18.599Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:54:18.603Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:18.604Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:54:18.607Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:54:18.612Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:18.613Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:54:37.063Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:37.064Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 말씀해 주세요
+[2025-05-29T17:54:37.065Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:54:37.094Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:37.096Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:54:37.102Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:54:37.110Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:54:37.116Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:55:05.000Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5월 소비 리포트 알려줘
+[2025-05-29T17:55:05.001Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5월 소비 리포트 알려줘
+[2025-05-29T17:55:05.002Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:55:05.021Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:55:05.022Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:55:05.024Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:55:05.026Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:55:05.027Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:57:00.834Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:57:00.835Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비내역 알려줘
+[2025-05-29T17:57:00.836Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:57:00.860Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:00.861Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:57:00.862Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T17:57:00.901Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:00.902Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:57:40.392Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 7550원 저녁먹었어
+[2025-05-29T17:57:40.393Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 7550원 저녁먹었어
+[2025-05-29T17:57:40.393Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:57:40.411Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:40.412Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:57:40.413Z] [INFO] 🔍 간단 파싱 - 입력: 7550원 저녁먹었어
+[2025-05-29T17:57:40.414Z] [INFO] 💰 원 패턴 매치: 7550 → 7550
+[2025-05-29T17:57:40.415Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "먹"
+]
+[2025-05-29T17:57:40.416Z] [INFO] ✅ 파싱 성공: {
+  "amount": 7550,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "7550원 저녁먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:57:40.416Z] [INFO] 소비 내역 감지: {
+  "amount": 7550,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "7550원 저녁먹었어",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:57:40.419Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:40.420Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:57:47.019Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 7일
+[2025-05-29T17:57:47.019Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 7일
+[2025-05-29T17:57:47.020Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:57:47.024Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:47.025Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:57:47.026Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:57:47.027Z] [INFO] 📅 4월 7일 날짜: 2025-04-07
+[2025-05-29T17:57:47.066Z] [INFO] 📅 날짜 비교 - 입력: 2025-04-07 오늘(KST): 2025-05-30 어제(KST): 2025-05-29
+[2025-05-29T17:57:47.070Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:47.071Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:57:55.278Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 7일 일반 음식점에서 755 식비 지출을 가계부에 저장했어요
+[2025-05-29T17:57:55.278Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 7일 일반 음식점에서 755 식비 지출을 가계부에 저장했어요
+[2025-05-29T17:57:55.279Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:57:55.286Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:55.287Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:57:55.290Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T17:57:55.324Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:55.325Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:57:58.635Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 확인해 드릴게요
+[2025-05-29T17:57:58.636Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 확인해 드릴게요
+[2025-05-29T17:57:58.636Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:57:58.641Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:58.642Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:57:58.644Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T17:57:58.670Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:57:58.671Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:58:27.498Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 확인해 드릴게요
+[2025-05-29T17:58:27.498Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 확인해 드릴게요
+[2025-05-29T17:58:27.499Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:58:27.548Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:58:27.550Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:58:27.553Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T17:58:27.602Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:58:27.602Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:59:13.333Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 5005원저녁먹음
+[2025-05-29T17:59:13.334Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 5005원저녁먹음
+[2025-05-29T17:59:13.334Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:59:13.348Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:59:13.349Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:59:13.349Z] [INFO] 🔍 간단 파싱 - 입력: 5005원저녁먹음
+[2025-05-29T17:59:13.350Z] [INFO] 💰 원 패턴 매치: 5005 → 5005
+[2025-05-29T17:59:13.350Z] [INFO] 🔑 키워드 체크: true 키워드들: [
+  "먹"
+]
+[2025-05-29T17:59:13.351Z] [INFO] ✅ 파싱 성공: {
+  "amount": 5005,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5005원저녁먹음",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:59:13.351Z] [INFO] 소비 내역 감지: {
+  "amount": 5005,
+  "category": "식비",
+  "merchantName": "일반음식점",
+  "originalText": "5005원저녁먹음",
+  "transactionDate": null,
+  "needsDateConfirmation": true
+}
+[2025-05-29T17:59:13.354Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:59:13.355Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T17:59:20.265Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 어제
+[2025-05-29T17:59:20.266Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 어제
+[2025-05-29T17:59:20.267Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T17:59:20.270Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:59:20.271Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T17:59:20.272Z] [INFO] 날짜 확인 응답 처리 중
+[2025-05-29T17:59:20.273Z] [INFO] 📅 어제 날짜 (KST): 2025-05-29
+[2025-05-29T17:59:20.302Z] [INFO] 📅 날짜 비교 - 입력: 2025-05-29 오늘(KST): 2025-05-30 어제(KST): 2025-05-29
+[2025-05-29T17:59:20.306Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T17:59:20.308Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:00:16.336Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비 리포트 알려 줘
+[2025-05-29T18:00:16.338Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비 리포트 알려 줘
+[2025-05-29T18:00:16.341Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:00:16.396Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:00:16.398Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:00:16.401Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T18:00:16.423Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:00:16.424Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:02:44.568Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 4월 소비 리포트 알려줘
+[2025-05-29T18:02:44.568Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 4월 소비 리포트 알려줘
+[2025-05-29T18:02:44.569Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:02:44.573Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:02:44.574Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:02:44.575Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-29T18:02:44.602Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:02:44.603Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:13:58.449Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 넌 뭘 할 수 있어?
+[2025-05-29T18:13:58.450Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 넌 뭘 할 수 있어?
+[2025-05-29T18:13:58.451Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:13:58.466Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:13:58.466Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:13:58.467Z] [INFO] 기능 문의 메시지 감지
+[2025-05-29T18:13:58.469Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:13:58.469Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:16:01.874Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 너 복지서비스 예약한거 취소할수있어?
+[2025-05-29T18:16:01.875Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 너 복지서비스 예약한거 취소할수있어?
+[2025-05-29T18:16:01.876Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:16:01.897Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:01.897Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:16:01.899Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T18:16:01.902Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:01.903Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:16:18.276Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약한거 취소해줘
+[2025-05-29T18:16:18.278Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약한거 취소해줘
+[2025-05-29T18:16:18.278Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:16:18.289Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:18.290Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:16:18.291Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T18:16:18.293Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:18.294Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:16:20.650Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 안녕하세요
+[2025-05-29T18:16:20.651Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 안녕하세요
+[2025-05-29T18:16:20.651Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:16:20.657Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:20.658Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:16:20.658Z] [INFO] 인사 메시지 감지
+[2025-05-29T18:16:20.662Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:16:20.662Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:17:00.250Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 넌 뭘할수있어?
+[2025-05-29T18:17:00.251Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 넌 뭘할수있어?
+[2025-05-29T18:17:00.251Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:17:00.256Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:17:00.257Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:17:00.257Z] [INFO] 기능 문의 메시지 감지
+[2025-05-29T18:17:00.260Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:17:00.264Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:24:57.857Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약한거 취소할수있어?
+[2025-05-29T18:24:57.858Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 예약한거 취소할수있어?
+[2025-05-29T18:24:57.859Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:24:57.879Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:24:57.879Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:24:57.880Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T18:24:57.882Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:24:57.882Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:25:55.484Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약 취소해줘
+[2025-05-29T18:25:55.485Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약 취소해줘
+[2025-05-29T18:25:55.487Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:25:55.509Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:25:55.510Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:25:55.513Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-29T18:25:55.517Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:25:55.517Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:26:14.063Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지서비스 취소하고 싶어
+[2025-05-29T18:26:14.063Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지서비스 취소하고 싶어
+[2025-05-29T18:26:14.064Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:26:14.081Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:26:14.081Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:26:14.082Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T18:26:14.087Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:26:14.088Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:26:27.968Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T18:26:27.968Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 가정간병 서비스
+[2025-05-29T18:26:27.970Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:26:27.986Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:26:27.987Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:26:27.988Z] [INFO] 복지서비스 예약 플로우 처리
+[2025-05-29T18:26:27.990Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:26:27.991Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-29T18:35:34.991Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약 취소해줘
+[2025-05-29T18:35:34.993Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약 취소해줘
+[2025-05-29T18:35:34.993Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-29T18:35:35.011Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:35:35.012Z] [ERROR] 로그 저장 실패: {}
+[2025-05-29T18:35:35.013Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 예약 취소해줘",
+  "hasCancelKeyword": true,
+  "isQuestionAboutCancel": false,
+  "result": true
+}
+[2025-05-29T18:35:35.013Z] [INFO] 복지서비스 예약 취소 요청 감지
+[2025-05-29T18:35:35.035Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-29T18:35:35.036Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:54:43.581Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 취소하고 싶어
+[2025-05-30T00:54:43.582Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 취소하고 싶어
+[2025-05-30T00:54:43.583Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:54:43.600Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:54:43.601Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:54:43.602Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 취소하고 싶어",
+  "hasCancelKeyword": true,
+  "isQuestionAboutCancel": false,
+  "result": true
+}
+[2025-05-30T00:54:43.602Z] [INFO] 복지서비스 예약 취소 요청 감지
+[2025-05-30T00:54:43.610Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:54:43.611Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:56:42.479Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:56:42.480Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:56:42.481Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:56:42.495Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:56:42.496Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:56:42.497Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:56:42.497Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T00:56:42.498Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T00:56:42.499Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T00:56:42.500Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T00:56:42.502Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-30T00:56:42.546Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:56:42.547Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:58:11.007Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:58:11.008Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 알려줘
+[2025-05-30T00:58:11.009Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:58:11.026Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:11.026Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:58:11.027Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 알려줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:58:11.028Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 알려줘
+[2025-05-30T00:58:11.028Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 알려줘
+[2025-05-30T00:58:11.029Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-30T00:58:11.029Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-30T00:58:11.030Z] [INFO] 소비내역 조회 요청 감지
+[2025-05-30T00:58:11.066Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:11.067Z] [ERROR] AI 응답 로그 저장 실패: {}
+[2025-05-30T00:58:19.923Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.923Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.924Z] [ERROR] 대화방 생성/조회 오류: {}
+[2025-05-30T00:58:19.927Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:19.928Z] [ERROR] 로그 저장 실패: {}
+[2025-05-30T00:58:19.929Z] [INFO] 취소 요청 분석: {
+  "message": "복지 서비스 예약해줘",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-30T00:58:19.930Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.930Z] [INFO] 🔍 소문자 변환 후: 복지 서비스 예약해줘
+[2025-05-30T00:58:19.931Z] [INFO] 🔍 매칭된 키워드들: [
+  "복지 서비스 예약",
+  "서비스 예약",
+  "예약해줘"
+]
+[2025-05-30T00:58:19.931Z] [INFO] 🔍 예약 요청 감지 결과: true
+[2025-05-30T00:58:19.932Z] [INFO] 복지서비스 예약 요청 감지
+[2025-05-30T00:58:19.936Z] [ERROR] ❌ ConversationLogService.saveConversationLog Error: {}
+[2025-05-30T00:58:19.937Z] [ERROR] AI 응답 로그 저장 실패: {}
+>>>>>>> 459924f22b7e07184d135580fde22cbca2ca85c6

@@ -26,9 +26,6 @@ const notificationRoutes = require('./routes/notifications');
 const pageRoutes = require('./routes/pages');
 const aiChatRoutes = require('./routes/aiChatRoutes');
 
-// 테스트 라우트 추가
-const testWelfareRoutes = require('./routes/test-welfare');
-
 // 복지 서비스 라우터 추가
 const welfareServicesRoutes = require('../routes/welfare.routes');
 
@@ -98,9 +95,6 @@ app.use('/api/v1/welfare-book', welfareBookRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/ai-chat', aiChatRoutes);
 
-// 테스트 라우트 추가
-app.use('/api/v1/test-welfare', testWelfareRoutes);
-
 // 공공 API 라우트 추가
 app.use('/api/welfare', welfareServicesRoutes);
 
@@ -139,7 +133,7 @@ async function startServer() {
       }
     }
     
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📖 Environment: ${process.env.NODE_ENV}`);
       console.log(`🌐 CORS Origin: ${allowedOrigins.join(', ')}`);

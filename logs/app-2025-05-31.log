@@ -1,0 +1,68 @@
+[2025-05-31T11:34:00.972Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 나 65살인데 건강에 좋은거 알려줄래?
+[2025-05-31T11:34:00.974Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 나 65살인데 건강에 좋은거 알려줄래?
+[2025-05-31T11:34:01.007Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-31T11:34:01.009Z] [INFO] 취소 요청 분석: {
+  "message": "나 65살인데 건강에 좋은거 알려줄래?",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-31T11:34:01.011Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "나 65살인데 건강에 좋은거 알려줄래?",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-31T11:34:01.012Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 나 65살인데 건강에 좋은거 알려줄래?
+[2025-05-31T11:34:01.013Z] [INFO] 🔍 소문자 변환 후: 나 65살인데 건강에 좋은거 알려줄래?
+[2025-05-31T11:34:01.014Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-31T11:34:01.014Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-31T11:34:01.016Z] [INFO] 🔍 간단 파싱 - 입력: 나 65살인데 건강에 좋은거 알려줄래?
+[2025-05-31T11:34:01.017Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-31T11:34:01.018Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": "건강",
+  "originalMessage": "나 65살인데 건강에 좋은거 알려줄래?"
+}
+[2025-05-31T11:34:01.019Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": "건강",
+  "userId": 1
+}
+[2025-05-31T11:34:01.041Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-31T11:34:01.051Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1
+[2025-05-31T11:34:23.009Z] [INFO] AI 채팅 요청 - 사용자: 1, 세션: default, 메시지: 나 암인데 관련 복지 서비스 있어?
+[2025-05-31T11:34:23.009Z] [INFO] AI 메시지 처리 시작 - 사용자: 1, 세션: default, 메시지: 나 암인데 관련 복지 서비스 있어?
+[2025-05-31T11:34:23.038Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: USER, UserNo: 1
+[2025-05-31T11:34:23.039Z] [INFO] 취소 요청 분석: {
+  "message": "나 암인데 관련 복지 서비스 있어?",
+  "hasCancelKeyword": false,
+  "isQuestionAboutCancel": false,
+  "result": false
+}
+[2025-05-31T11:34:23.040Z] [INFO] 🔍 구체적 복지서비스 취소 요청 분석: {
+  "message": "나 암인데 관련 복지 서비스 있어?",
+  "hasServiceKeyword": false,
+  "hasDatePattern": false,
+  "hasNumberPattern": false,
+  "hasCancelKeyword": false,
+  "result": false
+}
+[2025-05-31T11:34:23.040Z] [INFO] 🔍 복지서비스 예약 요청 분석 - 입력: 나 암인데 관련 복지 서비스 있어?
+[2025-05-31T11:34:23.041Z] [INFO] 🔍 소문자 변환 후: 나 암인데 관련 복지 서비스 있어?
+[2025-05-31T11:34:23.043Z] [INFO] 🔍 매칭된 키워드들: []
+[2025-05-31T11:34:23.043Z] [INFO] 🔍 예약 요청 감지 결과: false
+[2025-05-31T11:34:23.044Z] [INFO] 🔍 간단 파싱 - 입력: 나 암인데 관련 복지 서비스 있어?
+[2025-05-31T11:34:23.045Z] [INFO] ❌ 금액을 찾을 수 없음
+[2025-05-31T11:34:23.045Z] [INFO] 복지서비스 추천 요청 감지: {
+  "isActivityRequest": true,
+  "specificCategory": null,
+  "originalMessage": "나 암인데 관련 복지 서비스 있어?"
+}
+[2025-05-31T11:34:23.046Z] [INFO] 복지서비스 추천 생성 시작: {
+  "specificCategory": null,
+  "userId": 1
+}
+[2025-05-31T11:34:23.058Z] [INFO] 추천할 복지서비스 수: 5
+[2025-05-31T11:34:23.069Z] [INFO] 💬 대화 로그 저장 완료 - RoomNo: 1, Type: AI, UserNo: 1

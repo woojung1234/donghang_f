@@ -76,6 +76,16 @@
   color: #007bff;
 }
 
+.voiceBookingNotice {
+  background-color: #e8f4fd;
+  color: #0c5460;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 14px;
+  border-left: 4px solid #007bff;
+}
+
 .errorMessage {
   background-color: #f8d7da;
   color: #721c24;
@@ -233,6 +243,25 @@
     padding: 15px;
   }
 
+  .userInfoSection {
+    padding: 15px;
+    margin-bottom: 25px;
+  }
+
+  .userInfoDisplay {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .infoLabel {
+    min-width: 70px;
+    font-size: 13px;
+  }
+
+  .infoValue {
+    font-size: 13px;
+  }
+
   .buttonGroup {
     flex-direction: column;
   }
@@ -259,6 +288,39 @@
   margin: 0 0 20px 0;
   padding-bottom: 10px;
   border-bottom: 2px solid #FF6B35;
+}
+
+.userInfoSection {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.userInfoDisplay {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #555;
+  min-width: 80px;
+  font-size: 14px;
+}
+
+.infoValue {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .formGroupRow {

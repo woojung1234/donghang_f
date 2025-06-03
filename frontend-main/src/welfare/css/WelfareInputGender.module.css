@@ -56,6 +56,15 @@
   margin-bottom: 10px;
 }
 
+.gender-icon {
+  font-size: 60px;
+  margin-top: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* .main-section {
   width: 80%;
   padding: 20px;

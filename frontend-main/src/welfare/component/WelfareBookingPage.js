@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from 'header/BlueHeader';
 import { call } from 'login/service/ApiService';
 import styles from 'welfare/css/WelfareBookingPage.module.css';
@@ -13,11 +13,86 @@ function WelfareBookingPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [voiceBookingData, setVoiceBookingData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchWelfareServices();
   }, []);
+
+  // welfareServices가 로드된 후 음성 예약 데이터 처리
+  useEffect(() => {
+    if (welfareServices.length > 0) {
+      checkForVoiceBookingData();
+    }
+  }, [welfareServices]); // welfareServices가 변경될 때 실행
+
+  const checkForVoiceBookingData = () => {
+    const params = new URLSearchParams(location.search);
+    const serviceId = params.get('serviceId');
+    const serviceName = params.get('serviceName');
+    const startDate = params.get('startDate');
+    const endDate = params.get('endDate');
+    const timeOption = params.get('timeOption');
+    const address = params.get('address');
+
+    console.log('🔍 URL 매개변수 원본 값들:');
+    console.log('  serviceId:', serviceId, '타입:', typeof serviceId);
+    console.log('  serviceName:', serviceName, '타입:', typeof serviceName);
+    console.log('  timeOption:', timeOption, '타입:', typeof timeOption);
+    console.log('  startDate:', startDate);
+    console.log('  endDate:', endDate);
+    console.log('  address:', address);
+
+    if (serviceId && serviceName) {
+      const parsedTimeOption = parseInt(timeOption);
+      
+      // 🚨 임시 수정: 서비스명 기반으로 올바른 serviceId 매핑
+      let correctedServiceId = parseInt(serviceId);
+      if (serviceName && serviceName.includes('가정간병')) {
+        correctedServiceId = 2; // 가정간병 = 2번
+        console.log('🔧 가정간병 서비스 감지 - serviceId를 2로 수정');
+      } else if (serviceName && serviceName.includes('일상가사')) {
+        correctedServiceId = 1; // 일상가사 = 1번
+        console.log('🔧 일상가사 서비스 감지 - serviceId를 1로 수정');
+      } else if (serviceName && serviceName.includes('정서지원')) {
+        correctedServiceId = 3; // 정서지원 = 3번
+        console.log('🔧 정서지원 서비스 감지 - serviceId를 3으로 수정');
+      }
+      
+      console.log('🎙️ 음성 예약 데이터 감지:', {
+        serviceId: correctedServiceId, // 수정된 값 사용
+        serviceName,
+        startDate,
+        endDate,
+        timeOption,
+        address
+      });
+      
+      console.log('🔢 timeOption 변환: 원본:', timeOption, '→ 파싱됨:', parsedTimeOption);
+      
+      const voiceData = {
+        serviceId: correctedServiceId, // 수정된 값 사용
+        serviceName: decodeURIComponent(serviceName),
+        startDate,
+        endDate,
+        timeOption: parsedTimeOption,
+        address: address ? decodeURIComponent(address) : ''
+      };
+      
+      console.log('🎙️ 최종 voiceBookingData:', voiceData);
+      
+      setVoiceBookingData(voiceData);
+      
+      // 해당 서비스에 대한 모달을 자동으로 열기
+      const targetService = welfareServices.find(service => service.welfareNo === parseInt(serviceId));
+      if (targetService) {
+        setSelectedService(targetService);
+        setIsModalOpen(true);
+      }
+    }
+  };
 
   const fetchWelfareServices = async () => {
     try {
@@ -38,6 +113,19 @@ function WelfareBookingPage() {
         setWelfareServices([]);
       }
       setError(null);
+      
+      // 음성 예약 데이터가 있으면 해당 서비스로 자동 모달 열기
+      if (voiceBookingData) {
+        const targetService = (Array.isArray(response) ? response : response?.data || [])
+          .find(service => service.welfareNo === voiceBookingData.serviceId);
+        
+        if (targetService) {
+          console.log('🎙️ 음성 예약 서비스 자동 선택:', targetService.welfareName);
+          setSelectedService(targetService);
+          setIsModalOpen(true);
+        }
+      }
+      
     } catch (err) {
       console.error('복지서비스 목록 조회 실패:', err);
       setError('복지서비스 목록을 불러오는데 실패했습니다.');
@@ -194,6 +282,7 @@ function WelfareBookingPage() {
             service={selectedService}
             onClose={closeModal}
             onSuccess={handleBookingSuccess}
+            voiceBookingData={voiceBookingData}
           />
         )}
       </Modal>

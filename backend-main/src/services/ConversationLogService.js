@@ -1,18 +1,23 @@
 const ConversationLog = require('../models/ConversationLog');
 const ConversationRoom = require('../models/ConversationRoom');
+const logger = require('../utils/logger');
 
 class ConversationLogService {
   /**
-   * 대화 로그 생성
+   * 대화 로그 저장
    */
-  static async createConversationLog({ conversationRoomNo, message, sender, userNo }) {
+  static async saveConversationLog(conversationRoomNo, messageContent, messageType = 'USER', userNo = null) {
     try {
-      // 대화방 존재 및 소유권 확인
+      // userNo가 필수이므로 확인
+      if (!userNo) {
+        throw new Error('사용자 정보가 필요합니다.');
+      }
+
+      // 대화방 존재 여부 확인
       const room = await ConversationRoom.findOne({
         where: {
-          conversationRoomNo,
-          userNo,
-          conversationRoomIsActive: true
+          roomNo: conversationRoomNo,
+          isActive: true
         }
       });
 
@@ -20,161 +25,175 @@ class ConversationLogService {
         throw new Error('대화방을 찾을 수 없습니다.');
       }
 
+      // 대화 로그 저장 (필드명 수정)
       const conversationLog = await ConversationLog.create({
-        conversationRoomNo,
-        conversationLogSender: sender,
-        conversationLogMessage: message,
-        conversationLogCreatedAt: new Date()
+        roomNo: conversationRoomNo,  // conversationRoomNo -> roomNo
+        userNo: userNo,              // userNo 추가
+        messageContent: messageContent,
+        messageType: messageType, // 'USER' 또는 'AI'
+        createdAt: new Date()
       });
 
-      // 대화방 업데이트 시간 갱신
+      // 대화방 최종 업데이트 시간 갱신
       await room.update({
-        conversationRoomUpdatedAt: new Date()
+        updatedAt: new Date()
       });
 
-      console.log(`📝 Conversation log created - LogNo: ${conversationLog.conversationLogNo}, RoomNo: ${conversationRoomNo}`);
+      logger.info(`💬 대화 로그 저장 완료 - RoomNo: ${conversationRoomNo}, Type: ${messageType}, UserNo: ${userNo}`);
 
-      return conversationLog.conversationLogNo;
+      return {
+        logNo: conversationLog.logNo,               // conversationLogNo -> logNo
+        roomNo: conversationLog.roomNo,             // conversationRoomNo -> roomNo
+        userNo: conversationLog.userNo,             // userNo 추가
+        messageContent: conversationLog.messageContent,
+        messageType: conversationLog.messageType,
+        createdAt: conversationLog.createdAt
+      };
 
     } catch (error) {
-      console.error('❌ ConversationLogService.createConversationLog Error:', error);
+      logger.error('❌ ConversationLogService.saveConversationLog Error:', error.message, error.stack);
       throw error;
     }
   }
 
   /**
-   * 모든 대화 로그 조회
+   * 대화방의 대화 로그 조회
    */
-  static async getAllConversationLogs() {
+  static async getConversationLogs(conversationRoomNo, limit = 50, offset = 0) {
     try {
       const logs = await ConversationLog.findAll({
-        include: [
-          {
-            model: ConversationRoom,
-            as: 'conversationRoom',
-            attributes: ['conversationRoomNo', 'conversationRoomTitle']
-          }
-        ],
-        order: [['conversationLogCreatedAt', 'DESC']]
+        where: {
+          roomNo: conversationRoomNo  // conversationRoomNo -> roomNo
+        },
+        order: [['created_at', 'DESC']],
+        limit: limit,
+        offset: offset
       });
 
       return logs.map(log => ({
-        conversationLogNo: log.conversationLogNo,
-        conversationRoomNo: log.conversationRoomNo,
-        conversationLogSender: log.conversationLogSender,
-        conversationLogMessage: log.conversationLogMessage,
-        conversationLogCreatedAt: log.conversationLogCreatedAt,
-        conversationRoom: log.conversationRoom ? {
-          conversationRoomNo: log.conversationRoom.conversationRoomNo,
-          conversationRoomTitle: log.conversationRoom.conversationRoomTitle
-        } : null
+        logNo: log.logNo,               // conversationLogNo -> logNo
+        roomNo: log.roomNo,             // conversationRoomNo -> roomNo
+        userNo: log.userNo,             // userNo 추가
+        messageContent: log.messageContent,
+        messageType: log.messageType,
+        createdAt: log.createdAt
       }));
 
     } catch (error) {
-      console.error('❌ ConversationLogService.getAllConversationLogs Error:', error);
+      logger.error('❌ ConversationLogService.getConversationLogs Error:', error.message, error.stack);
       throw error;
     }
   }
 
   /**
-   * 대화 로그 수정
+   * 사용자의 최근 대화 로그 조회
    */
-  static async updateConversationLog(conversationLogNo, updateData, userNo) {
+  static async getRecentConversationLogs(userNo, limit = 10) {
     try {
-      const log = await ConversationLog.findOne({
-        where: { conversationLogNo },
-        include: [
-          {
-            model: ConversationRoom,
-            as: 'conversationRoom',
-            where: { userNo, conversationRoomIsActive: true }
-          }
-        ]
+      const { sequelize } = require('../models');
+      
+      const results = await sequelize.query(`
+        SELECT 
+          cl.log_no,
+          cl.room_no,
+          cl.user_no,
+          cl.message_content,
+          cl.message_type,
+          cl.created_at,
+          cr.room_name
+        FROM conversation_logs cl
+        INNER JOIN conversation_rooms cr ON cl.room_no = cr.room_no
+        WHERE cr.user_no = ? AND cr.is_active = true
+        ORDER BY cl.created_at DESC
+        LIMIT ?
+      `, {
+        replacements: [userNo, limit],
+        type: sequelize.QueryTypes.SELECT
       });
 
-      if (!log) {
-        throw new Error('대화 로그를 찾을 수 없습니다.');
-      }
-
-      await log.update({
-        ...updateData,
-        conversationLogUpdatedAt: new Date()
-      });
-
-      console.log(`🔄 Conversation log updated - LogNo: ${conversationLogNo}`);
-
-      return true;
+      return results.map(result => ({
+        logNo: result.log_no,
+        roomNo: result.room_no,
+        userNo: result.user_no,
+        messageContent: result.message_content,
+        messageType: result.message_type,
+        createdAt: result.created_at,
+        roomName: result.room_name
+      }));
 
     } catch (error) {
-      console.error('❌ ConversationLogService.updateConversationLog Error:', error);
-      throw error;
+      logger.error('❌ ConversationLogService.getRecentConversationLogs Error:', error.message, error.stack);
+      return [];
     }
   }
 
   /**
-   * 대화 로그 삭제
+   * 대화 로그 삭제 (소프트 삭제 아님 - 실제 삭제)
    */
-  static async deleteConversationLog(conversationLogNo, userNo) {
+  static async deleteConversationLog(logNo, userNo = null) {
     try {
+      // 대화 로그 조회 및 권한 확인
       const log = await ConversationLog.findOne({
-        where: { conversationLogNo },
+        where: {
+          logNo: logNo  // conversationLogNo -> logNo
+        },
         include: [
           {
             model: ConversationRoom,
             as: 'conversationRoom',
-            where: { userNo, conversationRoomIsActive: true }
+            where: userNo ? { userNo: userNo } : {},
+            required: true
           }
         ]
       });
 
       if (!log) {
-        throw new Error('대화 로그를 찾을 수 없습니다.');
+        throw new Error('대화 로그를 찾을 수 없거나 권한이 없습니다.');
       }
 
       await log.destroy();
 
-      console.log(`🗑️ Conversation log deleted - LogNo: ${conversationLogNo}`);
-
+      logger.info(`🗑️ 대화 로그 삭제 완료 - LogNo: ${logNo}`);
+      
       return true;
 
     } catch (error) {
-      console.error('❌ ConversationLogService.deleteConversationLog Error:', error);
+      logger.error('❌ ConversationLogService.deleteConversationLog Error:', error.message, error.stack);
       throw error;
     }
   }
 
   /**
-   * 특정 대화방의 로그 조회
+   * 대화방의 모든 로그 삭제
    */
-  static async getLogsByRoomNo(conversationRoomNo, userNo) {
+  static async deleteAllLogsInRoom(conversationRoomNo, userNo = null) {
     try {
-      // 대화방 소유권 확인
+      // 대화방 존재 및 권한 확인
       const room = await ConversationRoom.findOne({
         where: {
-          conversationRoomNo,
-          userNo,
-          conversationRoomIsActive: true
+          roomNo: conversationRoomNo,
+          ...(userNo && { userNo: userNo }),
+          isActive: true
         }
       });
 
       if (!room) {
-        throw new Error('대화방을 찾을 수 없습니다.');
+        throw new Error('대화방을 찾을 수 없거나 권한이 없습니다.');
       }
 
-      const logs = await ConversationLog.findAll({
-        where: { conversationRoomNo },
-        order: [['conversationLogCreatedAt', 'ASC']]
+      // 해당 대화방의 모든 로그 삭제
+      const deletedCount = await ConversationLog.destroy({
+        where: {
+          roomNo: conversationRoomNo  // conversationRoomNo -> roomNo
+        }
       });
 
-      return logs.map(log => ({
-        conversationLogNo: log.conversationLogNo,
-        conversationLogSender: log.conversationLogSender,
-        conversationLogMessage: log.conversationLogMessage,
-        conversationLogCreatedAt: log.conversationLogCreatedAt
-  }));
+      logger.info(`🗑️ 대화방 로그 일괄 삭제 완료 - RoomNo: ${conversationRoomNo}, 삭제 수: ${deletedCount}`);
+      
+      return deletedCount;
 
     } catch (error) {
-      console.error('❌ ConversationLogService.getLogsByRoomNo Error:', error);
+      logger.error('❌ ConversationLogService.deleteAllLogsInRoom Error:', error.message, error.stack);
       throw error;
     }
   }
