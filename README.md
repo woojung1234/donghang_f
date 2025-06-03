@@ -29,18 +29,38 @@
 
 ```mermaid
 graph TD
-    A[📱 Frontend<br/>React.js + PWA] --> B[🌐 API Gateway<br/>CORS + Rate Limiting]
-    B --> C[💻 Backend API<br/>Node.js + Express]
-    B --> D[🤖 AI Service<br/>Python + FastAPI]
-    C --> E[🗄️ Database<br/>PostgreSQL + Sequelize]
-    C --> F[📁 File Storage<br/>Local + Cloud Ready]
-    D --> G[🧠 ML Models<br/>KoGPT + Speech API]
+    A[📱 Frontend Container<br/>React.js + PWA<br/>Port: 3000] --> B[🌐 Docker Network<br/>donghang-network]
+    B --> C[💻 Backend Container<br/>Node.js + Express<br/>Port: 5000]
+    B --> D[🤖 AI Service Container<br/>Python + FastAPI<br/>Port: 8000]
+    C --> E[🗄️ PostgreSQL Container<br/>Database<br/>Port: 5432]
+    C --> F[📁 Volume Mounts<br/>Logs & File Storage]
+    D --> G[🧠 ML Models<br/>PyTorch + Transformers]
     
     H[📡 Service Worker] --> A
     I[🔔 Push Notifications] --> A
-    J[📊 Monitoring & Logs] --> C
+    J[📊 Docker Logs] --> C
     J --> D
+    
+    subgraph "🐳 Docker Compose Environment"
+        A
+        C
+        D
+        E
+    end
 ```
+
+### 🐳 도커 컨테이너 구성
+
+#### 컨테이너별 세부사항
+- **donghang-postgres**: PostgreSQL 15-alpine 기반 데이터베이스
+- **donghang-backend**: Node.js 20-alpine + Express 기반 API 서버
+- **donghang-ai**: Python 3.10-slim + FastAPI 기반 AI 서비스
+- **donghang-frontend-dev**: Node.js 20-alpine + React 개발 서버
+
+#### 네트워크 & 볼륨
+- **네트워크**: `donghang-network` (bridge driver)
+- **볼륨**: `postgres_data` (데이터 영속성)
+- **마운트**: 로그 파일, 소스 코드 실시간 동기화
 
 ### 🔧 기술 스택
 
@@ -117,12 +137,44 @@ donghang_f/
 
 ### 📋 사전 요구사항
 
-- **Node.js** 18.x 이상
-- **Python** 3.9 이상
-- **PostgreSQL** 13 이상
+- **Docker Desktop** (최신 버전)
+- **Docker Compose** (Docker Desktop에 포함)
 - **Git**
 
-### 📥 설치 방법
+### 🐳 도커로 빠른 시작 (추천)
+
+#### 1️⃣ 저장소 클론
+```bash
+git clone https://github.com/your-username/donghang_f.git
+cd donghang_f
+```
+
+#### 2️⃣ 도커 컨테이너 실행
+```bash
+# 전체 서비스 한번에 시작
+docker-compose up -d
+
+# 상태 확인
+docker-compose ps
+
+# 로그 확인 (선택사항)
+docker-compose logs -f
+```
+
+#### 3️⃣ 접속 확인
+- **프론트엔드**: http://localhost:3000
+- **백엔드 API**: http://localhost:5000
+- **AI 서비스**: http://localhost:8000
+- **API 문서**: http://localhost:5000/api-docs
+
+### 💻 로컬 개발 환경 (선택사항)
+
+도커 없이 직접 실행하려면:
+
+#### 📋 로컬 설치 요구사항
+- **Node.js** 18.x 이상
+- **Python** 3.9 이상  
+- **PostgreSQL** 13 이상
 
 #### 1️⃣ 저장소 클론
 ```bash
@@ -140,28 +192,59 @@ cp backend-main/.env.example backend-main/.env
 # .env 파일에서 DATABASE_URL 설정
 ```
 
-#### 3️⃣ 백엔드 서버 시작
+#### 3️⃣ 각 서비스 개별 실행
 ```bash
+# 백엔드 서버 시작
 cd backend-main
-npm install
-npm run dev
-# 서버 실행: http://localhost:5000
-```
+npm install && npm run dev
 
-#### 4️⃣ AI 서비스 시작
-```bash
+# AI 서비스 시작  
 cd AI-main
 pip install -r requirements.txt
 python app/main.py
-# AI 서비스 실행: http://localhost:8000
+
+# 프론트엔드 서버 시작
+cd frontend-main
+npm install && npm start
 ```
 
-#### 5️⃣ 프론트엔드 서버 시작
+## 🐳 도커 명령어 모음
+
+### 기본 명령어
 ```bash
-cd frontend-main
-npm install
-npm start
-# 웹 앱 실행: http://localhost:3000
+# 전체 서비스 시작
+docker-compose up -d
+
+# 서비스 중지
+docker-compose down
+
+# 로그 확인
+docker-compose logs -f [서비스명]
+
+# 상태 확인
+docker-compose ps
+```
+
+### 개발 명령어
+```bash
+# 이미지 다시 빌드
+docker-compose up -d --build
+
+# 특정 서비스만 재시작
+docker-compose restart backend
+
+# 컨테이너 내부 접속
+docker exec -it donghang-backend sh
+```
+
+### 문제 해결
+```bash
+# 완전 정리 후 재시작
+docker-compose down --rmi all -v
+docker-compose up -d --build
+
+# 로그 실시간 확인
+docker-compose logs -f backend
 ```
 
 ### 🔧 환경변수 설정
@@ -231,32 +314,63 @@ npm run test:e2e
 
 ## 📦 빌드 및 배포
 
-### 🏗️ 프로덕션 빌드
+### 🐳 도커 기반 배포 (추천)
+
+#### 개발 환경
 ```bash
-# 프론트엔드 빌드
-cd frontend-main
-npm run build
-
-# 백엔드는 Node.js로 직접 실행
-cd backend-main
-npm start
-
-# AI 서비스 도커 빌드
-cd AI-main
-docker build -t donghang-ai .
-docker run -p 8000:8000 donghang-ai
-```
-
-### 🐳 Docker Compose 실행
-```bash
-# 전체 서비스 한번에 실행
+# 전체 서비스 개발 모드로 실행
 docker-compose up -d
 
-# 서비스 확인
-docker-compose ps
+# 개별 서비스 로그 확인
+docker-compose logs -f backend
+docker-compose logs -f ai-service
+docker-compose logs -f frontend-dev
+```
 
-# 로그 확인
-docker-compose logs -f
+#### 프로덕션 환경
+```bash
+# 프로덕션용 Nginx 서버 실행
+docker-compose --profile production up -d
+
+# 또는 개별 빌드
+docker build -t donghang-frontend ./frontend-main/nginx
+docker build -t donghang-backend ./backend-main
+docker build -t donghang-ai ./AI-main
+```
+
+### 🏗️ 로컬 빌드 방식
+
+#### 프론트엔드 빌드
+```bash
+cd frontend-main
+npm run build
+# 빌드 결과: build/ 폴더
+```
+
+#### 백엔드 실행
+```bash
+cd backend-main
+npm start
+# 프로덕션 모드로 실행
+```
+
+#### AI 서비스 실행
+```bash
+cd AI-main
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+### 🐳 Docker Compose 프로필
+
+```bash
+# 개발 환경 (기본)
+docker-compose up -d
+
+# 프로덕션 환경 (Nginx 포함)
+docker-compose --profile production up -d
+
+# 특정 서비스만 실행
+docker-compose up -d postgres backend ai-service
 ```
 
 ## 📊 API 문서
