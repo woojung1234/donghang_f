@@ -65,7 +65,7 @@ import WelfarePayComplete from 'welfare/component/WelfarePayCompl';
 import DolbomMain from 'welfare/component/DolbomMain';
 import WelfareNursingModal from 'welfare/component/WelfareNursingModal';
 import WelfareHouseworkModal from 'welfare/component/WelfareHouseworkModal';
-import WelfareHanwoolModal from 'welfare/component/WelfareHanwoolModal';
+
 
 import 'index.css';
 
@@ -182,11 +182,11 @@ function App() {
           <Route path="dolbom-main" element={<PrivateRoute><DolbomMain /></PrivateRoute>} />
           <Route path="nursing-modal" element={<PrivateRoute><WelfareNursingModal /></PrivateRoute>} />
           <Route path="housework-modal" element={<PrivateRoute><WelfareHouseworkModal /></PrivateRoute>} />
-          <Route path="hanwool-modal" element={<PrivateRoute><WelfareHanwoolModal /></PrivateRoute>} />
+
         </Route>
 
-        {/* 결제 완료 페이지 독립 라우트 */}
-        <Route path="/welfare-pay-compl" element={<PrivateRoute><WelfarePayComplete /></PrivateRoute>} />
+
+
         
         {/* 404 페이지 추가 */}
         <Route path="*" element={

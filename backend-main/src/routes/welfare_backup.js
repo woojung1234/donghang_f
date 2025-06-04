@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const WelfareController = require('../controllers/WelfareController');
 const WelfareSyncController = require('../controllers/WelfareSyncController');
-const WelfareApiSyncController = require('../controllers/WelfareApiSyncController');
 const authMiddleware = require('../middleware/auth');
 
 // 공개 라우트 (인증 불필요)
@@ -33,36 +32,6 @@ router.get('/stats', WelfareSyncController.getWelfareStats);
  * @access Public
  */
 router.get('/search', WelfareSyncController.searchWelfareServices);
-
-// 동기화 관리 라우트 (관리자 전용)
-/**
- * @route GET /api/welfare/sync/status
- * @description 동기화 상태 조회
- * @access Private (Admin)
- */
-router.get('/sync/status', authMiddleware, WelfareApiSyncController.getSyncStatus);
-
-/**
- * @route GET /api/welfare/sync/test
- * @description 공공 API 연결 테스트
- * @access Private (Admin)
- */
-router.get('/sync/test', authMiddleware, WelfareApiSyncController.testApiConnection);
-
-/**
- * @route POST /api/welfare/sync/all
- * @description 전체 복지서비스 데이터 동기화
- * @access Private (Admin)
- */
-router.post('/sync/all', authMiddleware, WelfareApiSyncController.syncAllWelfareData);
-
-/**
- * @route POST /api/welfare/sync/category/:category
- * @description 카테고리별 복지서비스 데이터 동기화
- * @param {string} category - 동기화할 카테고리
- * @access Private (Admin)
- */
-router.post('/sync/category/:category', authMiddleware, WelfareApiSyncController.syncWelfareDataByCategory);
 
 /**
  * @route GET /api/welfare/:id

@@ -32,8 +32,8 @@ app = FastAPI(
 
 # CORS 미들웨어 추가
 allowed_origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:3010",
+    "http://127.0.0.1:3010",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "*"  # 개발 환경에서는 모든 도메인 허용

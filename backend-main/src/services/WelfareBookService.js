@@ -29,13 +29,23 @@ class WelfareBookService {
         3: { welfareNo: 3, welfareName: '정서지원 돌봄', welfarePrice: 20000, welfareCategory: '정서지원' }
       };
 
+      // 시간 코드 변환 함수 (실제 시간 -> 코드)
+      const convertHoursToCode = (hours) => {
+        switch(hours) {
+          case 3: return 1; // 3시간 -> 코드 1
+          case 6: return 2; // 6시간 -> 코드 2  
+          case 9: return 3; // 9시간 -> 코드 3
+          default: return hours; // 기타 값은 그대로 반환
+        }
+      };
+
       return welfareBooks.map(book => ({
         welfareBookNo: book.welfareBookNo,
         welfareBookStartDate: book.welfareBookStartDate,
         welfareBookEndDate: book.welfareBookEndDate,
         welfareBookIsCancel: book.welfareBookIsCancel,
         welfareBookIsComplete: book.welfareBookIsComplete,
-        welfareBookUseTime: book.welfareBookUseTime,
+        welfareBookUseTime: convertHoursToCode(book.welfareBookUseTime),
         welfareBookTotalPrice: book.welfareBookTotalPrice,
         welfareBookReservationDate: book.welfareBookReservationDate,
         // 예약자 개인정보 추가
@@ -88,13 +98,23 @@ class WelfareBookService {
         3: { welfareNo: 3, welfareName: '정서지원 돌봄', welfarePrice: 20000, welfareCategory: '정서지원' }
       };
 
+      // 시간 코드 변환 함수 (실제 시간 -> 코드)
+      const convertHoursToCode = (hours) => {
+        switch(hours) {
+          case 3: return 1; // 3시간 -> 코드 1
+          case 6: return 2; // 6시간 -> 코드 2  
+          case 9: return 3; // 9시간 -> 코드 3
+          default: return hours; // 기타 값은 그대로 반환
+        }
+      };
+
       return {
         welfareBookNo: welfareBook.welfareBookNo,
         welfareBookStartDate: welfareBook.welfareBookStartDate,
         welfareBookEndDate: welfareBook.welfareBookEndDate,
         welfareBookIsCancel: welfareBook.welfareBookIsCancel,
         welfareBookIsComplete: welfareBook.welfareBookIsComplete,
-        welfareBookUseTime: welfareBook.welfareBookUseTime,
+        welfareBookUseTime: convertHoursToCode(welfareBook.welfareBookUseTime),
         welfareBookTotalPrice: welfareBook.welfareBookTotalPrice,
         welfareBookReservationDate: welfareBook.welfareBookReservationDate,
         // 예약자 개인정보 추가
@@ -177,12 +197,6 @@ class WelfareBookService {
         case 1: actualHours = 3; break;  // 3시간
         case 2: actualHours = 6; break;  // 6시간  
         case 3: actualHours = 9; break;  // 9시간
-        case 4: actualHours = 24 * 30; break;  // 1개월 (30일 기준)
-        case 5: actualHours = 24 * 60; break;  // 2개월 (60일 기준)
-        case 6: actualHours = 24 * 90; break;  // 3개월 (90일 기준)
-        case 7: actualHours = 24 * 120; break; // 4개월 (120일 기준)
-        case 8: actualHours = 24 * 150; break; // 5개월 (150일 기준)
-        case 9: actualHours = 24 * 180; break; // 6개월 (180일 기준)
         default: actualHours = timeValue;
       }
 
