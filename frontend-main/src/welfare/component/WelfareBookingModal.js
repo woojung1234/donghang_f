@@ -79,12 +79,6 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
       case 1: actualHours = 3; break;  // 3시간
       case 2: actualHours = 6; break;  // 6시간  
       case 3: actualHours = 9; break;  // 9시간
-      case 4: actualHours = 24 * 30; break;  // 1개월 (30일 기준)
-      case 5: actualHours = 24 * 60; break;  // 2개월 (60일 기준)
-      case 6: actualHours = 24 * 90; break;  // 3개월 (90일 기준)
-      case 7: actualHours = 24 * 120; break; // 4개월 (120일 기준)
-      case 8: actualHours = 24 * 150; break; // 5개월 (150일 기준)
-      case 9: actualHours = 24 * 180; break; // 6개월 (180일 기준)
       default: actualHours = timeValue;
     }
     
@@ -170,12 +164,6 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
       case 1: return '3시간 (09:00 ~ 12:00)';
       case 2: return '6시간 (09:00 ~ 15:00)';
       case 3: return '9시간 (09:00 ~ 18:00)';
-      case 4: return '1개월';
-      case 5: return '2개월';
-      case 6: return '6시간 (09:00 ~ 15:00)';
-      case 7: return '4개월';
-      case 8: return '5개월';
-      case 9: return '6개월';
       default: return `${time}시간`;
     }
   };
@@ -273,12 +261,6 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
             <option value={1}>3시간 (09:00 ~ 12:00)</option>
             <option value={2}>6시간 (09:00 ~ 15:00)</option>
             <option value={3}>9시간 (09:00 ~ 18:00)</option>
-            <option value={4}>1개월</option>
-            <option value={5}>2개월</option>
-            <option value={6}>3개월</option>
-            <option value={7}>4개월</option>
-            <option value={8}>5개월</option>
-            <option value={9}>6개월</option>
           </select>
           <p className={styles.timeDisplay}>선택된 시간: {getTimeDisplayText(formData.useTime)}</p>
         </div>
@@ -313,15 +295,9 @@ function WelfareBookingModal({ service, onClose, onSuccess, voiceBookingData }) 
                 case 1: actualHours = 3; break;
                 case 2: actualHours = 6; break;
                 case 3: actualHours = 9; break;
-                case 4: actualHours = 24 * 30; break;
-                case 5: actualHours = 24 * 60; break;
-                case 6: actualHours = 24 * 90; break;
-                case 7: actualHours = 24 * 120; break;
-                case 8: actualHours = 24 * 150; break;
-                case 9: actualHours = 24 * 180; break;
                 default: actualHours = timeValue;
               }
-              return `${actualHours.toLocaleString()}시간`;
+              return `${actualHours}시간`;
             })()}</span>
           </div>
           <div className={styles.totalPriceRow}>

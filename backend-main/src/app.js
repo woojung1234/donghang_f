@@ -38,7 +38,7 @@ app.use(helmet({
 }));
 
 // CORS configuration - 더 관대한 설정으로 변경
-const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'];
+const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3010'];
 app.use(cors({
   origin: function(origin, callback) {
     // 개발 환경에서는 모든 origin 허용

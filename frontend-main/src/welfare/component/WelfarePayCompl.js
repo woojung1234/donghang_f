@@ -77,18 +77,6 @@ function WelfarePayCompl(props) {
                 return "6시간 (09:00 ~ 15:00)";  
             case 3:
                 return "9시간 (09:00 ~ 18:00)";
-            case 4:
-                return "1개월";
-            case 5:
-                return "2개월";
-            case 6:
-                return "6시간 (09:00 ~ 15:00)";
-            case 7:
-                return "4개월";
-            case 8:
-                return "5개월";
-            case 9:
-                return "6개월";
             default:
                 return "서비스 시간 미정";
         }
