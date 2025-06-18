@@ -12,10 +12,10 @@ const WelfareBook = sequelize.define('WelfareBook', {
     type: DataTypes.BIGINT,
     allowNull: false,
     field: 'user_no',
-    references: {
-      model: 'users',
-      key: 'user_no'
-    }
+    //references: {
+     // model: 'users',
+     // key: 'user_no'
+    //}
   },
   welfareNo: {
     type: DataTypes.BIGINT,
