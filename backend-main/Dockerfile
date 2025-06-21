@@ -14,11 +14,11 @@ RUN npm ci
 COPY . .
 
 # 포트 노출
-EXPOSE 5000
+EXPOSE 9090
 
 # 헬스체크 추가
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5000/api/health || exit 1
+#HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#  CMD curl -f http://localhost:5000/api/health || exit 1
 
 # 애플리케이션 시작
 CMD ["npm", "run", "dev"]
